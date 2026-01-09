@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { validateAndParse } from '@/lib/parsers/smartParse';
 import { flattenJSON } from '@/lib/parsers/flattener';
+import { smartUnwrap } from '@/lib/parsers/unwrapper';
 import type { AppState, ParseError, ExportFormat } from '@/types/store.types';
 
 const initialState = {
