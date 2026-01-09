@@ -66,3 +66,33 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Nested Table Styles */
+.nested-table {
+  @apply w-full border-collapse;
+}
+
+.nested-table tbody tr {
+  @apply border-b border-border/50;
+}
+
+.nested-table td {
+  @apply p-2 align-top;
+}
+
+.key-cell {
+  @apply font-semibold text-sm min-w-[120px] bg-muted/30 border-r border-border/50;
+}
+
+.value-cell {
+  @apply break-words;
+}
+
+.index-cell {
+  @apply font-mono text-xs text-center min-w-[40px] bg-muted/50 border-r border-border/50 text-muted-foreground;
+}
+
+/* Nested depth styling */
+.nested-table .nested-table {
+  @apply ml-0 mt-1 mb-1 border border-border/30 rounded;
+}

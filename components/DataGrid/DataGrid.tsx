@@ -9,9 +9,11 @@ import {
     ColumnDef,
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
+import { NestedTable } from './NestedTable';
+import { ViewModeToggle } from './ViewModeToggle';
 
 export function DataGrid() {
-    const { flatData, schema, updateCell } = useAppStore();
+    const { flatData, schema, parsedData, viewMode, updateCell } = useAppStore();
 
     const columns: ColumnDef<Record<string, any>>[] = useMemo(
         () =>
@@ -21,11 +23,16 @@ export function DataGrid() {
                 header: key,
                 cell: ({ getValue, row, column }) => {
                     const value = getValue();
+                    const stringValue = String(value ?? '');
+                    const isTruncated = stringValue.length > 100;
+                    const displayValue = isTruncated ? stringValue.substring(0, 100) + '...' : stringValue;
+
                     return (
                         <div
-                            className="px-2 py-1 min-h-[32px] cursor-pointer hover:bg-accent"
+                            className="px-2 py-1 min-h-[32px] cursor-pointer hover:bg-accent max-w[300px]"
+                            title={stringValue} // Tooltip showing full value
                             onDoubleClick={() => {
-                                const newValue = prompt(`Edit ${key}:`, String(value ?? ''));
+                                const newValue = prompt(`Edit ${key}:`, stringValue);
                                 if (newValue !== null) {
                                     updateCell(row.index, column.id, newValue);
                                 }
@@ -34,7 +41,7 @@ export function DataGrid() {
                             {value === null ? (
                                 <span className="text-muted-foreground italic">null</span>
                             ) : (
-                                String(value)
+                                <span className="truncate block">{displayValue}</span>
                             )}
                         </div>
                     );
@@ -62,44 +69,60 @@ export function DataGrid() {
 
     return (
         <Card className="h-full flex flex-col p-4">
-            <div className="mb-4">
-                <h2 className="text-lg font-semibold">Table Preview</h2>
-                <p className="text-sm text-muted-foreground">
-                    {flatData.length} rows × {schema.length} columns (Double-click to edit)
-                </p>
+            <div className="mb-4 flex justify-between items-start">
+                <div>
+                    <h2 className="text-lg font-semibold">
+                        {viewMode === 'flat' ? 'Table Preview' : 'Nested View'}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                        {viewMode === 'flat'
+                            ? `${flatData.length} rows × ${schema.length} columns (Double-click to edit)`
+                            : 'Hierarchical JSON structure'}
+                    </p>
+                </div>
+                <ViewModeToggle />
             </div>
 
             <div className="flex-1 overflow-auto border rounded-md">
-                <table className="w-full text-sm">
-                    <thead className="bg-muted sticky top-0">
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <th
-                                        key={header.id}
-                                        className="px-2 py-2 text-left font-semibold border-b"
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {table.getRowModel().rows.map((row) => (
-                            <tr key={row.id} className="border-b hover:bg-muted/50">
-                                {row.getVisibleCells().map((cell) => (
-                                    <td key={cell.id} className="border-r last:border-r-0">
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                {viewMode === 'flat' ? (
+                    <table className="w-full text-sm">
+                        <thead className="bg-muted sticky top-0">
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <th
+                                            key={header.id}
+                                            className="px-2 py-2 text-left font-semibold border-b min-w-[120px] max-w-[300px]"
+                                            title={header.id} // Tooltip showing full column name
+                                        >
+                                            <div className="truncate">
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                            </div>
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody>
+                            {table.getRowModel().rows.map((row) => (
+                                <tr key={row.id} className="border-b hover:bg-muted/50">
+                                    {row.getVisibleCells().map((cell) => (
+                                        <td key={cell.id} className="border-r last:border-r-0">
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <div className="p-4">
+                        <NestedTable data={parsedData} />
+                    </div>
+                )}
             </div>
         </Card>
     );
