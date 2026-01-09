@@ -116,13 +116,20 @@ function flattenRelational(obj: any, prefix: string = '', context: Record<string
     }
 
     if (Array.isArray(obj)) {
-        if (obj.length === 0) return [{ ...context, [prefix]: '[]' }];
+        // Smart Array Handling:
+        // Only expand arrays of objects. Keep primitives/nested arrays (e.g. coordinates) compacted.
+        const arrayType = detectArrayType(obj);
 
-        const results: Record<string, any>[] = [];
-        obj.forEach(item => {
-            results.push(...flattenRelational(item, prefix, context));
-        });
-        return results;
+        if (arrayType === 'objects') {
+            const results: Record<string, any>[] = [];
+            obj.forEach(item => {
+                results.push(...flattenRelational(item, prefix, context));
+            });
+            return results;
+        } else {
+            // Serialize primitives, nested arrays, or mixed content
+            return [{ ...context, [prefix]: JSON.stringify(obj) }];
+        }
     }
 
     // It's an object
@@ -131,10 +138,27 @@ function flattenRelational(obj: any, prefix: string = '', context: Record<string
     for (const [key, value] of Object.entries(obj)) {
         const newKey = prefix ? `${prefix}.${key}` : key;
 
-        if (value === null || typeof value !== 'object' || (Array.isArray(value) && value.length === 0)) {
-            currentRows.forEach(row => { row[newKey] = value === null ? null : (Array.isArray(value) ? '[]' : value); });
+        if (value === null || typeof value !== 'object') {
+            currentRows.forEach(row => { row[newKey] = value; });
+        } else if (Array.isArray(value)) {
+            // Use the same smart detection for nested arrays
+            const arrayType = detectArrayType(value);
+
+            if (arrayType === 'objects' && value.length > 0) {
+                // Expand logic
+                const nextRows: Record<string, any>[] = [];
+                currentRows.forEach(row => {
+                    const expanded = flattenRelational(value, newKey, row);
+                    nextRows.push(...expanded);
+                });
+                currentRows = nextRows;
+            } else {
+                // Serialize logic
+                const serialized = JSON.stringify(value);
+                currentRows.forEach(row => { row[newKey] = serialized; });
+            }
         } else {
-            // Complex value (object or array)
+            // Complex value (nested object)
             const nextRows: Record<string, any>[] = [];
             currentRows.forEach(row => {
                 const expanded = flattenRelational(value, newKey, row);
