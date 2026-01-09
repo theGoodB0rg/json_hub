@@ -27,6 +27,10 @@ const initialState = {
     prettyPrint: true,
     rowLimit: 100000, // Max rows to display for performance
     fileSizeLimit: 10 * 1024 * 1024, // 10MB in bytes
+    exportSettings: {
+        structure: 'flat' as const,
+        askForPreference: true,
+    },
 
     // Project State
     currentProjectId: null,
@@ -144,11 +148,11 @@ export const useAppStore = create<AppState>()(
                     set({ flatData: newFlatData });
                 },
 
-                // Export data (placeholder - will be implemented with converter modules)
+                // Export data
                 exportData: async (format: ExportFormat) => {
-                    const { flatData, schema, parsedData } = get();
+                    const { parsedData, exportSettings } = get();
 
-                    if (flatData.length === 0) {
+                    if (!parsedData) {
                         set({
                             parseErrors: [{ message: 'No data to export' }],
                         });
@@ -160,25 +164,32 @@ export const useAppStore = create<AppState>()(
                     try {
                         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
 
+                        // Use the selected structure for export
+                        const { smartUnwrap } = require('@/lib/parsers/unwrapper');
+                        const { data: dataToExport } = smartUnwrap(parsedData);
+
+                        const mode = exportSettings.structure === 'nested' ? 'relational' : 'flat';
+                        const { rows, schema } = flattenJSON(dataToExport, { mode });
+
                         switch (format) {
                             case 'csv': {
                                 const { downloadCsv } = await import('@/lib/converters/jsonToCsv');
-                                downloadCsv(flatData, schema, `export-${timestamp}.csv`);
+                                downloadCsv(rows, schema, `export-${timestamp}.csv`);
                                 break;
                             }
                             case 'xlsx': {
                                 const { downloadXlsx } = await import('@/lib/converters/jsonToXlsx');
-                                downloadXlsx(flatData, schema, `export-${timestamp}.xlsx`);
+                                downloadXlsx(rows, schema, `export-${timestamp}.xlsx`);
                                 break;
                             }
                             case 'html': {
                                 const { downloadHtml } = await import('@/lib/converters/jsonToHtml');
-                                downloadHtml(flatData, schema, `export-${timestamp}.html`);
+                                downloadHtml(rows, schema, `export-${timestamp}.html`);
                                 break;
                             }
                             case 'zip': {
                                 const { downloadZip } = await import('@/lib/converters/zipExporter');
-                                await downloadZip(flatData, schema, parsedData, `json-hub-export-${timestamp}.zip`);
+                                await downloadZip(rows, schema, parsedData, `json-hub-export-${timestamp}.zip`);
                                 break;
                             }
                             default:
@@ -222,6 +233,12 @@ export const useAppStore = create<AppState>()(
 
                 setPrettyPrint: (value: boolean) => {
                     set({ prettyPrint: value });
+                },
+
+                updateExportSettings: (settings: Partial<AppState['exportSettings']>) => {
+                    set((state) => ({
+                        exportSettings: { ...state.exportSettings, ...settings },
+                    }));
                 },
 
                 // --- Project Management Actions ---
@@ -338,6 +355,7 @@ export const useAppStore = create<AppState>()(
             partialize: (state) => ({
                 viewMode: state.viewMode,
                 prettyPrint: state.prettyPrint,
+                exportSettings: state.exportSettings,
             }),
         }
     )
