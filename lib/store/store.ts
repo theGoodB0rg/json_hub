@@ -134,16 +134,43 @@ export const useAppStore = create<AppState>()(
 
             // Export data (placeholder - will be implemented with converter modules)
             exportData: async (format: ExportFormat) => {
+                const { flatData, schema, parsedData } = get();
+
+                if (flatData.length === 0) {
+                    set({
+                        parseErrors: [{ message: 'No data to export' }],
+                    });
+                    return;
+                }
+
                 set({ isLoading: true, downloadProgress: 0 });
 
                 try {
-                    // TODO: Implement actual export logic with converter modules
-                    console.log(`Exporting as ${format}...`);
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
 
-                    // Simulate progress
-                    for (let i = 0; i <= 100; i += 10) {
-                        await new Promise((resolve) => setTimeout(resolve, 100));
-                        set({ downloadProgress: i });
+                    switch (format) {
+                        case 'csv': {
+                            const { downloadCsv } = await import('@/lib/converters/jsonToCsv');
+                            downloadCsv(flatData, schema, `export-${timestamp}.csv`);
+                            break;
+                        }
+                        case 'xlsx': {
+                            const { downloadXlsx } = await import('@/lib/converters/jsonToXlsx');
+                            downloadXlsx(flatData, schema, `export-${timestamp}.xlsx`);
+                            break;
+                        }
+                        case 'html': {
+                            const { downloadHtml } = await import('@/lib/converters/jsonToHtml');
+                            downloadHtml(flatData, schema, `export-${timestamp}.html`);
+                            break;
+                        }
+                        case 'zip': {
+                            const { downloadZip } = await import('@/lib/converters/zipExporter');
+                            await downloadZip(flatData, schema, parsedData, `json-hub-export-${timestamp}.zip`);
+                            break;
+                        }
+                        default:
+                            throw new Error(`Unsupported format: ${format}`);
                     }
 
                     set({ isLoading: false, downloadProgress: 100 });
