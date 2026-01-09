@@ -65,9 +65,15 @@ export function validateAndParse(
         }
 
         // Success - return parsed data
+        // If the result is a single object (and not null), wrap it in an array
+        // This prevents the app from crashing when users paste a single object
+        const finalData = (parsed && typeof parsed === 'object' && !Array.isArray(parsed))
+            ? [parsed]
+            : parsed;
+
         return {
             success: true,
-            data: parsed,
+            data: finalData,
         };
     } catch (error) {
         const errors: ParseError[] = [];
