@@ -48,7 +48,7 @@ describe('flattener', () => {
             expect(result.rows[1]).toEqual({ name: 'Jane', age: 25 });
         });
 
-        it('should handle nested arrays with indexed columns', () => {
+        it('should serialize arrays of primitives as JSON strings', () => {
             const input = {
                 items: ['apple', 'banana', 'cherry'],
             };
@@ -56,9 +56,7 @@ describe('flattener', () => {
 
             expect(result.rows).toHaveLength(1);
             expect(result.rows[0]).toEqual({
-                'items.0': 'apple',
-                'items.1': 'banana',
-                'items.2': 'cherry',
+                items: '["apple","banana","cherry"]',
             });
         });
 
@@ -129,9 +127,7 @@ describe('flattener', () => {
                 number: 42,
                 boolean: true,
                 null: null,
-                'array.0': 1,
-                'array.1': 2,
-                'array.2': 3,
+                array: '[1,2,3]', // Now serialized as JSON
                 'object.nested': 'value',
             });
         });
@@ -196,6 +192,81 @@ describe('flattener', () => {
                 'key.with.dots': 'value2',
                 'key with spaces': 'value3',
             });
+        });
+
+        it('should handle GeoJSON coordinates intelligently', () => {
+            const geojson = {
+                type: 'FeatureCollection',
+                features: [
+                    {
+                        type: 'Feature',
+                        properties: {
+                            location: 'Central Park',
+                            areaCode: 212,
+                            amenities: {
+                                restrooms: true,
+                                food: true,
+                            },
+                        },
+                        geometry: {
+                            type: 'Polygon',
+                            coordinates: [
+                                [
+                                    [-73.981, 40.768],
+                                    [-73.958, 40.8],
+                                    [-73.949, 40.796],
+                                    [-73.973, 40.764],
+                                    [-73.981, 40.768],
+                                ],
+                            ],
+                        },
+                    },
+                ],
+            };
+
+            const result = flattenJSON(geojson);
+
+            // Should create a manageable number of columns (not 17!)
+            expect(result.schema.length).toBeLessThan(12);
+
+            // Coordinates should be serialized as JSON string
+            expect(result.rows[0]['features.0.geometry.coordinates']).toContain('[');
+            expect(typeof result.rows[0]['features.0.geometry.coordinates']).toBe('string');
+
+            // Regular properties should still be flattened
+            expect(result.rows[0]['features.0.properties.location']).toBe('Central Park');
+            expect(result.rows[0]['features.0.properties.areaCode']).toBe(212);
+        });
+
+        it('should serialize nested arrays', () => {
+            const input = {
+                matrix: [
+                    [1, 2, 3],
+                    [4, 5, 6],
+                ],
+            };
+            const result = flattenJSON(input);
+
+            expect(result.rows).toHaveLength(1);
+            expect(result.rows[0].matrix).toBe('[[1,2,3],[4,5,6]]');
+        });
+
+        it('should expand arrays of objects but serialize their primitive arrays', () => {
+            const input = {
+                users: [
+                    { name: 'John', tags: ['admin', 'user'] },
+                    { name: 'Jane', tags: ['user'] },
+                ],
+            };
+            const result = flattenJSON(input);
+
+            expect(result.rows).toHaveLength(1);
+            // Users array should be expanded
+            expect(result.rows[0]['users.0.name']).toBe('John');
+            expect(result.rows[0]['users.1.name']).toBe('Jane');
+            // But tags (primitive arrays) should be serialized
+            expect(result.rows[0]['users.0.tags']).toBe('["admin","user"]');
+            expect(result.rows[0]['users.1.tags']).toBe('["user"]');
         });
     });
 
