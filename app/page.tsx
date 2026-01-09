@@ -1,17 +1,44 @@
+'use client';
+
+import { JsonEditor } from '@/components/JsonEditor/JsonEditor';
+import { DataGrid } from '@/components/DataGrid/DataGrid';
+import { ExportMenu } from '@/components/ExportMenu/ExportMenu';
+import {
+    ResizablePanelGroup,
+    ResizablePanel,
+    ResizableHandle,
+} from '@/components/ui/resizable';
+
 export default function Home() {
     return (
-        <main className="min-h-screen p-8">
-            <div className="max-w-7xl mx-auto">
-                <h1 className="text-4xl font-bold mb-4">JSON Hub</h1>
-                <p className="text-muted-foreground">
-                    The Smart JSON Bridge - Convert complex JSON to Excel/CSV
+        <main className="h-screen flex flex-col">
+            <header className="border-b px-6 py-4">
+                <h1 className="text-2xl font-bold">JSON Hub</h1>
+                <p className="text-sm text-muted-foreground">
+                    Convert complex JSON to Excel/CSV with auto-unescape and flattening
                 </p>
-                <div className="mt-8 p-6 border rounded-lg">
-                    <p className="text-sm text-muted-foreground">
-                        Project initialized. Core modules coming next...
-                    </p>
-                </div>
+            </header>
+
+            <div className="flex-1 overflow-hidden">
+                <ResizablePanelGroup orientation="horizontal" className="h-full">
+                    <ResizablePanel defaultSize={40} minSize={30}>
+                        <div className="h-full p-4">
+                            <JsonEditor />
+                        </div>
+                    </ResizablePanel>
+
+                    <ResizableHandle withHandle />
+
+                    <ResizablePanel defaultSize={60} minSize={30}>
+                        <div className="h-full p-4 flex flex-col gap-4">
+                            <div className="flex-1 overflow-hidden">
+                                <DataGrid />
+                            </div>
+                            <ExportMenu />
+                        </div>
+                    </ResizablePanel>
+                </ResizablePanelGroup>
             </div>
         </main>
-    )
+    );
 }
