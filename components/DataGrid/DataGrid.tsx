@@ -16,7 +16,8 @@ export function DataGrid() {
     const columns: ColumnDef<Record<string, any>>[] = useMemo(
         () =>
             schema.map((key) => ({
-                accessorKey: key,
+                id: key,
+                accessorFn: (row) => row[key], // Fix: Use accessorFn to treat dot keys as literal properties
                 header: key,
                 cell: ({ getValue, row, column }) => {
                     const value = getValue();
