@@ -8,6 +8,8 @@ const nextConfig = {
     images: {
         unoptimized: true,
     },
+    // Protect source code: Disable source maps in production
+    productionBrowserSourceMaps: false,
 }
 
 module.exports = nextConfig
