@@ -1,9 +1,19 @@
 'use client';
 
 import { useAppStore } from '@/lib/store/store';
-import Editor from '@monaco-editor/react';
+import dynamic from 'next/dynamic';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+
+// Dynamically import Monaco Editor with SSR disabled
+const Editor = dynamic(() => import('@monaco-editor/react'), {
+    ssr: false,
+    loading: () => (
+        <div className="h-full flex items-center justify-center bg-muted">
+            <p className="text-muted-foreground">Loading editor...</p>
+        </div>
+    ),
+});
 
 export function JsonEditor() {
     const { rawInput, setRawInput, parseInput, isParsed, parseErrors, prettyPrint } = useAppStore();
