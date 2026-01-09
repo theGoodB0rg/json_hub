@@ -1,5 +1,58 @@
 import type { FlattenResult } from '@/types/parser.types';
 
+// Maximum depth for array expansion to prevent column explosion
+const MAX_ARRAY_EXPANSION_DEPTH = 1;
+
+// Maximum number of array elements to check for type detection
+const ARRAY_SAMPLE_SIZE = 5;
+
+/**
+ * Determines the type of array content for smart flattening
+ */
+type ArrayType = 'objects' | 'primitives' | 'nested' | 'mixed';
+
+/**
+ * Detects the type of content in an array
+ * @param arr - Array to analyze
+ * @returns ArrayType classification
+ */
+function detectArrayType(arr: any[]): ArrayType {
+    if (arr.length === 0) return 'primitives';
+
+    const sample = arr.slice(0, ARRAY_SAMPLE_SIZE);
+    let hasObject = false;
+    let hasPrimitive = false;
+    let hasArray = false;
+
+    for (const item of sample) {
+        if (Array.isArray(item)) {
+            hasArray = true;
+        } else if (item !== null && typeof item === 'object') {
+            hasObject = true;
+        } else {
+            hasPrimitive = true;
+        }
+    }
+
+    // Nested arrays (like GeoJSON coordinates)
+    if (hasArray) {
+        return 'nested';
+    }
+
+    // Mixed content
+    if ((hasObject && hasPrimitive) || (hasObject && hasArray) || (hasPrimitive && hasArray)) {
+        return 'mixed';
+    }
+
+    // Arrays of objects (typical spreadsheet case)
+    if (hasObject) {
+        return 'objects';
+    }
+
+    // Arrays of primitives
+    return 'primitives';
+}
+
 /**
  * Flattens nested JSON objects into spreadsheet-style rows
  * @param data - Parsed JSON data (object or array)
@@ -50,15 +103,18 @@ export function flattenJSON(data: any): FlattenResult {
 }
 
 /**
- * Recursively flattens a single object using dot notation
+ * Recursively flattens a single object using dot notation with smart array handling
  * @param obj - Object to flatten
  * @param prefix - Current key prefix (for recursion)
+ * @param visited - Set to track circular references
+ * @param arrayDepth - Current array nesting depth
  * @returns Flattened object with dot-notation keys
  */
 function flattenObject(
     obj: any,
     prefix: string = '',
-    visited: Set<any> = new Set()
+    visited: Set<any> = new Set(),
+    arrayDepth: number = 0
 ): Record<string, any> {
     const result: Record<string, any> = {};
 
@@ -75,15 +131,36 @@ function flattenObject(
         return { [prefix]: obj };
     }
 
-    // Handle arrays
+    // Handle arrays with smart detection
     if (Array.isArray(obj)) {
-        // For arrays, create indexed keys
-        obj.forEach((item, index) => {
-            const key = prefix ? `${prefix}.${index}` : `${index}`;
-            const flattened = flattenObject(item, key, new Set(visited));
-            Object.assign(result, flattened);
-        });
-        return result;
+        const arrayType = detectArrayType(obj);
+
+        // Arrays beyond max depth should be serialized
+        if (arrayDepth >= MAX_ARRAY_EXPANSION_DEPTH) {
+            return { [prefix]: JSON.stringify(obj) };
+        }
+
+        // Handle based on detected type
+        switch (arrayType) {
+            case 'objects':
+                // Expand arrays of objects (typical spreadsheet case)
+                obj.forEach((item, index) => {
+                    const key = prefix ? `${prefix}.${index}` : `${index}`;
+                    const flattened = flattenObject(item, key, new Set(visited), arrayDepth + 1);
+                    Object.assign(result, flattened);
+                });
+                return result;
+
+            case 'primitives':
+            case 'nested':
+            case 'mixed':
+                // Serialize as JSON string for compact display
+                return { [prefix]: JSON.stringify(obj) };
+
+            default:
+                // Fallback: serialize as JSON
+                return { [prefix]: JSON.stringify(obj) };
+        }
     }
 
     // Handle objects
@@ -92,9 +169,13 @@ function flattenObject(
 
         if (value === null) {
             result[newKey] = null;
+        } else if (Array.isArray(value)) {
+            // Handle arrays with smart detection
+            const flattened = flattenObject(value, newKey, new Set(visited), arrayDepth);
+            Object.assign(result, flattened);
         } else if (typeof value === 'object') {
             // Recursively flatten nested objects
-            const flattened = flattenObject(value, newKey, new Set(visited));
+            const flattened = flattenObject(value, newKey, new Set(visited), arrayDepth);
             Object.assign(result, flattened);
         } else {
             // Primitive value
@@ -132,6 +213,31 @@ export function unflattenObject(flatObj: Record<string, any>): any {
     const result: any = {};
 
     for (const [key, value] of Object.entries(flatObj)) {
+        // Check if value is a serialized JSON string
+        if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
+            try {
+                // Try to parse it back to original structure
+                const parsed = JSON.parse(value);
+                const keys = key.split('.');
+                let current = result;
+
+                for (let i = 0; i < keys.length - 1; i++) {
+                    const k = keys[i];
+                    if (!(k in current)) {
+                        current[k] = {};
+                    }
+                    current = current[k];
+                }
+
+                const lastKey = keys[keys.length - 1];
+                current[lastKey] = parsed;
+                continue;
+            } catch {
+                // If parsing fails, treat as regular string
+            }
+        }
+
+        // Regular unflattening
         const keys = key.split('.');
         let current = result;
 
