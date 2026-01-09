@@ -56,9 +56,10 @@ function detectArrayType(arr: any[]): ArrayType {
 /**
  * Flattens nested JSON objects into spreadsheet-style rows
  * @param data - Parsed JSON data (object or array)
+ * @param options - Flattening options (mode: 'flat' | 'relational')
  * @returns FlattenResult with rows and schema
  */
-export function flattenJSON(data: any): FlattenResult {
+export function flattenJSON(data: any, options: { mode: 'flat' | 'relational' } = { mode: 'flat' }): FlattenResult {
     // Handle null or undefined
     if (data === null || data === undefined) {
         return { rows: [], schema: [] };
@@ -77,11 +78,15 @@ export function flattenJSON(data: any): FlattenResult {
     const allKeys = new Set<string>();
 
     for (const item of dataArray) {
-        const flatRow = flattenObject(item);
-        flatRows.push(flatRow);
-
-        // Collect all keys for schema
-        Object.keys(flatRow).forEach((key) => allKeys.add(key));
+        if (options.mode === 'relational') {
+            const relationalResult = flattenRelational(item);
+            flatRows.push(...relationalResult);
+            relationalResult.forEach(row => Object.keys(row).forEach(key => allKeys.add(key)));
+        } else {
+            const flatRow = flattenObject(item);
+            flatRows.push(flatRow);
+            Object.keys(flatRow).forEach((key) => allKeys.add(key));
+        }
     }
 
     // Create schema (sorted for consistency)
@@ -101,6 +106,47 @@ export function flattenJSON(data: any): FlattenResult {
         schema,
     };
 }
+
+/**
+ * Relational flattener: expands arrays into multiple rows
+ */
+function flattenRelational(obj: any, prefix: string = '', context: Record<string, any> = {}): Record<string, any>[] {
+    if (obj === null || typeof obj !== 'object') {
+        return [{ ...context, [prefix || 'value']: obj }];
+    }
+
+    if (Array.isArray(obj)) {
+        if (obj.length === 0) return [{ ...context, [prefix]: '[]' }];
+
+        const results: Record<string, any>[] = [];
+        obj.forEach(item => {
+            results.push(...flattenRelational(item, prefix, context));
+        });
+        return results;
+    }
+
+    // It's an object
+    let currentRows: Record<string, any>[] = [{ ...context }];
+
+    for (const [key, value] of Object.entries(obj)) {
+        const newKey = prefix ? `${prefix}.${key}` : key;
+
+        if (value === null || typeof value !== 'object' || (Array.isArray(value) && value.length === 0)) {
+            currentRows.forEach(row => { row[newKey] = value === null ? null : (Array.isArray(value) ? '[]' : value); });
+        } else {
+            // Complex value (object or array)
+            const nextRows: Record<string, any>[] = [];
+            currentRows.forEach(row => {
+                const expanded = flattenRelational(value, newKey, row);
+                nextRows.push(...expanded);
+            });
+            currentRows = nextRows;
+        }
+    }
+
+    return currentRows;
+}
+
 
 /**
  * Recursively flattens a single object using dot notation with smart array handling
