@@ -20,6 +20,12 @@ export interface AppState {
     rowLimit: number;
     fileSizeLimit: number;
 
+    // Project Management
+    currentProjectId: string | null;
+    projectName: string | null;
+    lastSaved: number | null;
+    savedProjects: any[]; // Using list type from db
+
     // Actions
     setRawInput: (input: string) => void;
     parseInput: () => void;
@@ -30,6 +36,13 @@ export interface AppState {
     setActiveTab: (tab: 'input' | 'preview' | 'export') => void;
     setSelectedFormat: (format: ExportFormat) => void;
     setPrettyPrint: (value: boolean) => void;
+
+    // Project Actions
+    loadProjectsList: () => Promise<void>;
+    saveCurrentProject: (name: string) => Promise<void>;
+    loadProject: (id: string) => Promise<void>;
+    deleteProject: (id: string) => Promise<void>;
+    createNewProject: () => void;
 }
 
 export interface ParseError {

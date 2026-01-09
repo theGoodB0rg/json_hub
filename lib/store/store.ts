@@ -25,6 +25,12 @@ const initialState = {
     prettyPrint: true,
     rowLimit: 100000, // Max rows to display for performance
     fileSizeLimit: 10 * 1024 * 1024, // 10MB in bytes
+
+    // Project State
+    currentProjectId: null,
+    projectName: null,
+    lastSaved: null,
+    savedProjects: [],
 };
 
 export const useAppStore = create<AppState>()(
@@ -203,9 +209,112 @@ export const useAppStore = create<AppState>()(
                 set({ selectedFormat: format });
             },
 
-            // Set pretty print option
             setPrettyPrint: (value: boolean) => {
                 set({ prettyPrint: value });
+            },
+
+            // --- Project Management Actions ---
+
+            createNewProject: () => {
+                set({
+                    ...initialState,
+                    currentProjectId: null,
+                    projectName: null,
+                    savedProjects: get().savedProjects, // Keep the list loaded
+                });
+            },
+
+            loadProjectsList: async () => {
+                try {
+                    const { projectService } = await import('@/lib/db');
+                    const projects = await projectService.getProjects();
+                    set({ savedProjects: projects });
+                } catch (error) {
+                    console.error('Failed to load projects list', error);
+                }
+            },
+
+            saveCurrentProject: async (name: string) => {
+                const state = get();
+                const { projectService } = await import('@/lib/db');
+
+                const projectData = {
+                    rawInput: state.rawInput,
+                    isParsed: state.isParsed,
+                    parseErrors: state.parseErrors,
+                    parsedData: state.parsedData,
+                    flatData: state.flatData,
+                    schema: state.schema,
+                    selectedFormat: state.selectedFormat,
+                };
+
+                const newProject = {
+                    id: state.currentProjectId || crypto.randomUUID(),
+                    name: name,
+                    createdAt: state.currentProjectId ? (state.lastSaved || Date.now()) : Date.now(),
+                    updatedAt: Date.now(),
+                    data: projectData,
+                };
+
+                try {
+                    await projectService.saveProject(newProject);
+                    set({
+                        currentProjectId: newProject.id,
+                        projectName: newProject.name,
+                        lastSaved: newProject.updatedAt,
+                    });
+                    // Reload list to reflect changes
+                    get().loadProjectsList();
+                } catch (error) {
+                    console.error('Failed to save project', error);
+                    set({
+                        parseErrors: [{ message: 'Failed to save project locally.' }],
+                    });
+                }
+            },
+
+            loadProject: async (id: string) => {
+                set({ isLoading: true });
+                try {
+                    const { projectService } = await import('@/lib/db');
+                    const project = await projectService.getProject(id);
+
+                    if (project) {
+                        set({
+                            ...project.data,
+                            currentProjectId: project.id,
+                            projectName: project.name,
+                            lastSaved: project.updatedAt,
+                            isLoading: false,
+                        });
+                    } else {
+                        set({ isLoading: false });
+                    }
+                } catch (error) {
+                    console.error('Failed to load project', error);
+                    set({ isLoading: false });
+                }
+            },
+
+            deleteProject: async (id: string) => {
+                try {
+                    const { projectService } = await import('@/lib/db');
+                    await projectService.deleteProject(id);
+
+                    // If deleting current project, reset ID but keep data (unsaved state)
+                    const { currentProjectId } = get();
+                    if (currentProjectId === id) {
+                        set({
+                            currentProjectId: null,
+                            projectName: null,
+                            lastSaved: null
+                        });
+                    }
+
+                    get().loadProjectsList();
+                } catch (error) {
+                    console.error('Failed to delete project', error);
+                }
             },
         }),
         {
