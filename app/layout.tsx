@@ -2,15 +2,16 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-    title: 'JSON Hub - Smart JSON Bridge',
-    description: 'Convert complex JSON to Excel/CSV with auto-unescape and flattening',
+    title: 'Secure JSON to Excel Converter | JSON Hub',
+    description: 'Instantly convert JSON to Excel/CSV in your browser. 100% Private - your data never leaves this device. Perfect for accountants and analysts.',
     applicationName: 'JSON Hub',
     authors: [{ name: 'JSON Hub Team' }],
-    keywords: ['json', 'csv', 'excel', 'converter', 'flatten', 'unescape', 'developer tools'],
+    keywords: ['json to excel', 'json to csv', 'secure json converter', 'client-side json tools', 'convert api to excel', 'json formatter', 'excel converter'],
     creator: 'JSON Hub',
     publisher: 'JSON Hub',
     formatDetection: {
@@ -23,8 +24,8 @@ export const metadata: Metadata = {
         apple: '/apple-touch-icon.png',
     },
     openGraph: {
-        title: 'JSON Hub - Smart JSON Bridge',
-        description: 'Convert complex JSON to Excel/CSV with auto-unescape and flattening. Handle messy API responses with ease.',
+        title: 'Secure JSON to Excel Converter | JSON Hub',
+        description: 'Convert complex JSON to Excel/CSV instantly in your browser. 100% Private & Secure.',
         url: 'https://jsonhub.com',
         siteName: 'JSON Hub',
         locale: 'en_US',
@@ -32,8 +33,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'JSON Hub - Smart JSON Bridge',
-        description: 'Convert complex JSON to Excel/CSV with auto-unescape and flattening',
+        title: 'Secure JSON to Excel Converter | JSON Hub',
+        description: 'Convert complex JSON to Excel/CSV instantly in your browser. 100% Private.',
         creator: '@jsonhub',
     },
     manifest: '/manifest.json',
@@ -47,15 +48,22 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-                {children}
-                {/* Google AdSense Placeholder - Replace ca-pub-XXXXXXXXXXXXXXXX with your actual ID */}
-                <Script
-                    id="adsense-init"
-                    async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-                    crossOrigin="anonymous"
-                    strategy="lazyOnload"
-                />
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    {children}
+                    {/* Google AdSense Placeholder - Replace ca-pub-XXXXXXXXXXXXXXXX with your actual ID */}
+                    <Script
+                        id="adsense-init"
+                        async
+                        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+                        crossOrigin="anonymous"
+                        strategy="lazyOnload"
+                    />
+                </ThemeProvider>
             </body>
         </html>
     )
