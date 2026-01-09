@@ -17,7 +17,7 @@ const initialState = {
 
     // UI State
     activeTab: 'input' as const,
-    selectedFormat: 'csv' as ExportFormat,
+    selectedFormat: 'xlsx' as ExportFormat,
     isLoading: false,
     downloadProgress: 0,
 
