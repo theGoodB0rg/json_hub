@@ -30,11 +30,68 @@ export function JsonEditor() {
         setRawInput('');
     };
 
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Check file size (10MB limit)
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert('File size exceeds 10MB limit');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target?.result as string;
+            setRawInput(content);
+        };
+        reader.readAsText(file);
+    };
+
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        if (!file) return;
+
+        // Check file size
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert('File size exceeds 10MB limit');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target?.result as string;
+            setRawInput(content);
+        };
+        reader.readAsText(file);
+    };
+
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+    };
+
     return (
         <Card className="h-full flex flex-col p-4">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">JSON Input</h2>
                 <div className="flex gap-2">
+                    <input
+                        type="file"
+                        accept=".json,.txt"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        id="file-upload"
+                    />
+                    <Button
+                        onClick={() => document.getElementById('file-upload')?.click()}
+                        variant="outline"
+                        size="sm"
+                    >
+                        Upload File
+                    </Button>
                     <Button onClick={handleClear} variant="outline" size="sm">
                         Clear
                     </Button>
@@ -44,7 +101,11 @@ export function JsonEditor() {
                 </div>
             </div>
 
-            <div className="flex-1 border rounded-md overflow-hidden">
+            <div
+                className="flex-1 border rounded-md overflow-hidden"
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+            >
                 <Editor
                     height="100%"
                     defaultLanguage="json"
