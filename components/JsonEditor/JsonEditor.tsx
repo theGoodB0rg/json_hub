@@ -95,6 +95,22 @@ export function JsonEditor() {
                     <Button onClick={handleClear} variant="outline" size="sm">
                         Clear
                     </Button>
+                    <Button
+                        onClick={async () => {
+                            try {
+                                const text = await navigator.clipboard.readText();
+                                setRawInput(text);
+                            } catch (err) {
+                                console.error('Failed to read clipboard', err);
+                                alert('Could not access clipboard. Please paste manually.');
+                            }
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="hidden sm:inline-flex"
+                    >
+                        Paste
+                    </Button>
                     <Button onClick={handleParse} size="sm">
                         Parse & Flatten
                     </Button>
