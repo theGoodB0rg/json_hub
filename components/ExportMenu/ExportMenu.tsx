@@ -33,7 +33,10 @@ export function ExportMenu() {
                         size="sm"
                         onClick={() => setSelectedFormat(format.value)}
                     >
-                        {format.label}
+                        <span className={format.value === 'xlsx' ? "flex items-center gap-1" : ""}>
+                            {format.value === 'xlsx' && <span>📊</span>}
+                            {format.label}
+                        </span>
                     </Button>
                 ))}
             </div>
