@@ -11,8 +11,11 @@ import {
     ResizableHandle,
 } from '@/components/ui/resizable';
 import { ShieldCheck, Zap, Code2, Lock } from "lucide-react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export default function Home() {
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+
     return (
         <div className="min-h-screen flex flex-col bg-background font-sans selection:bg-primary/10">
             {/* Glassmorphic Header */}
@@ -65,7 +68,10 @@ export default function Home() {
                 {/* Main App Interface */}
                 <section className="flex-1 px-4 pb-8 container mx-auto">
                     <div className="h-[75vh] md:h-[800px] border border-border/50 rounded-xl shadow-2xl bg-card overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 ring-1 ring-white/10">
-                        <ResizablePanelGroup orientation="horizontal" className="h-full">
+                        <ResizablePanelGroup
+                            orientation={isDesktop ? "horizontal" : "vertical"}
+                            className="h-full"
+                        >
                             <ResizablePanel defaultSize={40} minSize={30} className="bg-background/50">
                                 <div className="h-full p-0 flex flex-col">
                                     <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
