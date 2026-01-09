@@ -7,7 +7,8 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(result.data).toEqual({ name: 'John', age: 30 });
+            expect(result.success).toBe(true);
+            expect(result.data).toEqual([{ name: 'John', age: 30 }]);
             expect(result.errors).toBeUndefined();
         });
 
@@ -80,7 +81,8 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(result.data).toEqual(deepObject);
+            expect(result.success).toBe(true);
+            expect(result.data).toEqual([deepObject]);
         });
 
         it('should handle large objects', () => {
@@ -92,7 +94,8 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(Object.keys(result.data).length).toBe(10000);
+            expect(result.success).toBe(true);
+            expect(Object.keys(result.data[0]).length).toBe(10000);
         });
 
         it('should prevent infinite recursion with max depth limit', () => {
@@ -120,10 +123,11 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(result.data).toHaveProperty('string', 'text');
-            expect(result.data).toHaveProperty('number', 42);
-            expect(result.data).toHaveProperty('boolean', true);
-            expect(result.data).toHaveProperty('null', null);
+            expect(result.success).toBe(true);
+            expect(result.data[0]).toHaveProperty('string', 'text');
+            expect(result.data[0]).toHaveProperty('number', 42);
+            expect(result.data[0]).toHaveProperty('boolean', true);
+            expect(result.data[0]).toHaveProperty('null', null);
         });
 
         it('should handle special characters in strings', () => {
@@ -136,8 +140,19 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(result.data.quote).toBe('He said "Hello"');
-            expect(result.data.newline).toBe('Line 1\nLine 2');
+            expect(result.success).toBe(true);
+            expect(result.data[0].quote).toBe('He said "Hello"');
+            expect(result.data[0].newline).toBe('Line 1\nLine 2');
+        });
+
+        it('should handle single object input by wrapping in array', () => {
+            const input = '{"name": "Single Object"}';
+            const result = validateAndParse(input);
+
+            expect(result.success).toBe(true);
+            expect(Array.isArray(result.data)).toBe(true);
+            expect(result.data).toHaveLength(1);
+            expect(result.data[0]).toEqual({ name: 'Single Object' });
         });
     });
 

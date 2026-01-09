@@ -7,11 +7,11 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-    title: 'Secure JSON to Excel Converter | JSON Hub',
-    description: 'Instantly convert JSON to Excel/CSV in your browser. 100% Private - your data never leaves this device. Perfect for accountants and analysts.',
+    title: 'Convert JSON to Excel Free | Secure & Private Tool',
+    description: 'The easiest way to convert JSON files to Excel (XLSX) or CSV. Private, secure, and free. No coding required. Perfect for business analysts and reporting.',
     applicationName: 'JSON Hub',
     authors: [{ name: 'JSON Hub Team' }],
-    keywords: ['json to excel', 'json to csv', 'secure json converter', 'client-side json tools', 'convert api to excel', 'json formatter', 'excel converter'],
+    keywords: ['json to excel', 'convert json to xlsx', 'json to csv', 'no-code json converter', 'secure data converter', 'excel conversion tool', 'offline json parser'],
     creator: 'JSON Hub',
     publisher: 'JSON Hub',
     formatDetection: {
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
         apple: '/apple-touch-icon.png',
     },
     openGraph: {
-        title: 'Secure JSON to Excel Converter | JSON Hub',
-        description: 'Convert complex JSON to Excel/CSV instantly in your browser. 100% Private & Secure.',
+        title: 'Convert JSON to Excel Free | Secure & Private Tool',
+        description: 'Stop struggling with JSON. Convert data to Excel instantly in your browser. 100% Private & Secure.',
         url: 'https://jsonhub.com',
         siteName: 'JSON Hub',
         locale: 'en_US',
@@ -33,8 +33,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Secure JSON to Excel Converter | JSON Hub',
-        description: 'Convert complex JSON to Excel/CSV instantly in your browser. 100% Private.',
+        title: 'Convert JSON to Excel Free | Secure & Private Tool',
+        description: 'Stop struggling with JSON. Convert data to Excel instantly in your browser. 100% Private.',
         creator: '@jsonhub',
     },
     manifest: '/manifest.json',

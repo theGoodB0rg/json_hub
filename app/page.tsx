@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/resizable';
 import { ShieldCheck, Zap, Code2, Lock } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { AffiliateSidebar } from "@/components/AffiliateSidebar";
 
 export default function Home() {
     const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -52,15 +53,15 @@ export default function Home() {
                         </div>
 
                         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-5 duration-700">
-                            Transform JSON into <br />
+                            Stop Wrestling with JSON. <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">
-                                Excel Spreadsheets
+                                Convert to Excel Instantly.
                             </span>
                         </h1>
 
                         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
-                            The professional&apos;s tool for parsing, flattening, and converting complex JSON data.
-                            Secure, private, and capable of handling massive files directly in your browser.
+                            The easiest way to turn raw data into readable spreadsheets.
+                            100% Private. No software to install. No coding required.
                         </p>
                     </div>
                 </section>
@@ -68,42 +69,49 @@ export default function Home() {
                 {/* Main App Interface */}
                 <section className="flex-1 px-4 pb-8 container mx-auto">
                     <div className="h-[75vh] md:h-[800px] border border-border/50 rounded-xl shadow-2xl bg-card overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 ring-1 ring-white/10">
-                        <ResizablePanelGroup
-                            orientation={isDesktop ? "horizontal" : "vertical"}
-                            className="h-full"
-                        >
-                            <ResizablePanel defaultSize={40} minSize={30} className="bg-background/50">
-                                <div className="h-full p-0 flex flex-col">
-                                    <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
-                                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Input JSON</span>
-                                        <span className="text-[10px] text-muted-foreground">Auto-detects format</span>
-                                    </div>
-                                    <div className="flex-1 overflow-hidden relative group">
-                                        <JsonEditor />
-                                    </div>
-                                </div>
-                            </ResizablePanel>
-
-                            <ResizableHandle withHandle className="bg-border/50 hover:bg-primary/50 transition-colors w-1.5" />
-
-                            <ResizablePanel defaultSize={60} minSize={30} className="bg-background">
-                                <div className="h-full flex flex-col">
-                                    <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
-                                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data Grid Preview</span>
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                            <span className="text-[10px] text-muted-foreground">Live App</span>
+                        <div className="flex flex-row h-full">
+                            <div className="flex-1 h-full overflow-hidden">
+                                <ResizablePanelGroup
+                                    orientation={isDesktop ? "horizontal" : "vertical"}
+                                    className="h-full"
+                                >
+                                    <ResizablePanel defaultSize={40} minSize={30} className="bg-background/50">
+                                        <div className="h-full p-0 flex flex-col">
+                                            <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
+                                                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Input JSON</span>
+                                                <span className="text-[10px] text-muted-foreground">Auto-detects format</span>
+                                            </div>
+                                            <div className="flex-1 overflow-hidden relative group">
+                                                <JsonEditor />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="flex-1 overflow-hidden p-4">
-                                        <DataGrid />
-                                    </div>
-                                    <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
-                                        <ExportMenu />
-                                    </div>
-                                </div>
-                            </ResizablePanel>
-                        </ResizablePanelGroup>
+                                    </ResizablePanel>
+
+                                    <ResizableHandle withHandle className="bg-border/50 hover:bg-primary/50 transition-colors w-1.5" />
+
+                                    <ResizablePanel defaultSize={60} minSize={30} className="bg-background">
+                                        <div className="h-full flex flex-col">
+                                            <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
+                                                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data Grid Preview</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                                    <span className="text-[10px] text-muted-foreground">Live App</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 overflow-hidden p-4">
+                                                <DataGrid />
+                                            </div>
+                                            <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
+                                                <ExportMenu />
+                                            </div>
+                                        </div>
+                                    </ResizablePanel>
+                                </ResizablePanelGroup>
+                            </div>
+                            <div className="hidden lg:block h-full border-l border-border/50 w-64 bg-background/50 backdrop-blur-sm">
+                                <AffiliateSidebar />
+                            </div>
+                        </div>
                     </div>
                 </section>
 
