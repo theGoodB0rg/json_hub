@@ -20,6 +20,7 @@ export interface AppState {
     prettyPrint: boolean;
     rowLimit: number;
     fileSizeLimit: number;
+    exportSettings: ExportSettings;
 
     // Project Management
     currentProjectId: string | null;
@@ -38,6 +39,7 @@ export interface AppState {
     setSelectedFormat: (format: ExportFormat) => void;
     setViewMode: (mode: 'flat' | 'nested') => void;
     setPrettyPrint: (value: boolean) => void;
+    updateExportSettings: (settings: Partial<ExportSettings>) => void;
 
     // Project Actions
     loadProjectsList: () => Promise<void>;
@@ -45,6 +47,11 @@ export interface AppState {
     loadProject: (id: string) => Promise<void>;
     deleteProject: (id: string) => Promise<void>;
     createNewProject: () => void;
+}
+
+export interface ExportSettings {
+    structure: 'flat' | 'nested';
+    askForPreference: boolean;
 }
 
 export interface ParseError {
