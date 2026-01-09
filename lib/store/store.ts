@@ -101,7 +101,10 @@ export const useAppStore = create<AppState>()(
                     set({ isLoading: true });
 
                     try {
-                        const result = flattenJSON(parsedData);
+                        // Attempt to smart unwrap (e.g. extract features from FeatureCollection)
+                        const { data: dataToFlatten } = smartUnwrap(parsedData);
+
+                        const result = flattenJSON(dataToFlatten);
 
                         set({
                             flatData: result.rows,
