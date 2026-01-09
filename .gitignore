@@ -32,6 +32,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Internal development files
+docs/
+project_plan.txt
+.agentworkflow/
+
 # Playwright
 /test-results/
 /playwright-report/
