@@ -193,7 +193,10 @@ export const useAppStore = create<AppState>()(
                                 break;
                             }
                             case 'xlsx': {
-                                if (exportSettings.structure === 'nested') {
+                                if (exportSettings.structure === 'table') {
+                                    const { jsonToXlsxTableView } = await import('@/lib/converters/jsonToXlsxTableView');
+                                    jsonToXlsxTableView(dataToExport, `${fileName}.xlsx`);
+                                } else if (exportSettings.structure === 'nested') {
                                     const { downloadXlsxHierarchical } = await import('@/lib/converters/jsonToXlsx');
                                     // Use original dataToExport (unwrapped but not flattened)
                                     downloadXlsxHierarchical(dataToExport, `${fileName}.xlsx`);
@@ -204,8 +207,13 @@ export const useAppStore = create<AppState>()(
                                 break;
                             }
                             case 'html': {
-                                const { downloadHtml } = await import('@/lib/converters/jsonToHtml');
-                                downloadHtml(rows, schema, `${fileName}.html`);
+                                if (exportSettings.structure === 'table') {
+                                    const { downloadHtmlTableView } = await import('@/lib/converters/jsonToHtmlTableView');
+                                    downloadHtmlTableView(dataToExport, `${fileName}.html`);
+                                } else {
+                                    const { downloadHtml } = await import('@/lib/converters/jsonToHtml');
+                                    downloadHtml(rows, schema, `${fileName}.html`);
+                                }
                                 break;
                             }
                             case 'zip': {
