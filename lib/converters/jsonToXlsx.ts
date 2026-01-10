@@ -115,6 +115,19 @@ export function jsonToXlsxHierarchical(data: any): XLSX.WorkBook {
         }
 
         // Complex value (Object or Array)
+        // Check for primitive array first
+        if (Array.isArray(value)) {
+            const hasObject = value.some(item => item !== null && typeof item === 'object');
+            if (!hasObject) {
+                // Format: val1, val2 (no quotes)
+                const formatted = value.join(', ');
+                if (!rows[currentRow]) rows[currentRow] = [];
+                rows[currentRow][valueCol] = formatted;
+                currentRow++;
+                return;
+            }
+        }
+
         const entries = Array.isArray(value)
             ? value.map((v, i) => [String(i), v])
             : Object.entries(value);
