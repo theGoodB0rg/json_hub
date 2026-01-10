@@ -56,7 +56,7 @@ describe('flattener', () => {
 
             expect(result.rows).toHaveLength(1);
             expect(result.rows[0]).toEqual({
-                items: '["apple","banana","cherry"]',
+                items: 'apple, banana, cherry',
             });
         });
 
@@ -127,7 +127,7 @@ describe('flattener', () => {
                 number: 42,
                 boolean: true,
                 null: null,
-                array: '[1,2,3]', // Now serialized as JSON
+                array: '1, 2, 3', // Now serialized as comma separated
                 'object.nested': 'value',
             });
         });
@@ -265,8 +265,8 @@ describe('flattener', () => {
             expect(result.rows[0]['users.0.name']).toBe('John');
             expect(result.rows[0]['users.1.name']).toBe('Jane');
             // But tags (primitive arrays) should be serialized
-            expect(result.rows[0]['users.0.tags']).toBe('["admin","user"]');
-            expect(result.rows[0]['users.1.tags']).toBe('["user"]');
+            expect(result.rows[0]['users.0.tags']).toBe('admin, user');
+            expect(result.rows[0]['users.1.tags']).toBe('user');
         });
     });
 
@@ -365,7 +365,13 @@ describe('flattener', () => {
             const flattened = flattenJSON(original);
             const unflattened = unflattenObject(flattened.rows[0]);
 
-            expect(unflattened).toEqual(original);
+            // Since we now format primitive arrays as strings, the roundtrip will result in a string
+            const expected = {
+                ...original,
+                items: 'apple, banana',
+            };
+
+            expect(unflattened).toEqual(expected);
         });
     });
 });

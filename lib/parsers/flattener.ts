@@ -240,9 +240,32 @@ function flattenObject(
         if (value === null) {
             result[newKey] = null;
         } else if (Array.isArray(value)) {
-            // Handle arrays with smart detection
-            const flattened = flattenObject(value, newKey, new Set(visited), arrayDepth);
-            Object.assign(result, flattened);
+            // STRICT FIX: Always serialize explicit primitive arrays
+            // Check if ANY element is an object. If not, it's a primitive array -> Serialize.
+            const hasObject = value.some(item => item !== null && typeof item === 'object');
+
+            if (!hasObject) {
+                // Format: val1, val2 (comma separated, no quotes)
+                result[newKey] = value.join(', ');
+            } else {
+                // Determine if we should expand or serialize based on depth & type
+                if (arrayDepth >= MAX_ARRAY_EXPANSION_DEPTH) {
+                    result[newKey] = JSON.stringify(value);
+                } else {
+                    // "detectArrayType" logic:
+                    // Expand ONLY if ALL items are OBJECTS but NOT ARRAYS (i.e., we serialize matrix/nested arrays)
+                    const isPureObjects = value.every(item => item !== null && typeof item === 'object' && !Array.isArray(item));
+
+                    if (isPureObjects) {
+                        // Expand
+                        const flattened = flattenObject(value, newKey, new Set(visited), arrayDepth);
+                        Object.assign(result, flattened);
+                    } else {
+                        // Mixed content or Nested Arrays -> Serialize safely
+                        result[newKey] = JSON.stringify(value);
+                    }
+                }
+            }
         } else if (typeof value === 'object') {
             // Recursively flatten nested objects
             const flattened = flattenObject(value, newKey, new Set(visited), arrayDepth);
