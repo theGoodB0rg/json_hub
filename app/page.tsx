@@ -15,6 +15,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { AffiliateSidebar } from "@/components/AffiliateSidebar";
 import { Testimonials } from "@/components/Testimonials";
 import { UsageStats } from "@/components/UsageStats";
+import { ConversionHistory } from "@/components/ConversionHistory/ConversionHistory";
 
 export default function Home() {
     const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -37,6 +38,7 @@ export default function Home() {
                             <span>100% Client-Side & Private</span>
                         </div>
                         <div className="h-6 w-px bg-border/50 hidden md:block" />
+                        <ConversionHistory />
                         <ProjectManager />
                         <ModeToggle />
                     </div>

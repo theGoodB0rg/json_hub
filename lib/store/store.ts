@@ -150,7 +150,7 @@ export const useAppStore = create<AppState>()(
 
                 // Export data
                 exportData: async (format: ExportFormat) => {
-                    const { parsedData, exportSettings } = get();
+                    const { parsedData, exportSettings, rawInput } = get();
 
                     if (!parsedData) {
                         set({
@@ -171,35 +171,52 @@ export const useAppStore = create<AppState>()(
                         const mode = exportSettings.structure === 'nested' ? 'relational' : 'flat';
                         const { rows, schema } = flattenJSON(dataToExport, { mode });
 
+                        const fileName = `export-${timestamp}`;
+
                         switch (format) {
                             case 'csv': {
                                 const { downloadCsv } = await import('@/lib/converters/jsonToCsv');
-                                downloadCsv(rows, schema, `export-${timestamp}.csv`);
+                                downloadCsv(rows, schema, `${fileName}.csv`);
                                 break;
                             }
                             case 'xlsx': {
                                 if (exportSettings.structure === 'nested') {
                                     const { downloadXlsxHierarchical } = await import('@/lib/converters/jsonToXlsx');
                                     // Use original dataToExport (unwrapped but not flattened)
-                                    downloadXlsxHierarchical(dataToExport, `export-${timestamp}.xlsx`);
+                                    downloadXlsxHierarchical(dataToExport, `${fileName}.xlsx`);
                                 } else {
                                     const { downloadXlsx } = await import('@/lib/converters/jsonToXlsx');
-                                    downloadXlsx(rows, schema, `export-${timestamp}.xlsx`);
+                                    downloadXlsx(rows, schema, `${fileName}.xlsx`);
                                 }
                                 break;
                             }
                             case 'html': {
                                 const { downloadHtml } = await import('@/lib/converters/jsonToHtml');
-                                downloadHtml(rows, schema, `export-${timestamp}.html`);
+                                downloadHtml(rows, schema, `${fileName}.html`);
                                 break;
                             }
                             case 'zip': {
                                 const { downloadZip } = await import('@/lib/converters/zipExporter');
-                                await downloadZip(rows, schema, parsedData, `json-hub-export-${timestamp}.zip`);
+                                await downloadZip(rows, schema, parsedData, `json-hub-${fileName}.zip`);
                                 break;
                             }
                             default:
                                 throw new Error(`Unsupported format: ${format}`);
+                        }
+
+                        // Save to conversion history (async, don't block UI)
+                        try {
+                            const { conversionHistory } = await import('@/lib/storage/conversionHistory');
+                            await conversionHistory.saveConversion({
+                                fileName: `${fileName}.${format}`,
+                                originalJSON: rawInput,
+                                exportFormat: format as 'csv' | 'xlsx' | 'html' | 'zip',
+                                exportMode: mode,
+                                rowCount: rows.length,
+                            });
+                        } catch (historyError) {
+                            console.error('Failed to save to history:', historyError);
+                            // Don't fail the export if history save fails
                         }
 
                         set({ isLoading: false, downloadProgress: 100 });
