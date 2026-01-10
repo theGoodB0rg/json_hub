@@ -13,26 +13,26 @@ interface AffiliateLink {
 
 const AFFILIATE_LINKS: AffiliateLink[] = [
     {
-        name: "Monday.com",
-        description: "Visualize your converted JSON data in beautiful dashboards.",
-        icon: BarChart3,
-        url: "#", // Replace with actual affiliate link
-        buttonText: "Visualize Data",
+        name: "Airtable",
+        description: "Turn your JSON data into powerful, collaborative databases.",
+        icon: Database,
+        url: "https://airtable.com/invite/r/YOUR_AFFILIATE_ID", // TODO: Replace with your Airtable affiliate ID
+        buttonText: "Try Free",
         tag: "Recommended"
     },
     {
-        name: "Airtable",
-        description: "Turn JSON into a powerful, collaborative database.",
-        icon: Database,
-        url: "#", // Replace with actual affiliate link
-        buttonText: "Try for Free"
+        name: "Notion",
+        description: "Organize and analyze your exported data in beautiful docs.",
+        icon: BarChart3,
+        url: "https://www.notion.so/?r=YOUR_AFFILIATE_ID", // TODO: Replace with your Notion affiliate ID
+        buttonText: "Get Started"
     },
     {
-        name: "Exodus Secure",
-        description: "Encrypt your sensitive data exports before sharing.",
+        name: "Zapier",
+        description: "Automate JSON conversions in your workflows.",
         icon: Shield,
-        url: "#", // Replace with actual affiliate link
-        buttonText: "Secure Files"
+        url: "https://zapier.com/sign-up?via=YOUR_AFFILIATE_ID", // TODO: Replace with your Zapier affiliate ID
+        buttonText: "Automate"
     }
 ];
 
