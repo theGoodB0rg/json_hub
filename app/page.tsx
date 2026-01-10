@@ -164,7 +164,7 @@ export default function Home() {
                             <div className="flex items-center gap-2 text-sm font-semibold"><Lock className="w-4 h-4" /> End-to-End Encrypted</div>
                             <div className="flex items-center gap-2 text-sm font-semibold"><Zap className="w-4 h-4" /> Local Processing</div>
                             <a
-                                href="https://github.com/yourusername/json_hub"
+                                href="https://github.com/theGoodB0rg/json_hub"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors"
