@@ -55,14 +55,6 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     {children}
-                    {/* Google AdSense Placeholder - Replace ca-pub-XXXXXXXXXXXXXXXX with your actual ID */}
-                    <Script
-                        id="adsense-init"
-                        async
-                        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-                        crossOrigin="anonymous"
-                        strategy="lazyOnload"
-                    />
                 </ThemeProvider>
             </body>
         </html>

@@ -10,9 +10,11 @@ import {
     ResizablePanel,
     ResizableHandle,
 } from '@/components/ui/resizable';
-import { ShieldCheck, Zap, Code2, Lock } from "lucide-react";
+import { ShieldCheck, Zap, Code2, Lock, Github } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { AffiliateSidebar } from "@/components/AffiliateSidebar";
+import { Testimonials } from "@/components/Testimonials";
+import { UsageStats } from "@/components/UsageStats";
 
 export default function Home() {
     const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -66,6 +68,9 @@ export default function Home() {
                     </div>
                 </section>
 
+                {/* Usage Statistics */}
+                <UsageStats />
+
                 {/* Main App Interface */}
                 <section className="flex-1 px-4 pb-8 container mx-auto">
                     <div className="h-[75vh] md:h-[800px] border border-border/50 rounded-xl shadow-2xl bg-card overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 ring-1 ring-white/10">
@@ -115,6 +120,9 @@ export default function Home() {
                     </div>
                 </section>
 
+                {/* Testimonials Section */}
+                <Testimonials />
+
                 {/* Trust Footer Section */}
                 <footer className="py-8 border-t border-border/40 mt-auto bg-muted/30">
                     <div className="container mx-auto px-4 text-center">
@@ -125,7 +133,14 @@ export default function Home() {
                             {/* Mock Trust Logos or Tech Stack Indicators */}
                             <div className="flex items-center gap-2 text-sm font-semibold"><Lock className="w-4 h-4" /> End-to-End Encrypted</div>
                             <div className="flex items-center gap-2 text-sm font-semibold"><Zap className="w-4 h-4" /> Local Processing</div>
-                            <div className="flex items-center gap-2 text-sm font-semibold"><Code2 className="w-4 h-4" /> Open Source</div>
+                            <a
+                                href="https://github.com/yourusername/json_hub"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors"
+                            >
+                                <Github className="w-4 h-4" /> Open Source
+                            </a>
                         </div>
                     </div>
                 </footer>
