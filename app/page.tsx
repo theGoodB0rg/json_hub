@@ -16,6 +16,7 @@ import { AffiliateSidebar } from "@/components/AffiliateSidebar";
 import { Testimonials } from "@/components/Testimonials";
 import { UsageStats } from "@/components/UsageStats";
 import { ConversionHistory } from "@/components/ConversionHistory/ConversionHistory";
+import { FAQ } from "@/components/FAQ";
 
 export default function Home() {
     const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -124,6 +125,9 @@ export default function Home() {
 
                 {/* Testimonials Section */}
                 <Testimonials />
+
+                {/* FAQ Section */}
+                <FAQ />
 
                 {/* Trust Footer Section */}
                 <footer className="py-8 border-t border-border/40 mt-auto bg-muted/30">
