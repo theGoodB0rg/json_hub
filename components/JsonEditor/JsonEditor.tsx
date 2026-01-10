@@ -4,6 +4,7 @@ import { useAppStore } from '@/lib/store/store';
 import dynamic from 'next/dynamic';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { TemplateSelector } from '@/components/TemplateSelector/TemplateSelector';
 
 // Dynamically import Monaco Editor with SSR disabled
 const Editor = dynamic(() => import('@monaco-editor/react'), {
@@ -78,6 +79,7 @@ export function JsonEditor() {
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">JSON Input</h2>
                 <div className="flex gap-2">
+                    <TemplateSelector />
                     <input
                         type="file"
                         accept=".json,.txt"
