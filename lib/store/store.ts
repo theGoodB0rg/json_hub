@@ -168,8 +168,21 @@ export const useAppStore = create<AppState>()(
                         const { smartUnwrap } = require('@/lib/parsers/unwrapper');
                         const { data: dataToExport } = smartUnwrap(parsedData);
 
-                        const mode = exportSettings.structure === 'nested' ? 'relational' : 'flat';
-                        const { rows, schema } = flattenJSON(dataToExport, { mode });
+                        let rows, schema;
+
+                        if (exportSettings.structure === 'table') {
+                            // Use table view expansion
+                            const { expandToTableView } = require('@/lib/parsers/tableView');
+                            const result = expandToTableView(dataToExport);
+                            rows = result.rows;
+                            schema = result.schema;
+                        } else {
+                            // Use existing flattener (flat or relational mode)
+                            const mode = exportSettings.structure === 'nested' ? 'relational' : 'flat';
+                            const result = flattenJSON(dataToExport, { mode });
+                            rows = result.rows;
+                            schema = result.schema;
+                        }
 
                         const fileName = `export-${timestamp}`;
 
@@ -207,11 +220,13 @@ export const useAppStore = create<AppState>()(
                         // Save to conversion history (async, don't block UI)
                         try {
                             const { conversionHistory } = await import('@/lib/storage/conversionHistory');
+                            const exportMode = exportSettings.structure === 'nested' ? 'relational' :
+                                exportSettings.structure === 'table' ? 'table' : 'flat';
                             await conversionHistory.saveConversion({
                                 fileName: `${fileName}.${format}`,
                                 originalJSON: rawInput,
                                 exportFormat: format as 'csv' | 'xlsx' | 'html' | 'zip',
-                                exportMode: mode,
+                                exportMode: exportMode as any,
                                 rowCount: rows.length,
                             });
                         } catch (historyError) {
@@ -250,8 +265,27 @@ export const useAppStore = create<AppState>()(
                 },
 
                 // Set view mode
-                setViewMode: (mode: 'flat' | 'nested') => {
+                setViewMode: (mode: 'flat' | 'nested' | 'table') => {
                     set({ viewMode: mode });
+
+                    // When switching to table view, update flatData using table transformer
+                    if (mode === 'table') {
+                        const { parsedData } = get();
+                        if (parsedData) {
+                            try {
+                                const { smartUnwrap } = require('@/lib/parsers/unwrapper');
+                                const { expandToTableView } = require('@/lib/parsers/tableView');
+                                const { data: dataToExpand } = smartUnwrap(parsedData);
+                                const result = expandToTableView(dataToExpand);
+                                set({ flatData: result.rows, schema: result.schema });
+                            } catch (error) {
+                                console.error('Table view error:', error);
+                            }
+                        }
+                    } else if (mode === 'flat') {
+                        // Re-flatten using normal flattener
+                        get().flattenData();
+                    }
                 },
 
                 setPrettyPrint: (value: boolean) => {

@@ -11,6 +11,7 @@ import {
 import { useMemo } from 'react';
 import { NestedTable } from './NestedTable';
 import { ViewModeToggle } from './ViewModeToggle';
+import { TableViewGrid } from './TableViewGrid';
 
 export function DataGrid() {
     const { flatData, schema, parsedData, viewMode, updateCell } = useAppStore();
@@ -72,19 +73,23 @@ export function DataGrid() {
             <div className="mb-4 flex justify-between items-start">
                 <div>
                     <h2 className="text-lg font-semibold">
-                        {viewMode === 'flat' ? 'Table Preview' : 'Nested View'}
+                        {viewMode === 'flat' ? 'Table Preview' : viewMode === 'table' ? 'Table View (Nested)' : 'Nested View'}
                     </h2>
                     <p className="text-sm text-muted-foreground">
                         {viewMode === 'flat'
                             ? `${flatData.length} rows × ${schema.length} columns (Double-click to edit)`
-                            : 'Hierarchical JSON structure'}
+                            : viewMode === 'table'
+                                ? 'Hierarchical view with nested tables in cells'
+                                : 'Hierarchical JSON structure'}
                     </p>
                 </div>
                 <ViewModeToggle />
             </div>
 
             <div className="flex-1 overflow-auto border rounded-md">
-                {viewMode === 'flat' ? (
+                {viewMode === 'table' ? (
+                    <TableViewGrid data={parsedData} />
+                ) : viewMode === 'flat' ? (
                     <table className="w-full text-sm">
                         <thead className="bg-muted sticky top-0">
                             {table.getHeaderGroups().map((headerGroup) => (

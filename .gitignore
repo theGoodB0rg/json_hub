@@ -36,7 +36,7 @@ next-env.d.ts
 docs/
 project_plan.txt
 .agentworkflow/
-!docs/
+
 # Playwright
 /test-results/
 /playwright-report/
