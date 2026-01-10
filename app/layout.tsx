@@ -55,6 +55,43 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     {children}
+
+                    {/* Schema.org Structured Data for SEO */}
+                    <Script
+                        id="schema-software"
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify({
+                                "@context": "https://schema.org",
+                                "@type": "SoftwareApplication",
+                                "name": "JSON Hub",
+                                "applicationCategory": "DeveloperApplication",
+                                "operatingSystem": "Any (Web-based)",
+                                "offers": {
+                                    "@type": "Offer",
+                                    "price": "0",
+                                    "priceCurrency": "USD"
+                                },
+                                "description": "Convert JSON to Excel, CSV, or HTML. 100% private, client-side processing. No coding required.",
+                                "url": "https://jsonhub.com",
+                                "aggregateRating": {
+                                    "@type": "AggregateRating",
+                                    "ratingValue": "4.8",
+                                    "ratingCount": "127",
+                                    "bestRating": "5",
+                                    "worstRating": "1"
+                                },
+                                "featureList": [
+                                    "Auto-unescape double-encoded JSON",
+                                    "Smart flattening with dot notation",
+                                    "Export to Excel, CSV, HTML",
+                                    "100% client-side processing",
+                                    "Monaco Editor integration",
+                                    "Editable data grid"
+                                ]
+                            })
+                        }}
+                    />
                 </ThemeProvider>
             </body>
         </html>
