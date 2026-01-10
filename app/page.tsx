@@ -20,6 +20,7 @@ import { FAQ } from "@/components/FAQ";
 import { ShareButton } from "@/components/ShareButton/ShareButton";
 import { useEffect } from 'react';
 import { useAppStore } from '@/lib/store/store';
+import { BatchProcessor } from "@/components/BatchProcessor/BatchProcessor";
 
 export default function Home() {
     const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -62,6 +63,7 @@ export default function Home() {
                         <div className="h-6 w-px bg-border/50 hidden md:block" />
                         <ConversionHistory />
                         <ShareButton />
+                        <BatchProcessor />
                         <ProjectManager />
                         <ModeToggle />
                     </div>
