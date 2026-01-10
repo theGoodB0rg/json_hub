@@ -178,8 +178,14 @@ export const useAppStore = create<AppState>()(
                                 break;
                             }
                             case 'xlsx': {
-                                const { downloadXlsx } = await import('@/lib/converters/jsonToXlsx');
-                                downloadXlsx(rows, schema, `export-${timestamp}.xlsx`);
+                                if (exportSettings.structure === 'nested') {
+                                    const { downloadXlsxHierarchical } = await import('@/lib/converters/jsonToXlsx');
+                                    // Use original dataToExport (unwrapped but not flattened)
+                                    downloadXlsxHierarchical(dataToExport, `export-${timestamp}.xlsx`);
+                                } else {
+                                    const { downloadXlsx } = await import('@/lib/converters/jsonToXlsx');
+                                    downloadXlsx(rows, schema, `export-${timestamp}.xlsx`);
+                                }
                                 break;
                             }
                             case 'html': {
