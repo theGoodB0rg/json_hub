@@ -77,7 +77,7 @@ export function JsonEditor() {
     return (
         <Card className="h-full flex flex-col p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">JSON Input</h2>
+                <h2 className="text-sm font-semibold text-muted-foreground">JSON Input</h2>
                 <div className="flex gap-2">
                     <TemplateSelector />
                     <input
