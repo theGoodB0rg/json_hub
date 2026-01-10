@@ -17,9 +17,30 @@ import { Testimonials } from "@/components/Testimonials";
 import { UsageStats } from "@/components/UsageStats";
 import { ConversionHistory } from "@/components/ConversionHistory/ConversionHistory";
 import { FAQ } from "@/components/FAQ";
+import { ShareButton } from "@/components/ShareButton/ShareButton";
+import { useEffect } from 'react';
+import { useAppStore } from '@/lib/store/store';
 
 export default function Home() {
     const isDesktop = useMediaQuery("(min-width: 768px)");
+    const { setRawInput, parseInput } = useAppStore();
+
+    // Auto-load JSON from shareable URL on mount
+    useEffect(() => {
+        const loadSharedData = async () => {
+            const { loadFromShareableLink } = await import('@/lib/utils/shareLink');
+            const sharedData = loadFromShareableLink();
+
+            if (sharedData) {
+                setRawInput(sharedData);
+                // Auto-parse after a short delay to ensure UI is ready
+                setTimeout(() => parseInput(), 100);
+            }
+        };
+
+        loadSharedData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Empty dependency array - only run on mount
 
     return (
         <div className="min-h-screen flex flex-col bg-background font-sans selection:bg-primary/10">
@@ -40,6 +61,7 @@ export default function Home() {
                         </div>
                         <div className="h-6 w-px bg-border/50 hidden md:block" />
                         <ConversionHistory />
+                        <ShareButton />
                         <ProjectManager />
                         <ModeToggle />
                     </div>
