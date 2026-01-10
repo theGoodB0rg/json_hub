@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import { LayoutGrid, Layers, Download } from 'lucide-react';
+import { LayoutGrid, Layers, TableCellsMerge, Download } from 'lucide-react';
 import { useState } from 'react';
 import { ExportFormat } from '@/types/store.types';
 
@@ -56,7 +56,7 @@ export function ExportSettingsDialog({
                 <div className="py-6 space-y-6">
                     <RadioGroup
                         value={structure}
-                        onValueChange={(v) => setStructure(v as 'flat' | 'nested')}
+                        onValueChange={(v) => setStructure(v as 'flat' | 'nested' | 'table')}
                         className="grid grid-cols-1 gap-4"
                     >
                         <div className="relative group">
@@ -73,6 +73,26 @@ export function ExportSettingsDialog({
                                         <div className="font-bold text-sm">Flattened (Recommended)</div>
                                         <p className="text-xs text-muted-foreground mt-1">
                                             Best for Excel analysis. Arrays are expanded into multiple columns (e.g. tags.0, tags.1).
+                                        </p>
+                                    </div>
+                                </div>
+                            </Label>
+                        </div>
+
+                        <div className="relative group">
+                            <RadioGroupItem value="table" id="table" className="peer sr-only" />
+                            <Label
+                                htmlFor="table"
+                                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-all"
+                            >
+                                <div className="flex w-full items-start gap-3">
+                                    <div className="bg-emerald-500/10 p-2 rounded-lg text-emerald-600 dark:text-emerald-400">
+                                        <TableCellsMerge className="h-5 w-5" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="font-bold text-sm">Table View (Row Expanded)</div>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            Best for data analysis. Each item in nested arrays becomes its own row with parent data repeated.
                                         </p>
                                     </div>
                                 </div>
