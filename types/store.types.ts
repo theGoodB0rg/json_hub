@@ -12,7 +12,7 @@ export interface AppState {
     // UI State
     activeTab: 'input' | 'preview' | 'export';
     selectedFormat: 'csv' | 'xlsx' | 'docx' | 'html' | 'zip';
-    viewMode: 'flat' | 'nested';
+    viewMode: 'flat' | 'nested' | 'table';
     isLoading: boolean;
     downloadProgress: number;
 
@@ -37,7 +37,7 @@ export interface AppState {
     resetState: () => void;
     setActiveTab: (tab: 'input' | 'preview' | 'export') => void;
     setSelectedFormat: (format: ExportFormat) => void;
-    setViewMode: (mode: 'flat' | 'nested') => void;
+    setViewMode: (mode: 'flat' | 'nested' | 'table') => void;
     setPrettyPrint: (value: boolean) => void;
     updateExportSettings: (settings: Partial<ExportSettings>) => void;
 
@@ -50,7 +50,7 @@ export interface AppState {
 }
 
 export interface ExportSettings {
-    structure: 'flat' | 'nested';
+    structure: 'flat' | 'nested' | 'table';
     askForPreference: boolean;
 }
 
@@ -62,5 +62,5 @@ export interface ParseError {
 
 export type ExportFormat = 'csv' | 'xlsx' | 'docx' | 'html' | 'zip';
 
-export type ViewMode = 'flat' | 'nested';
+export type ViewMode = 'flat' | 'nested' | 'table';
 
