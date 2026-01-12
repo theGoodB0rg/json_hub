@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useAppStore } from '@/lib/store/store';
 import dynamic from 'next/dynamic';
 import { Card } from '@/components/ui/card';
@@ -19,12 +20,19 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
 export function JsonEditor() {
     const { rawInput, setRawInput, parseInput, isParsed, parseErrors, prettyPrint } = useAppStore();
 
+    // Auto-parse with debounce
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (rawInput.trim()) {
+                parseInput();
+            }
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [rawInput, parseInput]);
+
     const handleEditorChange = (value: string | undefined) => {
         setRawInput(value || '');
-    };
-
-    const handleParse = () => {
-        parseInput();
     };
 
     const handleClear = () => {
@@ -111,9 +119,6 @@ export function JsonEditor() {
                         size="sm"
                     >
                         Paste
-                    </Button>
-                    <Button onClick={handleParse} size="sm">
-                        Parse & Flatten
                     </Button>
                 </div>
             </div>
