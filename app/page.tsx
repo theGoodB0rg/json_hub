@@ -69,11 +69,17 @@ export default function Home() {
                             <ShareButton />
                             <BatchProcessor />
                             <ProjectManager />
-                            <ModeToggle />
                         </div>
 
-                        {/* Mobile Navigation */}
-                        <MobileNav />
+                        {/* Mobile Navigation & Theme */}
+                        <div className="flex items-center gap-2 md:hidden">
+                            <ModeToggle />
+                            <MobileNav />
+                        </div>
+
+                        <div className="hidden md:block">
+                            <ModeToggle />
+                        </div>
                     </div>
                 </div>
             </header>
