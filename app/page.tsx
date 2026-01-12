@@ -100,7 +100,7 @@ export default function Home() {
 
                 {/* Main App Interface */}
                 <section className="flex-1 px-4 pb-8 container mx-auto">
-                    <div className="h-[75vh] md:h-[800px] border border-border/50 rounded-xl shadow-2xl bg-card overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 ring-1 ring-white/10">
+                    <div className="h-[950px] md:h-[800px] border border-border/50 rounded-xl shadow-2xl bg-card overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 ring-1 ring-white/10">
                         <div className="flex flex-row h-full">
                             <div className="flex-1 h-full overflow-hidden">
                                 <ResizablePanelGroup
