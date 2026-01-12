@@ -14,8 +14,13 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { FolderOpen, Save, Trash2, FilePlus, ShieldAlert } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-export function ProjectManager() {
+interface ProjectManagerProps {
+    className?: string
+}
+
+export function ProjectManager({ className }: ProjectManagerProps) {
     const {
         currentProjectId,
         projectName,
@@ -62,7 +67,7 @@ export function ProjectManager() {
     }
 
     return (
-        <div className="flex items-center gap-2">
+        <div className={cn("flex items-center gap-2", className)}>
             {/* Current Project Indicator */}
             {projectName && (
                 <div className="text-sm font-medium mr-2 px-3 py-1 bg-secondary rounded-md border">

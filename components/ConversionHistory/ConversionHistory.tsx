@@ -13,8 +13,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { conversionHistory, ConversionRecord } from '@/lib/storage/conversionHistory';
 import { useAppStore } from '@/lib/store/store';
+import { cn } from '@/lib/utils';
 
-export function ConversionHistory() {
+interface ConversionHistoryProps {
+    className?: string;
+}
+
+export function ConversionHistory({ className }: ConversionHistoryProps) {
     const [conversions, setConversions] = useState<ConversionRecord[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const { setRawInput } = useAppStore();
@@ -82,7 +87,7 @@ export function ConversionHistory() {
     return (
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button variant="ghost" size="sm" className={cn("gap-2", className)}>
                     <History className="h-4 w-4" />
                     <span className="hidden sm:inline">History</span>
                 </Button>

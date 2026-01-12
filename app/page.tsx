@@ -21,6 +21,7 @@ import { ShareButton } from "@/components/ShareButton/ShareButton";
 import { useEffect } from 'react';
 import { useAppStore } from '@/lib/store/store';
 import { BatchProcessor } from "@/components/BatchProcessor/BatchProcessor";
+import { MobileNav } from "@/components/MobileNav";
 
 export default function Home() {
     const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -61,11 +62,18 @@ export default function Home() {
                             <span>Privacy-First & Secure</span>
                         </div>
                         <div className="h-6 w-px bg-border/50 hidden md:block" />
-                        <ConversionHistory />
-                        <ShareButton />
-                        <BatchProcessor />
-                        <ProjectManager />
-                        <ModeToggle />
+
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center gap-4">
+                            <ConversionHistory />
+                            <ShareButton />
+                            <BatchProcessor />
+                            <ProjectManager />
+                            <ModeToggle />
+                        </div>
+
+                        {/* Mobile Navigation */}
+                        <MobileNav />
                     </div>
                 </div>
             </header>
