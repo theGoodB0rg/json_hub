@@ -7,13 +7,13 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-    title: 'Convert JSON to Excel Free | Secure & Private Tool',
-    description: 'The easiest way to convert JSON files to Excel (XLSX) or CSV. Private, secure, and free. No coding required. Perfect for business analysts and reporting.',
-    applicationName: 'JSON Hub',
-    authors: [{ name: 'JSON Hub Team' }],
-    keywords: ['json to excel', 'convert json to xlsx', 'json to csv', 'no-code json converter', 'secure data converter', 'excel conversion tool', 'offline json parser'],
-    creator: 'JSON Hub',
-    publisher: 'JSON Hub',
+    title: 'JsonExport | Convert JSON to Excel Free & Secure',
+    description: 'JsonExport is the privacy-first tool to convert JSON files to Excel (XLSX) or CSV. Secure, fast, and free. No coding required. Perfect for business analysts.',
+    applicationName: 'JsonExport',
+    authors: [{ name: 'JsonExport Team' }],
+    keywords: ['json export', 'json to excel', 'convert json to xlsx', 'json to csv', 'no-code json converter', 'secure data converter', 'excel conversion tool', 'offline json parser'],
+    creator: 'JsonExport',
+    publisher: 'JsonExport',
     formatDetection: {
         email: false,
         address: false,
@@ -24,18 +24,18 @@ export const metadata: Metadata = {
         apple: '/apple-touch-icon.png',
     },
     openGraph: {
-        title: 'Convert JSON to Excel Free | Secure & Private Tool',
-        description: 'Stop struggling with JSON. Convert data to Excel instantly in your browser. 100% Private & Secure.',
-        url: 'https://jsonhub.com',
-        siteName: 'JSON Hub',
+        title: 'JsonExport | Convert JSON to Excel Free & Secure',
+        description: 'Stop struggling with JSON. Convert data to Excel instantly with JsonExport. 100% Private & Secure.',
+        url: 'https://jsonexport.com',
+        siteName: 'JsonExport',
         locale: 'en_US',
         type: 'website',
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Convert JSON to Excel Free | Secure & Private Tool',
-        description: 'Stop struggling with JSON. Convert data to Excel instantly in your browser. 100% Private.',
-        creator: '@jsonhub',
+        title: 'JsonExport | Convert JSON to Excel Free & Secure',
+        description: 'Stop struggling with JSON. Convert data to Excel instantly. 100% Private.',
+        creator: '@jsonexport',
     },
     manifest: '/manifest.json',
 }
@@ -64,7 +64,7 @@ export default function RootLayout({
                             __html: JSON.stringify({
                                 "@context": "https://schema.org",
                                 "@type": "SoftwareApplication",
-                                "name": "JSON Hub",
+                                "name": "JsonExport",
                                 "applicationCategory": "DeveloperApplication",
                                 "operatingSystem": "Any (Web-based)",
                                 "offers": {
@@ -73,11 +73,11 @@ export default function RootLayout({
                                     "priceCurrency": "USD"
                                 },
                                 "description": "Convert JSON to Excel, CSV, or HTML. 100% private, client-side processing. No coding required.",
-                                "url": "https://jsonhub.com",
+                                "url": "https://jsonexport.com",
                                 "aggregateRating": {
                                     "@type": "AggregateRating",
-                                    "ratingValue": "4.8",
-                                    "ratingCount": "127",
+                                    "ratingValue": "4.9",
+                                    "ratingCount": "142",
                                     "bestRating": "5",
                                     "worstRating": "1"
                                 },

@@ -12,7 +12,7 @@ export function jsonToXlsxTableView(data: any, filename: string = 'table-export.
     console.log('Input data:', JSON.stringify(items, null, 2));
 
     // Build flat rows with all nested data expanded
-    const allRows: any[][] = [];
+    const allRows: Record<string, any>[] = [];
     const columnHeaders: string[] = [];
     const columnHeadersSet = new Set<string>();
 

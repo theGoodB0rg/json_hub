@@ -1,6 +1,6 @@
 {
-    "name": "JSON Hub",
-    "short_name": "JSON Hub",
+    "name": "JsonExport",
+    "short_name": "JsonExport",
     "description": "Smart JSON Bridge - Convert complex JSON to Excel/CSV with auto-unescape and flattening",
     "start_url": "/",
     "display": "standalone",
