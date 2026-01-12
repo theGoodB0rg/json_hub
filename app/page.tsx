@@ -50,7 +50,7 @@ export default function Home() {
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="bg-primary text-primary-foreground p-1.5 rounded-lg">
-                            <Code2 className="h-5 w-5" />
+                            <img src="/icon.svg" alt="Logo" className="h-5 w-5" />
                         </div>
                         <span className="font-bold text-lg tracking-tight">JsonExport</span>
                     </div>
