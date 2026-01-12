@@ -28,7 +28,7 @@ export function MobileNav() {
             <DialogContent className="w-[90%] max-w-[350px] rounded-xl">
                 <DialogHeader className="text-left">
                     <DialogTitle className="flex items-center gap-2">
-                        <img src="/icon.svg" alt="Logo" className="h-5 w-5" />
+                        <img src="/icon.svg" alt="Logo" className="h-6 w-6" />
                         <span>Menu</span>
                     </DialogTitle>
                 </DialogHeader>
