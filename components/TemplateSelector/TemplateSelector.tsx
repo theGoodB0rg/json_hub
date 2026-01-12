@@ -41,10 +41,10 @@ export function TemplateSelector() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button variant="outline" size="sm" className="gap-2 px-2 sm:px-3" title="Try Example">
                     <FileJson className="h-4 w-4" />
-                    Try Example
-                    <ChevronDown className="h-3 w-3 opacity-50" />
+                    <span className="hidden sm:inline">Try Example</span>
+                    <ChevronDown className="h-3 w-3 opacity-50 hidden sm:block" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-64">
