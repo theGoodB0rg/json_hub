@@ -12,7 +12,7 @@ interface FAQItem {
 const faqs: FAQItem[] = [
     {
         question: "Is my data safe? Do you upload my JSON files?",
-        answer: "Absolutely safe! JSON Hub processes everything in your browser using JavaScript. Your data never leaves your computer - no uploads, no servers, 100% private."
+        answer: "Absolutely safe! JsonExport processes everything in your browser using JavaScript. Your data never leaves your computer - no uploads, no servers, 100% private."
     },
     {
         question: "What JSON formats are supported?",
@@ -20,7 +20,7 @@ const faqs: FAQItem[] = [
     },
     {
         question: "Can I convert large JSON files?",
-        answer: "Yes! JSON Hub supports files up to 10MB and can handle 100,000+ rows. For very large datasets, we recommend using the flat export mode for better performance."
+        answer: "Yes! JsonExport supports files up to 10MB and can handle 100,000+ rows. For very large datasets, we recommend using the flat export mode for better performance."
     },
     {
         question: "What's the difference between flat and nested export?",
@@ -28,7 +28,7 @@ const faqs: FAQItem[] = [
     },
     {
         question: "Do I need to install anything?",
-        answer: "No installation needed! JSON Hub is a web application that runs entirely in your browser. Just visit the site and start converting. You can also install it as a PWA for offline use."
+        answer: "No installation needed! JsonExport is a web application that runs entirely in your browser. Just visit the site and start converting. You can also install it as a PWA for offline use."
     },
     {
         question: "Can I edit the data before exporting?",

@@ -16,7 +16,7 @@ const testimonials: Testimonial[] = [
         name: "Sarah Chen",
         role: "Business Analyst",
         company: "TechCorp",
-        content: "JSON Hub saved me hours every week. The auto-unescape feature is a lifesaver for our messy API data.",
+        content: "JsonExport saved me hours every week. The auto-unescape feature is a lifesaver for our messy API data.",
         initials: "SC"
     },
     {
@@ -42,7 +42,7 @@ export function Testimonials() {
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold mb-4">Trusted by Business Analysts</h2>
                     <p className="text-muted-foreground max-w-2xl mx-auto">
-                        Join thousands of professionals who trust JSON Hub for their data conversion needs
+                        Join thousands of professionals who trust JsonExport for their data conversion needs
                     </p>
                 </div>
 
