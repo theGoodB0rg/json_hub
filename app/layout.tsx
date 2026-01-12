@@ -20,8 +20,9 @@ export const metadata: Metadata = {
         telephone: false,
     },
     icons: {
-        icon: '/favicon.ico',
-        apple: '/apple-touch-icon.png',
+        icon: '/icon.svg',
+        shortcut: '/icon.svg',
+        apple: '/icon.svg',
     },
     openGraph: {
         title: 'JsonExport | Convert JSON to Excel Free & Secure',
