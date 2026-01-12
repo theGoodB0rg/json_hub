@@ -16,6 +16,11 @@ import JSZip from 'jszip';
 import { flattenJSON } from '@/lib/parsers/flattener';
 import { smartUnwrap } from '@/lib/parsers/unwrapper';
 import * as XLSX from 'xlsx';
+import { cn } from '@/lib/utils';
+
+interface BatchProcessorProps {
+    className?: string;
+}
 
 interface BatchFile {
     id: string;
@@ -24,7 +29,7 @@ interface BatchFile {
     error?: string;
 }
 
-export function BatchProcessor() {
+export function BatchProcessor({ className }: BatchProcessorProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [files, setFiles] = useState<BatchFile[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -133,7 +138,7 @@ export function BatchProcessor() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button variant="outline" size="sm" className={cn("gap-2", className)}>
                     <Files className="h-4 w-4" />
                     <span className="hidden sm:inline">Batch</span>
                 </Button>

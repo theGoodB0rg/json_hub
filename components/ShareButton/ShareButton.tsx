@@ -14,7 +14,13 @@ import {
 import { useAppStore } from '@/lib/store/store';
 import { createShareableLink, copyToClipboard } from '@/lib/utils/shareLink';
 
-export function ShareButton() {
+import { cn } from '@/lib/utils';
+
+interface ShareButtonProps {
+    className?: string;
+}
+
+export function ShareButton({ className }: ShareButtonProps) {
     const { rawInput } = useAppStore();
     const [isOpen, setIsOpen] = useState(false);
     const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -58,7 +64,7 @@ export function ShareButton() {
                 <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2"
+                    className={cn("gap-2", className)}
                     onClick={handleShare}
                 >
                     <Share2 className="h-4 w-4" />
