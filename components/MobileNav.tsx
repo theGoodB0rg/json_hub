@@ -14,7 +14,6 @@ import { ShareButton } from '@/components/ShareButton/ShareButton';
 import { ConversionHistory } from '@/components/ConversionHistory/ConversionHistory';
 import { BatchProcessor } from '@/components/BatchProcessor/BatchProcessor';
 import { ProjectManager } from '@/components/ProjectManager';
-import { ModeToggle } from '@/components/mode-toggle';
 
 export function MobileNav() {
     const [isOpen, setIsOpen] = useState(false);
@@ -37,9 +36,9 @@ export function MobileNav() {
                 <div className="flex flex-col gap-4 py-4">
                     {/* Main Actions */}
                     <div className="grid gap-2">
-                        <ShareButton className="w-full justify-start" />
-                        <BatchProcessor className="w-full justify-start" />
-                        <ConversionHistory className="w-full justify-start" />
+                        <ShareButton className="w-full justify-start [&_span]:!inline" />
+                        <BatchProcessor className="w-full justify-start [&_span]:!inline" />
+                        <ConversionHistory className="w-full justify-start [&_span]:!inline" />
                     </div>
 
                     <div className="h-px bg-border my-2" />
@@ -48,16 +47,8 @@ export function MobileNav() {
                     <div className="space-y-2">
                         <h4 className="text-sm font-medium text-muted-foreground">Projects</h4>
                         <div className="flex flex-col gap-2 [&>div]:w-full [&_button]:flex-1">
-                            <ProjectManager className="w-full justify-between" />
+                            <ProjectManager className="w-full justify-between [&_span]:!inline" />
                         </div>
-                    </div>
-
-                    <div className="h-px bg-border my-2" />
-
-                    {/* Settings / Mode */}
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Theme</span>
-                        <ModeToggle />
                     </div>
                 </div>
             </DialogContent>
