@@ -1,4 +1,4 @@
-# JSON Hub
+# JsonExport
 
 **The Smart JSON Bridge** - Convert complex JSON to Excel/CSV with auto-unescape and flattening.
 

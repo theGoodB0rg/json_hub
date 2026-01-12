@@ -52,13 +52,13 @@ export default function Home() {
                         <div className="bg-primary text-primary-foreground p-1.5 rounded-lg">
                             <Code2 className="h-5 w-5" />
                         </div>
-                        <span className="font-bold text-lg tracking-tight">JSON Hub</span>
+                        <span className="font-bold text-lg tracking-tight">JsonExport</span>
                     </div>
 
                     <div className="flex items-center gap-4">
                         <div className="hidden md:flex items-center gap-2 text-xs font-medium text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full border border-border/50">
                             <ShieldCheck className="w-3.5 h-3.5 text-green-500" />
-                            <span>100% Client-Side & Private</span>
+                            <span>Privacy-First & Secure</span>
                         </div>
                         <div className="h-6 w-px bg-border/50 hidden md:block" />
                         <ConversionHistory />
