@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { Footer } from "@/components/Footer"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -57,7 +58,12 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     <TooltipProvider delayDuration={300}>
-                        {children}
+                        <div className="flex flex-col min-h-screen">
+                            <div className="flex-1">
+                                {children}
+                            </div>
+                            <Footer />
+                        </div>
                     </TooltipProvider>
 
                     {/* Schema.org Structured Data for SEO */}
