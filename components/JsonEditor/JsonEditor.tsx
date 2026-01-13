@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppStore } from '@/lib/store/store';
 import dynamic from 'next/dynamic';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, Trash2, ClipboardPaste } from 'lucide-react';
+import { Upload, Trash2, ClipboardPaste, Maximize2, Minimize2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TemplateSelector } from '@/components/TemplateSelector/TemplateSelector';
+import { cn } from "@/lib/utils";
 
 // Dynamically import Monaco Editor with SSR disabled
 const Editor = dynamic(() => import('@monaco-editor/react'), {
@@ -21,6 +22,7 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
 
 export function JsonEditor() {
     const { rawInput, setRawInput, parseInput, isParsed, parseErrors, prettyPrint } = useAppStore();
+    const [isMaximized, setIsMaximized] = useState(false);
 
     // Auto-parse with debounce
     useEffect(() => {
@@ -85,7 +87,10 @@ export function JsonEditor() {
     };
 
     return (
-        <Card className="h-full flex flex-col p-4">
+        <Card className={cn(
+            "flex flex-col p-4 transition-all duration-300",
+            isMaximized ? "fixed inset-0 z-[100] h-[100dvh] w-screen rounded-none bg-background" : "h-full"
+        )}>
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-sm font-semibold text-muted-foreground hidden sm:block">JSON Input</h2>
                 <div className="flex gap-2 w-full sm:w-auto justify-end">
@@ -150,6 +155,23 @@ export function JsonEditor() {
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>Paste from Clipboard</p>
+                        </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                onClick={() => setIsMaximized(!isMaximized)}
+                                variant="outline"
+                                size="icon"
+                                className="md:hidden"
+                            >
+                                {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                                <span className="sr-only">{isMaximized ? "Minimize" : "Maximize"}</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{isMaximized ? "Minimize" : "Maximize"}</p>
                         </TooltipContent>
                     </Tooltip>
                 </div>
