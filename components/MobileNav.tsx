@@ -4,36 +4,38 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
 import { ShareButton } from '@/components/ShareButton/ShareButton';
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { ConversionHistory } from '@/components/ConversionHistory/ConversionHistory';
 import { BatchProcessor } from '@/components/BatchProcessor/BatchProcessor';
 import { ProjectManager } from '@/components/ProjectManager';
 
 export function MobileNav() {
-    const [isOpen, setIsOpen] = useState(false);
+    const [open, setOpen] = useState(false);
+    const pathname = usePathname();
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                    <Menu className="h-6 w-6" />
+        <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+                <Button variant="ghost" className="md:hidden" size="icon">
+                    <Menu />
+                    <span className="sr-only">Toggle Menu</span>
                 </Button>
-            </DialogTrigger>
-            <DialogContent className="w-[90%] max-w-[350px] rounded-xl">
-                <DialogHeader className="text-left">
-                    <DialogTitle className="flex items-center gap-2">
-                        <img src="/icon.svg" alt="Logo" className="h-6 w-6" />
-                        <span>Menu</span>
-                    </DialogTitle>
-                </DialogHeader>
-
+            </SheetTrigger>
+            <SheetContent side="left" className="pr-0">
+                <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2 mb-8 px-2">
+                    <div className="relative w-8 h-8">
+                        <Image
+                            src="/icon.svg"
+                            alt="JsonExport Logo"
+                            fill
+                            className="object-contain"
+                        />
+                    </div>
+                    <span className="font-bold text-lg">JsonExport</span>
+                </Link>
                 <div className="flex flex-col gap-4 py-4">
                     {/* Main Actions */}
                     <div className="grid gap-2">
@@ -57,7 +59,7 @@ export function MobileNav() {
                         </div>
                     </div>
                 </div>
-            </DialogContent>
-        </Dialog>
+            </SheetContent>
+        </Sheet>
     );
 }

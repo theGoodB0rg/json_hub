@@ -11,6 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { conversionHistory, ConversionRecord } from '@/lib/storage/conversionHistory';
 import { useAppStore } from '@/lib/store/store';
 import { cn } from '@/lib/utils';
@@ -86,12 +87,19 @@ export function ConversionHistory({ className }: ConversionHistoryProps) {
 
     return (
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className={cn("gap-2", className)}>
-                    <History className="h-4 w-4" />
-                    <span className="hidden sm:inline">History</span>
-                </Button>
-            </DropdownMenuTrigger>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className={cn("gap-2", className)}>
+                            <History className="h-4 w-4" />
+                            <span className="hidden sm:inline">History</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Conversion History</p>
+                </TooltipContent>
+            </Tooltip>
             <DropdownMenuContent align="end" className="w-80">
                 <DropdownMenuLabel>Recent Conversions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -121,14 +129,22 @@ export function ConversionHistory({ className }: ConversionHistoryProps) {
                                             {record.rowCount} rows • {record.exportFormat.toUpperCase()} • {formatDate(record.timestamp)}
                                         </div>
                                     </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-6 w-6 p-0 flex-shrink-0"
-                                        onClick={(e) => handleDelete(record.id, e)}
-                                    >
-                                        <Trash2 className="h-3 w-3" />
-                                    </Button>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-6 w-6 p-0 flex-shrink-0"
+                                                onClick={(e) => handleDelete(record.id, e)}
+                                            >
+                                                <Trash2 className="h-3 w-3" />
+                                                <span className="sr-only">Delete</span>
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Delete from History</p>
+                                        </TooltipContent>
+                                    </Tooltip>
                                 </DropdownMenuItem>
                             ))}
                         </div>

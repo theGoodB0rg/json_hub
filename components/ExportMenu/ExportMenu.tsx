@@ -52,37 +52,35 @@ export function ExportMenu() {
                     Export Options
                 </h3>
 
-                <TooltipProvider>
-                    <div className="flex border rounded-lg p-0.5 bg-muted/50">
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant={exportSettings.structure === 'flat' ? 'secondary' : 'ghost'}
-                                    size="icon"
-                                    className="h-6 w-6 rounded-md"
-                                    onClick={() => updateExportSettings({ structure: 'flat' })}
-                                >
-                                    <LayoutGrid className="h-3 w-3" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent><p className="text-[10px]">Flat Structure</p></TooltipContent>
-                        </Tooltip>
+                <div className="flex border rounded-lg p-0.5 bg-muted/50">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant={exportSettings.structure === 'flat' ? 'secondary' : 'ghost'}
+                                size="icon"
+                                className="h-6 w-6 rounded-md"
+                                onClick={() => updateExportSettings({ structure: 'flat' })}
+                            >
+                                <LayoutGrid className="h-3 w-3" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent><p className="text-[10px]">Flat Structure</p></TooltipContent>
+                    </Tooltip>
 
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant={exportSettings.structure === 'nested' ? 'secondary' : 'ghost'}
-                                    size="icon"
-                                    className="h-6 w-6 rounded-md"
-                                    onClick={() => updateExportSettings({ structure: 'nested' })}
-                                >
-                                    <Layers className="h-3 w-3" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent><p className="text-[10px]">Relational (Nested) Structure</p></TooltipContent>
-                        </Tooltip>
-                    </div>
-                </TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant={exportSettings.structure === 'nested' ? 'secondary' : 'ghost'}
+                                size="icon"
+                                className="h-6 w-6 rounded-md"
+                                onClick={() => updateExportSettings({ structure: 'nested' })}
+                            >
+                                <Layers className="h-3 w-3" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent><p className="text-[10px]">Relational (Nested) Structure</p></TooltipContent>
+                    </Tooltip>
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 mb-4">

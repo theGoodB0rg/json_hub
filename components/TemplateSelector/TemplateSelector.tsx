@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FileJson, ChevronDown } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -40,13 +41,20 @@ export function TemplateSelector() {
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 px-2" title="Try Example">
-                    <FileJson className="h-4 w-4" />
-                    <span className="hidden lg:inline">Try Example</span>
-                    <ChevronDown className="h-3 w-3 opacity-50" />
-                </Button>
-            </DropdownMenuTrigger>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-2 px-2">
+                            <FileJson className="h-4 w-4" />
+                            <span className="hidden lg:inline">Try Example</span>
+                            <ChevronDown className="h-3 w-3 opacity-50" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Load Example JSON</p>
+                </TooltipContent>
+            </Tooltip>
             <DropdownMenuContent align="start" className="w-64">
                 <DropdownMenuLabel>Sample JSON Templates</DropdownMenuLabel>
                 <DropdownMenuSeparator />
