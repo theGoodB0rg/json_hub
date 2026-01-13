@@ -213,34 +213,6 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
 
                 {/* FAQ Section */}
                 <FAQ />
-
-                {/* Trust Footer Section */}
-                <footer className="py-8 border-t border-border/40 mt-auto bg-muted/30">
-                    <div className="container mx-auto px-4 text-center">
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Trusted for handling sensitive financial, medical, and analytical data.
-                        </p>
-                        <div className="flex flex-wrap justify-center gap-6 md:gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                            {/* Mock Trust Logos or Tech Stack Indicators */}
-                            <div className="flex items-center gap-2 text-sm font-semibold"><Lock className="w-4 h-4" /> End-to-End Encrypted</div>
-                            <div className="flex items-center gap-2 text-sm font-semibold"><Zap className="w-4 h-4" /> Local Processing</div>
-                            <a
-                                href="/blog"
-                                className="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors"
-                            >
-                                Blog
-                            </a>
-                            <a
-                                href="https://github.com/theGoodB0rg/json_hub"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors"
-                            >
-                                <Github className="w-4 h-4" /> Open Source
-                            </a>
-                        </div>
-                    </div>
-                </footer>
             </main>
         </div>
     );
