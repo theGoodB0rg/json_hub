@@ -83,15 +83,15 @@ export function DataGrid() {
 
     return (
         <Card className={cn(
-            "flex flex-col p-4 transition-all duration-300",
-            isMaximized ? "fixed inset-0 z-[100] h-[100dvh] w-screen rounded-none bg-background" : "h-full"
+            "flex flex-col transition-all duration-300",
+            isMaximized ? "fixed inset-0 z-[100] h-[100dvh] w-screen rounded-none bg-background p-2 md:p-4" : "h-full p-2 md:p-4"
         )}>
-            <div className="mb-4 flex justify-between items-start">
+            <div className="mb-2 md:mb-4 flex flex-col md:flex-row justify-between items-start gap-2 md:gap-0">
                 <div>
-                    <h2 className="text-lg font-semibold">
+                    <h2 className="text-base md:text-lg font-semibold">
                         {viewMode === 'flat' ? 'Table Preview' : viewMode === 'table' ? 'Table View (Nested)' : 'Nested View'}
                     </h2>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs md:text-sm text-muted-foreground">
                         {viewMode === 'flat'
                             ? `${flatData.length} rows × ${schema.length} columns (Double-click to edit)`
                             : viewMode === 'table'
@@ -99,7 +99,7 @@ export function DataGrid() {
                                 : 'Hierarchical JSON structure'}
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 self-end md:self-auto">
                     <ViewModeToggle />
                     <TooltipProvider>
                         <Tooltip>
