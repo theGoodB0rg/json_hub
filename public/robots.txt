@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://jsonexport.com
+
+# Sitemaps
+Sitemap: https://jsonexport.com/sitemap.xml
