@@ -2,13 +2,16 @@
 
 import { useAppStore } from '@/lib/store/store';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Maximize2, Minimize2 } from 'lucide-react';
+import { cn } from "@/lib/utils";
 import {
     useReactTable,
     getCoreRowModel,
     flexRender,
     ColumnDef,
 } from '@tanstack/react-table';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { NestedTable } from './NestedTable';
 import { ViewModeToggle } from './ViewModeToggle';
 import { TableViewGrid } from './TableViewGrid';
@@ -16,6 +19,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 export function DataGrid() {
     const { flatData, schema, parsedData, viewMode, updateCell } = useAppStore();
+    const [isMaximized, setIsMaximized] = useState(false);
 
     const columns: ColumnDef<Record<string, any>>[] = useMemo(
         () =>
@@ -78,7 +82,10 @@ export function DataGrid() {
     }
 
     return (
-        <Card className="h-full flex flex-col p-4">
+        <Card className={cn(
+            "flex flex-col p-4 transition-all duration-300",
+            isMaximized ? "fixed inset-0 z-[100] h-[100dvh] w-screen rounded-none bg-background" : "h-full"
+        )}>
             <div className="mb-4 flex justify-between items-start">
                 <div>
                     <h2 className="text-lg font-semibold">
@@ -92,7 +99,27 @@ export function DataGrid() {
                                 : 'Hierarchical JSON structure'}
                     </p>
                 </div>
-                <ViewModeToggle />
+                <div className="flex gap-2">
+                    <ViewModeToggle />
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    onClick={() => setIsMaximized(!isMaximized)}
+                                    variant="outline"
+                                    size="icon"
+                                    className="md:hidden"
+                                >
+                                    {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                                    <span className="sr-only">{isMaximized ? "Minimize" : "Maximize"}</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{isMaximized ? "Minimize" : "Maximize"}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
             </div>
 
             <div className="flex-1 overflow-auto border rounded-md">
@@ -146,6 +173,6 @@ export function DataGrid() {
                     </div>
                 )}
             </div>
-        </Card>
+        </Card >
     );
 }
