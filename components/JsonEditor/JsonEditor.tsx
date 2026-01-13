@@ -99,22 +99,20 @@ export function JsonEditor() {
                     <Button
                         onClick={() => document.getElementById('file-upload')?.click()}
                         variant="outline"
-                        size="sm"
+                        size="icon"
                         title="Upload File"
-                        className="px-2 sm:px-3"
                     >
-                        <Upload className="h-4 w-4 sm:mr-2" />
-                        <span className="hidden sm:inline">Upload File</span>
+                        <Upload className="h-4 w-4" />
+                        <span className="sr-only">Upload File</span>
                     </Button>
                     <Button
                         onClick={handleClear}
                         variant="outline"
-                        size="sm"
+                        size="icon"
                         title="Clear"
-                        className="px-2 sm:px-3"
                     >
-                        <Trash2 className="h-4 w-4 sm:mr-2" />
-                        <span className="hidden sm:inline">Clear</span>
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Clear</span>
                     </Button>
                     <Button
                         onClick={async () => {
@@ -127,12 +125,11 @@ export function JsonEditor() {
                             }
                         }}
                         variant="outline"
-                        size="sm"
+                        size="icon"
                         title="Paste from Clipboard"
-                        className="px-2 sm:px-3"
                     >
-                        <ClipboardPaste className="h-4 w-4 sm:mr-2" />
-                        <span className="hidden sm:inline">Paste</span>
+                        <ClipboardPaste className="h-4 w-4" />
+                        <span className="sr-only">Paste</span>
                     </Button>
                 </div>
             </div>
