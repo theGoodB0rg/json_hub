@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
@@ -39,6 +40,11 @@ export function MobileNav() {
                         <ShareButton className="w-full justify-start [&_span]:!inline" />
                         <BatchProcessor className="w-full justify-start [&_span]:!inline" />
                         <ConversionHistory className="w-full justify-start [&_span]:!inline" />
+                        <Button variant="ghost" asChild className="w-full justify-start text-muted-foreground">
+                            <Link href="/blog">
+                                <span>Blog</span>
+                            </Link>
+                        </Button>
                     </div>
 
                     <div className="h-px bg-border my-2" />
