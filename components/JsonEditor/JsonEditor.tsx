@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload, Trash2, ClipboardPaste } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TemplateSelector } from '@/components/TemplateSelector/TemplateSelector';
 
 // Dynamically import Monaco Editor with SSR disabled
@@ -96,41 +97,61 @@ export function JsonEditor() {
                         className="hidden"
                         id="file-upload"
                     />
-                    <Button
-                        onClick={() => document.getElementById('file-upload')?.click()}
-                        variant="outline"
-                        size="icon"
-                        title="Upload File"
-                    >
-                        <Upload className="h-4 w-4" />
-                        <span className="sr-only">Upload File</span>
-                    </Button>
-                    <Button
-                        onClick={handleClear}
-                        variant="outline"
-                        size="icon"
-                        title="Clear"
-                    >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Clear</span>
-                    </Button>
-                    <Button
-                        onClick={async () => {
-                            try {
-                                const text = await navigator.clipboard.readText();
-                                setRawInput(text);
-                            } catch (err) {
-                                console.error('Failed to read clipboard', err);
-                                alert('Could not access clipboard. Please paste manually (Ctrl+V or Cmd+V).');
-                            }
-                        }}
-                        variant="outline"
-                        size="icon"
-                        title="Paste from Clipboard"
-                    >
-                        <ClipboardPaste className="h-4 w-4" />
-                        <span className="sr-only">Paste</span>
-                    </Button>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                onClick={() => document.getElementById('file-upload')?.click()}
+                                variant="outline"
+                                size="icon"
+                            >
+                                <Upload className="h-4 w-4" />
+                                <span className="sr-only">Upload File</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Upload File</p>
+                        </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                onClick={handleClear}
+                                variant="outline"
+                                size="icon"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Clear</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Clear Editor</p>
+                        </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                onClick={async () => {
+                                    try {
+                                        const text = await navigator.clipboard.readText();
+                                        setRawInput(text);
+                                    } catch (err) {
+                                        console.error('Failed to read clipboard', err);
+                                        alert('Could not access clipboard. Please paste manually (Ctrl+V or Cmd+V).');
+                                    }
+                                }}
+                                variant="outline"
+                                size="icon"
+                            >
+                                <ClipboardPaste className="h-4 w-4" />
+                                <span className="sr-only">Paste from Clipboard</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Paste from Clipboard</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
             </div>
 

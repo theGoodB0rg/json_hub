@@ -11,6 +11,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAppStore } from '@/lib/store/store';
 import { createShareableLink, copyToClipboard } from '@/lib/utils/shareLink';
 
@@ -60,17 +61,24 @@ export function ShareButton({ className }: ShareButtonProps) {
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn("gap-2", className)}
-                    onClick={handleShare}
-                >
-                    <Share2 className="h-4 w-4" />
-                    <span className="hidden sm:inline">Share</span>
-                </Button>
-            </DialogTrigger>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <DialogTrigger asChild>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn("gap-2", className)}
+                            onClick={handleShare}
+                        >
+                            <Share2 className="h-4 w-4" />
+                            <span className="hidden sm:inline">Share</span>
+                        </Button>
+                    </DialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Share Link</p>
+                </TooltipContent>
+            </Tooltip>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>Share JSON Conversion</DialogTitle>

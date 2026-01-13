@@ -13,6 +13,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { FolderOpen, Save, Trash2, FilePlus, ShieldAlert } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -76,9 +77,17 @@ export function ProjectManager({ className }: ProjectManagerProps) {
             )}
 
             {/* New Project Button */}
-            <Button variant="ghost" size="icon" title="New Project" onClick={createNewProject}>
-                <FilePlus className="h-4 w-4" />
-            </Button>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={createNewProject}>
+                        <FilePlus className="h-4 w-4" />
+                        <span className="sr-only">New Project</span>
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Create New Project</p>
+                </TooltipContent>
+            </Tooltip>
 
             {/* Save Button & Dialog */}
             <Dialog open={isSaveOpen} onOpenChange={setIsSaveOpen}>
@@ -154,14 +163,22 @@ export function ProjectManager({ className }: ProjectManagerProps) {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             {currentProjectId === project.id && <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Active</span>}
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                                                onClick={(e) => handleDelete(e, project.id)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                                        onClick={(e) => handleDelete(e, project.id)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span className="sr-only">Delete Project</span>
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Delete Project</p>
+                                                </TooltipContent>
+                                            </Tooltip>
                                         </div>
                                     </div>
                                 ))}

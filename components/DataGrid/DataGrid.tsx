@@ -12,6 +12,7 @@ import { useMemo } from 'react';
 import { NestedTable } from './NestedTable';
 import { ViewModeToggle } from './ViewModeToggle';
 import { TableViewGrid } from './TableViewGrid';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function DataGrid() {
     const { flatData, schema, parsedData, viewMode, updateCell } = useAppStore();
@@ -29,22 +30,30 @@ export function DataGrid() {
                     const displayValue = isTruncated ? stringValue.substring(0, 100) + '...' : stringValue;
 
                     return (
-                        <div
-                            className="px-2 py-1 min-h-[32px] cursor-pointer hover:bg-accent max-w[300px]"
-                            title={stringValue} // Tooltip showing full value
-                            onDoubleClick={() => {
-                                const newValue = prompt(`Edit ${key}:`, stringValue);
-                                if (newValue !== null) {
-                                    updateCell(row.index, column.id, newValue);
-                                }
-                            }}
-                        >
-                            {value === null ? (
-                                <span className="text-muted-foreground italic">null</span>
-                            ) : (
-                                <span className="truncate block">{displayValue}</span>
-                            )}
-                        </div>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <div
+                                        className="px-2 py-1 min-h-[32px] cursor-pointer hover:bg-accent max-w[300px]"
+                                        onDoubleClick={() => {
+                                            const newValue = prompt(`Edit ${key}:`, stringValue);
+                                            if (newValue !== null) {
+                                                updateCell(row.index, column.id, newValue);
+                                            }
+                                        }}
+                                    >
+                                        {value === null ? (
+                                            <span className="text-muted-foreground italic">null</span>
+                                        ) : (
+                                            <span className="truncate block">{displayValue}</span>
+                                        )}
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p className="max-w-xs break-all">{stringValue}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     );
                 },
             })),
@@ -98,14 +107,22 @@ export function DataGrid() {
                                         <th
                                             key={header.id}
                                             className="px-2 py-2 text-left font-semibold border-b min-w-[120px] max-w-[300px]"
-                                            title={header.id} // Tooltip showing full column name
                                         >
-                                            <div className="truncate">
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                            </div>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <div className="truncate w-full cursor-help">
+                                                            {flexRender(
+                                                                header.column.columnDef.header,
+                                                                header.getContext()
+                                                            )}
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>{header.id}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
                                         </th>
                                     ))}
                                 </tr>

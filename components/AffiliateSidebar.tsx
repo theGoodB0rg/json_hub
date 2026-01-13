@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { ExternalLink, Database, BarChart3, Shield, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AffiliateLink {
     name: string;
@@ -41,7 +42,14 @@ export function AffiliateSidebar() {
         <Card className="h-full bg-muted/20 border-l border-border/50 rounded-none w-full md:w-64 flex flex-col p-4 gap-6 overflow-y-auto">
             <div>
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-1">
-                    <Info className="w-4 h-4 text-blue-500" />
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Info className="w-4 h-4 text-blue-500 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Hand-picked tools to enhance your workflow</p>
+                        </TooltipContent>
+                    </Tooltip>
                     Recommended Tools
                 </h3>
                 <p className="text-xs text-muted-foreground">
@@ -76,9 +84,16 @@ export function AffiliateSidebar() {
                                     </p>
                                 </div>
                             </div>
-                            <Button variant="secondary" size="sm" className="w-full text-xs h-7 bg-background group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                                {link.buttonText} <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
-                            </Button>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="secondary" size="sm" className="w-full text-xs h-7 bg-background group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+                                        {link.buttonText} <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Open {link.name} in new tab</p>
+                                </TooltipContent>
+                            </Tooltip>
                         </a>
                     </div>
                 ))}
