@@ -128,7 +128,7 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
                 <section className="flex-1 px-4 pb-8 container mx-auto">
                     <div className={cn(
                         "border border-border/50 rounded-xl shadow-2xl bg-card overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 ring-1 ring-white/10",
-                        isDesktop ? "h-[800px]" : "min-h-[600px]"
+                        isDesktop ? "h-[800px]" : "h-[85dvh]"
                     )}>
                         <div className="flex flex-row h-full">
                             <div className="flex-1 h-full overflow-hidden">
@@ -184,14 +184,14 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
                                             </TabsList>
                                         </div>
 
-                                        <TabsContent value="input" className="flex-1 mt-0 h-full flex flex-col data-[state=inactive]:hidden">
-                                            <div className="flex-1 overflow-hidden relative border-b border-border/40">
+                                        <TabsContent value="input" className="flex-1 mt-0 h-full flex flex-col overflow-hidden data-[state=inactive]:hidden">
+                                            <div className="flex-1 overflow-hidden relative border-b border-border/40 h-full">
                                                 <JsonEditor />
                                             </div>
                                         </TabsContent>
 
-                                        <TabsContent value="preview" className="flex-1 mt-0 h-full flex flex-col data-[state=inactive]:hidden">
-                                            <div className="flex-1 overflow-hidden p-2">
+                                        <TabsContent value="preview" className="flex-1 mt-0 h-full flex flex-col overflow-hidden data-[state=inactive]:hidden">
+                                            <div className="flex-1 overflow-hidden p-2 h-full">
                                                 <DataGrid />
                                             </div>
                                             <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
