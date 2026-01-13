@@ -74,6 +74,9 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center gap-4">
                             <ConversionHistory />
+                            <a href="/blog" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                                Blog
+                            </a>
                             <ShareButton />
                             <BatchProcessor />
                             <ProjectManager />
@@ -221,6 +224,12 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
                             {/* Mock Trust Logos or Tech Stack Indicators */}
                             <div className="flex items-center gap-2 text-sm font-semibold"><Lock className="w-4 h-4" /> End-to-End Encrypted</div>
                             <div className="flex items-center gap-2 text-sm font-semibold"><Zap className="w-4 h-4" /> Local Processing</div>
+                            <a
+                                href="/blog"
+                                className="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors"
+                            >
+                                Blog
+                            </a>
                             <a
                                 href="https://github.com/theGoodB0rg/json_hub"
                                 target="_blank"
