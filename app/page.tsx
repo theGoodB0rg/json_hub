@@ -10,6 +10,8 @@ import {
     ResizablePanel,
     ResizableHandle,
 } from '@/components/ui/resizable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { ShieldCheck, Zap, Code2, Lock, Github } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { AffiliateSidebar } from "@/components/AffiliateSidebar";
@@ -112,45 +114,80 @@ export default function Home() {
 
                 {/* Main App Interface */}
                 <section className="flex-1 px-4 pb-8 container mx-auto">
-                    <div className="h-[950px] md:h-[800px] border border-border/50 rounded-xl shadow-2xl bg-card overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 ring-1 ring-white/10">
+                    <div className={cn(
+                        "border border-border/50 rounded-xl shadow-2xl bg-card overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 ring-1 ring-white/10",
+                        isDesktop ? "h-[800px]" : "min-h-[600px]"
+                    )}>
                         <div className="flex flex-row h-full">
                             <div className="flex-1 h-full overflow-hidden">
-                                <ResizablePanelGroup
-                                    orientation={isDesktop ? "horizontal" : "vertical"}
-                                    className="h-full"
-                                >
-                                    <ResizablePanel defaultSize={40} minSize={30} className="bg-background/50">
-                                        <div className="h-full p-0 flex flex-col">
-                                            <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
-                                                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Input JSON</span>
-                                                <span className="text-[10px] text-muted-foreground">Auto-detects format</span>
-                                            </div>
-                                            <div className="flex-1 overflow-hidden relative group">
-                                                <JsonEditor />
-                                            </div>
-                                        </div>
-                                    </ResizablePanel>
-
-                                    <ResizableHandle withHandle className="bg-border/50 hover:bg-primary/50 transition-colors w-1.5" />
-
-                                    <ResizablePanel defaultSize={60} minSize={30} className="bg-background">
-                                        <div className="h-full flex flex-col">
-                                            <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
-                                                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data Grid Preview</span>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                                    <span className="text-[10px] text-muted-foreground">Live App</span>
+                                {isDesktop ? (
+                                    <ResizablePanelGroup
+                                        orientation="horizontal"
+                                        className="h-full"
+                                    >
+                                        <ResizablePanel defaultSize={40} minSize={30} className="bg-background/50">
+                                            <div className="h-full p-0 flex flex-col">
+                                                <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
+                                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Input JSON</span>
+                                                    <span className="text-[10px] text-muted-foreground">Auto-detects format</span>
+                                                </div>
+                                                <div className="flex-1 overflow-hidden relative group">
+                                                    <JsonEditor />
                                                 </div>
                                             </div>
-                                            <div className="flex-1 overflow-hidden p-4">
+                                        </ResizablePanel>
+
+                                        <ResizableHandle withHandle className="bg-border/50 hover:bg-primary/50 transition-colors w-1.5" />
+
+                                        <ResizablePanel defaultSize={60} minSize={30} className="bg-background">
+                                            <div className="h-full flex flex-col">
+                                                <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
+                                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data Grid Preview</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                                        <span className="text-[10px] text-muted-foreground">Live App</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 overflow-hidden p-4">
+                                                    <DataGrid />
+                                                </div>
+                                                <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
+                                                    <ExportMenu />
+                                                </div>
+                                            </div>
+                                        </ResizablePanel>
+                                    </ResizablePanelGroup>
+                                ) : (
+                                    <Tabs defaultValue="input" className="h-full flex flex-col">
+                                        <div className="px-4 pt-4 bg-muted/10 border-b border-border/40">
+                                            <TabsList className="grid w-full grid-cols-2">
+                                                <TabsTrigger value="input" className="gap-2">
+                                                    <Code2 className="h-4 w-4" />
+                                                    Input
+                                                </TabsTrigger>
+                                                <TabsTrigger value="preview" className="gap-2">
+                                                    <Zap className="h-4 w-4" />
+                                                    Preview
+                                                </TabsTrigger>
+                                            </TabsList>
+                                        </div>
+
+                                        <TabsContent value="input" className="flex-1 mt-0 h-full flex flex-col data-[state=inactive]:hidden">
+                                            <div className="flex-1 overflow-hidden relative border-b border-border/40">
+                                                <JsonEditor />
+                                            </div>
+                                        </TabsContent>
+
+                                        <TabsContent value="preview" className="flex-1 mt-0 h-full flex flex-col data-[state=inactive]:hidden">
+                                            <div className="flex-1 overflow-hidden p-2">
                                                 <DataGrid />
                                             </div>
                                             <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
                                                 <ExportMenu />
                                             </div>
-                                        </div>
-                                    </ResizablePanel>
-                                </ResizablePanelGroup>
+                                        </TabsContent>
+                                    </Tabs>
+                                )}
                             </div>
                             <div className="hidden lg:block h-full border-l border-border/50 w-64 bg-background/50 backdrop-blur-sm">
                                 <AffiliateSidebar />
