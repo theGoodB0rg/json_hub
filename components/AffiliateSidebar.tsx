@@ -1,109 +1,67 @@
-import { Card } from "@/components/ui/card";
-import { ExternalLink, Database, BarChart3, Shield, Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-
-interface AffiliateLink {
-    name: string;
-    description: string;
-    icon: React.ElementType;
-    url: string;
-    buttonText: string;
-    tag?: string;
-}
-
-const AFFILIATE_LINKS: AffiliateLink[] = [
-    {
-        name: "Airtable",
-        description: "Turn your JSON data into powerful, collaborative databases.",
-        icon: Database,
-        url: "https://airtable.com/invite/r/YOUR_AFFILIATE_ID", // TODO: Replace with your Airtable affiliate ID
-        buttonText: "Try Free",
-        tag: "Recommended"
-    },
-    {
-        name: "Notion",
-        description: "Organize and analyze your exported data in beautiful docs.",
-        icon: BarChart3,
-        url: "https://www.notion.so/?r=YOUR_AFFILIATE_ID", // TODO: Replace with your Notion affiliate ID
-        buttonText: "Get Started"
-    },
-    {
-        name: "Zapier",
-        description: "Automate JSON conversions in your workflows.",
-        icon: Shield,
-        url: "https://zapier.com/sign-up?via=YOUR_AFFILIATE_ID", // TODO: Replace with your Zapier affiliate ID
-        buttonText: "Automate"
-    }
-];
+import { AFFILIATE_PARTNERS } from '@/lib/affiliates';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, Database, BarChart, Zap } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function AffiliateSidebar() {
     return (
-        <Card className="h-full bg-muted/20 border-l border-border/50 rounded-none w-full md:w-64 flex flex-col p-4 gap-6 overflow-y-auto">
-            <div>
-                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-1">
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Info className="w-4 h-4 text-blue-500 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Hand-picked tools to enhance your workflow</p>
-                        </TooltipContent>
-                    </Tooltip>
-                    Recommended Tools
+        <div className="h-full flex flex-col p-4 gap-4 overflow-y-auto">
+            <div className="space-y-1">
+                <h3 className="font-semibold text-sm tracking-tight text-muted-foreground uppercase">
+                    Suggested Next Steps
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                    Power up your data workflow
+                    Do more with your converted data
                 </p>
             </div>
 
             <div className="flex flex-col gap-4">
-                {AFFILIATE_LINKS.map((link, index) => (
-                    <div key={index} className="group relative">
-                        {link.tag && (
-                            <span className="absolute -top-2 right-2 px-1.5 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase rounded-full border border-blue-500/20">
-                                {link.tag}
-                            </span>
-                        )}
-                        <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener sponsored"
-                            className="block p-3 rounded-lg border border-border/50 bg-card hover:bg-accent/50 transition-all duration-300 hover:shadow-md hover:border-primary/20"
-                        >
-                            <div className="flex items-start gap-3 mb-2">
-                                <div className="p-2 rounded-md bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                                    <link.icon className="w-4 h-4" />
+                {AFFILIATE_PARTNERS.map((partner) => {
+                    // Icon logic (temporary until SVGs are added)
+                    let Icon = Database;
+                    if (partner.id === 'monday') Icon = BarChart;
+                    if (partner.id === 'make') Icon = Zap;
+
+                    return (
+                        <Card key={partner.id} className="overflow-hidden border-border/50 hover:border-primary/50 transition-colors shadow-sm bg-muted/20">
+                            <CardHeader className={`p-4 pb-2 ${partner.bgColor}`}>
+                                <div className="flex items-center gap-2">
+                                    <div className={`p-1.5 rounded-md bg-white/20 backdrop-blur-sm ${partner.textColor}`}>
+                                        <Icon className="h-4 w-4" />
+                                    </div>
+                                    <CardTitle className={`text-sm font-semibold ${partner.textColor}`}>
+                                        {partner.name}
+                                    </CardTitle>
                                 </div>
+                            </CardHeader>
+                            <CardContent className="p-4 pt-3 space-y-3">
                                 <div>
-                                    <h4 className="text-sm font-semibold leading-none mb-1 group-hover:text-primary transition-colors">
-                                        {link.name}
-                                    </h4>
-                                    <p className="text-[10px] text-muted-foreground leading-tight">
-                                        {link.description}
+                                    <p className="text-sm font-medium leading-none mb-1.5">
+                                        {partner.benefit}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground leading-snug">
+                                        {partner.description}
                                     </p>
                                 </div>
-                            </div>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button variant="secondary" size="sm" className="w-full text-xs h-7 bg-background group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                                        {link.buttonText} <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Open {link.name} in new tab</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </a>
-                    </div>
-                ))}
+                                <Button
+                                    className="w-full h-8 text-xs gap-1.5"
+                                    variant="outline"
+                                    onClick={() => window.open(partner.affiliateUrl, '_blank')}
+                                >
+                                    Try for Free
+                                    <ExternalLink className="h-3 w-3 opacity-50" />
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
 
-            <div className="mt-auto pt-4 border-t border-border/20">
+            <div className="mt-auto p-4 bg-muted/30 rounded-lg border border-border/50">
                 <p className="text-[10px] text-muted-foreground text-center">
-                    We may earn a commission if you use these links, at no extra cost to you.
+                    These links help support free development.
                 </p>
             </div>
-        </Card>
+        </div>
     );
 }
