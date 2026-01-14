@@ -2,7 +2,7 @@ import { ConverterApp } from "@/components/ConverterApp";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'JsonExport | Free Online JSON to Excel & CSV Converter',
+    title: 'JsonExport | Free Data Analyst Workbench (JSON to CSV/Excel)',
     alternates: {
         canonical: 'https://jsonexport.com',
     }
@@ -22,8 +22,7 @@ export default function Home() {
                     Perfect for converting complex, nested JSON objects into flat, readable spreadsheets.
                 </p>
                 <p>
-                    Whether you need to <a href="/json-to-csv" className="underline hover:text-primary">convert JSON to CSV</a> for database imports or
-                    <a href="/json-to-excel" className="underline hover:text-primary">transform JSON to Excel</a> for reporting, JsonExport handles
+                    Whether you need to <a href="/json-to-csv" className="underline hover:text-primary">convert JSON to CSV</a> for database imports or <a href="/json-to-excel" className="underline hover:text-primary">transform JSON to Excel</a> for reporting, JsonExport handles
                     large files, arrays, and deep nesting with ease.
                 </p>
             </section>
