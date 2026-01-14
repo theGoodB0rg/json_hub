@@ -1,5 +1,8 @@
 'use client';
 
+import { InlineEdit } from './InlineEdit';
+import { useAppStore } from '@/lib/store/store';
+
 /**
  * NestedTable - Hierarchical JSON visualization component
  * Recursively renders JSON as nested tables similar to jsontotable.org
@@ -8,25 +11,19 @@
 interface NestedTableProps {
     data: any;
     depth?: number;
+    path?: string;
 }
 
 function isPrimitive(value: any): boolean {
     return value === null || typeof value !== 'object';
 }
 
-export function NestedTable({ data, depth = 0 }: NestedTableProps) {
+export function NestedTable({ data, depth = 0, path = '' }: NestedTableProps) {
+    const { updateData } = useAppStore();
+
     // Base case: primitive values
     if (isPrimitive(data)) {
-        if (data === null) {
-            return <span className="text-muted-foreground italic">null</span>;
-        }
-        if (typeof data === 'boolean') {
-            return <span className="font-mono">{String(data)}</span>;
-        }
-        if (typeof data === 'number') {
-            return <span className="font-mono text-blue-600 dark:text-blue-400">{data}</span>;
-        }
-        return <span>{String(data)}</span>;
+        return <InlineEdit value={data} onSave={(val) => updateData(path, val)} />;
     }
 
     // Array: render as indexed rows
@@ -38,14 +35,17 @@ export function NestedTable({ data, depth = 0 }: NestedTableProps) {
         return (
             <table className="nested-table">
                 <tbody>
-                    {data.map((item, index) => (
-                        <tr key={index}>
-                            <td className="index-cell">{index}</td>
-                            <td>
-                                <NestedTable data={item} depth={depth + 1} />
-                            </td>
-                        </tr>
-                    ))}
+                    {data.map((item, index) => {
+                        const currentPath = path ? `${path}.${index}` : `${index}`;
+                        return (
+                            <tr key={index}>
+                                <td className="index-cell">{index}</td>
+                                <td>
+                                    <NestedTable data={item} depth={depth + 1} path={currentPath} />
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         );
@@ -61,16 +61,19 @@ export function NestedTable({ data, depth = 0 }: NestedTableProps) {
     return (
         <table className="nested-table">
             <tbody>
-                {entries.map(([key, value]) => (
-                    <tr key={key}>
-                        <td className="key-cell" title={key}>
-                            <div className="truncate max-w-[200px]">{key}</div>
-                        </td>
-                        <td className="value-cell">
-                            <NestedTable data={value} depth={depth + 1} />
-                        </td>
-                    </tr>
-                ))}
+                {entries.map(([key, value]) => {
+                    const currentPath = path ? `${path}.${key}` : key;
+                    return (
+                        <tr key={key}>
+                            <td className="key-cell" title={key}>
+                                <div className="truncate max-w-[200px]">{key}</div>
+                            </td>
+                            <td className="value-cell">
+                                <NestedTable data={value} depth={depth + 1} path={currentPath} />
+                            </td>
+                        </tr>
+                    );
+                })}
             </tbody>
         </table>
     );

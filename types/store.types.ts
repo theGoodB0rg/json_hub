@@ -8,7 +8,12 @@ export interface AppState {
     // Processed Data
     parsedData: any;
     flatData: Record<string, any>[];
+
     schema: string[];
+    // Extended Data State
+    columnOrder: string[]; // Order of columns (schema keys)
+    excludedColumns: string[]; // List of hidden/deleted columns
+
 
     // UI State
     activeTab: 'input' | 'preview' | 'export';
@@ -38,6 +43,7 @@ export interface AppState {
     parseInput: () => void;
     flattenData: () => void;
     updateCell: (rowIndex: number, column: string, value: any) => void;
+    updateData: (path: string, value: any) => void;
     exportData: (format: ExportFormat) => Promise<void>;
     resetState: () => void;
     setActiveTab: (tab: 'input' | 'preview' | 'export') => void;
@@ -45,6 +51,15 @@ export interface AppState {
     setViewMode: (mode: 'flat' | 'nested' | 'table') => void;
     setPrettyPrint: (value: boolean) => void;
     updateExportSettings: (settings: Partial<ExportSettings>) => void;
+    // Column & Row Management
+    setColumnOrder: (order: string[]) => void;
+    toggleColumnVisibility: (columnId: string) => void;
+    reorderRow: (fromIndex: number, toIndex: number) => void;
+    undo: () => void;
+    redo: () => void;
+    pastStates: any[]; // For zundo checking if undo is available
+    futureStates: any[]; // For zundo checking if redo is available
+
 
     // Project Actions
     loadProjectsList: () => Promise<void>;

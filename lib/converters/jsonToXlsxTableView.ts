@@ -4,9 +4,9 @@ import * as XLSX from 'xlsx';
  * Converts JSON to Excel with nested table structure using merged cells
  * Handles multi-level nesting correctly
  */
-export function jsonToXlsxTableView(data: any, filename: string = 'table-export.xlsx'): void {
+export function generateTableXlsx(data: any): XLSX.WorkBook | null {
     const items = Array.isArray(data) ? data : [data];
-    if (items.length === 0) return;
+    if (items.length === 0) return null;
 
     console.log('=== Excel Table View Export ===');
     console.log('Input data:', JSON.stringify(items, null, 2));
@@ -144,6 +144,16 @@ export function jsonToXlsxTableView(data: any, filename: string = 'table-export.
     // Create workbook and export
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
+
+    return wb;
+}
+
+/**
+ * Downloads Excel file with table view structure
+ */
+export function jsonToXlsxTableView(data: any, filename: string = 'table-export.xlsx'): void {
+    const wb = generateTableXlsx(data);
+    if (!wb) return;
 
     // Download
     XLSX.writeFile(wb, filename);

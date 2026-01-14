@@ -13,7 +13,9 @@ A client-side web application that transforms nested, double-encoded JSON into c
 - **⚡ Client-Side Only**: All processing happens in your browser - your data never leaves your machine
 - **🎯 Drag & Drop**: Upload JSON files by dragging them into the editor
 - **🔍 Error Detection**: Detailed error messages with line and column numbers
-- **✏️ Editable Tables**: Double-click any cell to edit values before export
+- **✏️ Unified Inline Editing**: Edit data directly in Flat, Table, or Nested views
+- **Undo/Redo**: Full history support for all edits and layout changes
+- **Column Management**: Reorder, hide, and manage columns via drag & drop
 - **📦 10MB File Support**: Handle large JSON files with ease
 
 ## 🚀 Quick Start
@@ -71,9 +73,9 @@ npm run dev
 - **Framework**: Next.js 14 (App Router, Static Export)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS + Shadcn/UI
-- **State**: Zustand
+- **State**: Zustand + Zundo (Temporal)
 - **Editor**: Monaco Editor (VS Code editor)
-- **Table**: TanStack Table v8
+- **Table**: TanStack Table v8 + @dnd-kit
 - **Export**: SheetJS (xlsx), JSZip
 - **Testing**: Jest + Playwright
 
