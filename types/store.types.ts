@@ -3,6 +3,7 @@ export interface AppState {
     rawInput: string;
     isParsed: boolean;
     parseErrors: ParseError[];
+    sourceFilename: string | null;
 
     // Processed Data
     parsedData: any;
@@ -28,8 +29,12 @@ export interface AppState {
     lastSaved: number | null;
     savedProjects: any[]; // Using list type from db
 
+    worker: Worker | null;
+
     // Actions
+    initWorker: () => void;
     setRawInput: (input: string) => void;
+    setSourceFilename: (name: string | null) => void;
     parseInput: () => void;
     flattenData: () => void;
     updateCell: (rowIndex: number, column: string, value: any) => void;

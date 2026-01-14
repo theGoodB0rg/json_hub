@@ -42,6 +42,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+
+
+import MDXComponents from "@/components/mdx/MDXComponents";
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import remarkGfm from 'remark-gfm';
+
 export default async function Post({ params }: Props) {
     const postData = await getPostData(params.slug);
 
@@ -66,13 +72,20 @@ export default async function Post({ params }: Props) {
                 </div>
             </div>
 
-            <div
-                className="prose prose-neutral dark:prose-invert max-w-none 
+            <div className="prose prose-neutral dark:prose-invert max-w-none 
         prose-headings:font-bold prose-headings:tracking-tight 
         prose-a:text-primary prose-code:text-primary prose-code:bg-muted prose-code:p-1 prose-code:rounded-sm
-        prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border"
-                dangerouslySetInnerHTML={{ __html: postData.contentHtml || '' }}
-            />
+        prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border">
+                <MDXRemote
+                    source={postData.content || ''}
+                    components={MDXComponents}
+                    options={{
+                        mdxOptions: {
+                            remarkPlugins: [remarkGfm],
+                        }
+                    }}
+                />
+            </div>
         </article>
     );
 }

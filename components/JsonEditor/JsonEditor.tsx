@@ -21,7 +21,7 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
 });
 
 export function JsonEditor() {
-    const { rawInput, setRawInput, parseInput, isParsed, parseErrors, prettyPrint } = useAppStore();
+    const { rawInput, setRawInput, parseInput, isParsed, parseErrors, prettyPrint, setSourceFilename } = useAppStore();
     const [isMaximized, setIsMaximized] = useState(false);
 
     // Auto-parse with debounce
@@ -37,10 +37,13 @@ export function JsonEditor() {
 
     const handleEditorChange = (value: string | undefined) => {
         setRawInput(value || '');
+        // We don't necessarily want to clear filename on edit, 
+        // as users might just be tweaking the uploaded file.
     };
 
     const handleClear = () => {
         setRawInput('');
+        setSourceFilename(null);
     };
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,6 +61,7 @@ export function JsonEditor() {
         reader.onload = (e) => {
             const content = e.target?.result as string;
             setRawInput(content);
+            setSourceFilename(file.name);
         };
         reader.readAsText(file);
     };
@@ -78,6 +82,7 @@ export function JsonEditor() {
         reader.onload = (e) => {
             const content = e.target?.result as string;
             setRawInput(content);
+            setSourceFilename(file.name);
         };
         reader.readAsText(file);
     };
@@ -141,6 +146,7 @@ export function JsonEditor() {
                                     try {
                                         const text = await navigator.clipboard.readText();
                                         setRawInput(text);
+                                        setSourceFilename('clipboard_data');
                                     } catch (err) {
                                         console.error('Failed to read clipboard', err);
                                         alert('Could not access clipboard. Please paste manually (Ctrl+V or Cmd+V).');

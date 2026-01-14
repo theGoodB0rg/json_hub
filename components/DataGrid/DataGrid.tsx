@@ -11,21 +11,25 @@ import {
     flexRender,
     ColumnDef,
 } from '@tanstack/react-table';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { NestedTable } from './NestedTable';
 import { ViewModeToggle } from './ViewModeToggle';
 import { TableViewGrid } from './TableViewGrid';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 export function DataGrid() {
     const { flatData, schema, parsedData, viewMode, updateCell } = useAppStore();
     const [isMaximized, setIsMaximized] = useState(false);
 
+    // Virtualization Refs
+    const tableContainerRef = useRef<HTMLDivElement>(null);
+
     const columns: ColumnDef<Record<string, any>>[] = useMemo(
         () =>
             schema.map((key) => ({
                 id: key,
-                accessorFn: (row) => row[key], // Fix: Use accessorFn to treat dot keys as literal properties
+                accessorFn: (row) => row[key],
                 header: key,
                 cell: ({ getValue, row, column }) => {
                     const value = getValue();
@@ -68,6 +72,16 @@ export function DataGrid() {
         data: flatData,
         columns,
         getCoreRowModel: getCoreRowModel(),
+    });
+
+    const { rows } = table.getRowModel();
+
+    // Virtualizer instance
+    const rowVirtualizer = useVirtualizer({
+        count: rows.length,
+        getScrollElement: () => tableContainerRef.current,
+        estimateSize: () => 40, // Approximate row height
+        overscan: 5,
     });
 
     if (flatData.length === 0) {
@@ -122,18 +136,21 @@ export function DataGrid() {
                 </div>
             </div>
 
-            <div className="flex-1 overflow-auto border rounded-md">
+            <div
+                ref={tableContainerRef}
+                className="flex-1 overflow-auto border rounded-md relative"
+            >
                 {viewMode === 'table' ? (
                     <TableViewGrid data={parsedData} />
                 ) : viewMode === 'flat' ? (
                     <table className="w-full text-sm">
-                        <thead className="bg-muted sticky top-0">
+                        <thead className="bg-muted sticky top-0 z-10 w-full">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
                                         <th
                                             key={header.id}
-                                            className="px-2 py-2 text-left font-semibold border-b min-w-[120px] max-w-[300px]"
+                                            className="px-2 py-2 text-left font-semibold border-b min-w-[120px] max-w-[300px] shadow-sm bg-muted"
                                         >
                                             <TooltipProvider>
                                                 <Tooltip>
@@ -155,16 +172,41 @@ export function DataGrid() {
                                 </tr>
                             ))}
                         </thead>
-                        <tbody>
-                            {table.getRowModel().rows.map((row) => (
-                                <tr key={row.id} className="border-b hover:bg-muted/50">
-                                    {row.getVisibleCells().map((cell) => (
-                                        <td key={cell.id} className="border-r last:border-r-0">
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
+                        <tbody
+                            style={{
+                                height: `${rowVirtualizer.getTotalSize()}px`,
+                                width: '100%',
+                                position: 'relative',
+                            }}
+                            className="block"
+                        >
+                            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                                const row = rows[virtualRow.index];
+                                return (
+                                    <tr
+                                        key={row.id}
+                                        style={{
+                                            height: `${virtualRow.size}px`,
+                                            transform: `translateY(${virtualRow.start}px)`,
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            width: '100%',
+                                        }}
+                                        className="border-b hover:bg-muted/50 flex"
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <td
+                                                key={cell.id}
+                                                className="border-r last:border-r-0 min-w-[120px] max-w-[300px] flex-1 overflow-hidden"
+                                                style={{ width: `${cell.column.getSize()}px` }} // Important for valid layout
+                                            >
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 ) : (
