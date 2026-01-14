@@ -9,6 +9,10 @@ import { Footer } from "@/components/Footer"
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+    metadataBase: new URL('https://jsonexport.com'),
+    alternates: {
+        canonical: './',
+    },
     title: 'JsonExport | Convert JSON to Excel Free & Secure',
     description: 'JsonExport is the privacy-first tool to convert JSON files to Excel (XLSX) or CSV. Secure, fast, and free. No coding required. Perfect for business analysts.',
     applicationName: 'JsonExport',
