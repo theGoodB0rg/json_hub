@@ -7,9 +7,11 @@ import type { AppState, ParseError, ExportFormat } from '@/types/store.types';
 
 const initialState = {
     // Input State
+    // Input State
     rawInput: '',
     isParsed: false,
     parseErrors: [] as ParseError[],
+    sourceFilename: null as string | null,
 
     // Processed Data
     parsedData: null,
@@ -26,7 +28,7 @@ const initialState = {
     // Configuration
     prettyPrint: true,
     rowLimit: 100000, // Max rows to display for performance
-    fileSizeLimit: 10 * 1024 * 1024, // 10MB in bytes
+    fileSizeLimit: 50 * 1024 * 1024, // Increased to 50MB
     exportSettings: {
         structure: 'flat' as const,
         askForPreference: true,
@@ -37,6 +39,9 @@ const initialState = {
     projectName: null,
     lastSaved: null,
     savedProjects: [],
+
+    // Internal
+    worker: null as Worker | null,
 };
 
 export const useAppStore = create<AppState>()(
@@ -45,89 +50,103 @@ export const useAppStore = create<AppState>()(
             (set, get) => ({
                 ...initialState,
 
+                initWorker: () => {
+                    if (typeof window === 'undefined' || get().worker) return;
+
+                    const worker = new Worker(new URL('../workers/parser.worker.ts', import.meta.url));
+
+                    worker.onmessage = (event) => {
+                        const { type, payload } = event.data;
+                        const state = get();
+
+                        if (type === 'PARSE_SUCCESS') {
+                            set({
+                                parsedData: payload,
+                                isParsed: true,
+                                parseErrors: [],
+                                isLoading: false,
+                            });
+                            // Trigger flatten after parse
+                            get().flattenData();
+                        } else if (type === 'PARSE_ERROR') {
+                            set({
+                                parsedData: null,
+                                isParsed: false,
+                                parseErrors: payload,
+                                flatData: [],
+                                schema: [],
+                                isLoading: false,
+                            });
+                        } else if (type === 'FLATTEN_SUCCESS') {
+                            set({
+                                flatData: payload.rows,
+                                schema: payload.schema,
+                                isLoading: false,
+                            });
+                        } else if (type === 'ERROR') {
+                            set({
+                                isLoading: false,
+                                parseErrors: payload
+                            });
+                        }
+                    };
+
+                    set({ worker });
+                },
+
                 // Set raw input
                 setRawInput: (input: string) => {
                     set({ rawInput: input, isParsed: false, parseErrors: [] });
                 },
 
+                setSourceFilename: (name: string | null) => {
+                    set({ sourceFilename: name });
+                },
+
                 // Parse the raw input
                 parseInput: () => {
-                    const { rawInput } = get();
-
+                    const { rawInput, worker } = get();
                     set({ isLoading: true });
 
-                    try {
-                        const result = validateAndParse(rawInput);
-
-                        if (result.success) {
-                            set({
-                                parsedData: result.data,
-                                isParsed: true,
-                                parseErrors: [],
-                                isLoading: false,
-                            });
-
-                            // Automatically flatten after successful parse
-                            get().flattenData();
-                        } else {
-                            set({
-                                parsedData: null,
-                                isParsed: false,
-                                parseErrors: result.errors || [],
-                                flatData: [],
-                                schema: [],
-                                isLoading: false,
-                            });
+                    if (worker) {
+                        worker.postMessage({ type: 'PARSE', payload: rawInput });
+                    } else {
+                        // Fallback if worker not ready (shouldn't happen if initialized)
+                        console.warn('Worker not ready, processing on main thread');
+                        try {
+                            const result = validateAndParse(rawInput);
+                            if (result.success) {
+                                set({ parsedData: result.data, isParsed: true, parseErrors: [], isLoading: false });
+                                get().flattenData();
+                            } else {
+                                set({ parsedData: null, isParsed: false, parseErrors: result.errors || [], flatData: [], schema: [], isLoading: false });
+                            }
+                        } catch (e) {
+                            set({ isLoading: false, parseErrors: [{ message: String(e) }] });
                         }
-                    } catch (error) {
-                        set({
-                            parsedData: null,
-                            isParsed: false,
-                            parseErrors: [
-                                {
-                                    message: error instanceof Error ? error.message : 'Unknown error',
-                                },
-                            ],
-                            flatData: [],
-                            schema: [],
-                            isLoading: false,
-                        });
                     }
                 },
 
                 // Flatten the parsed data
                 flattenData: () => {
-                    const { parsedData } = get();
-
-                    if (!parsedData) {
-                        return;
-                    }
+                    const { parsedData, worker, exportSettings } = get();
+                    if (!parsedData) return;
 
                     set({ isLoading: true });
 
-                    try {
-                        // Attempt to smart unwrap (e.g. extract features from FeatureCollection)
-                        const { data: dataToFlatten } = smartUnwrap(parsedData);
-
-                        const result = flattenJSON(dataToFlatten);
-
-                        set({
-                            flatData: result.rows,
-                            schema: result.schema,
-                            isLoading: false,
-                        });
-                    } catch (error) {
-                        set({
-                            flatData: [],
-                            schema: [],
-                            isLoading: false,
-                            parseErrors: [
-                                {
-                                    message: `Flattening error: ${error instanceof Error ? error.message : 'Unknown error'
-                                        }`,
-                                },
-                            ],
-                        });
+                    if (worker) {
+                        const mode = exportSettings.structure === 'nested' ? 'relational' : 'flat';
+                        worker.postMessage({ type: 'FLATTEN', payload: { data: parsedData, mode } });
+                    } else {
+                        // Fallback
+                        try {
+                            const { smartUnwrap } = require('@/lib/parsers/unwrapper');
+                            const { data: dataToFlatten } = smartUnwrap(parsedData);
+                            const result = flattenJSON(dataToFlatten);
+                            set({ flatData: result.rows, schema: result.schema, isLoading: false });
+                        } catch (error) {
+                            set({ isLoading: false, parseErrors: [{ message: String(error) }] });
+                        }
                     }
                 },
 
@@ -150,7 +169,7 @@ export const useAppStore = create<AppState>()(
 
                 // Export data
                 exportData: async (format: ExportFormat) => {
-                    const { parsedData, exportSettings, rawInput } = get();
+                    const { parsedData, exportSettings, rawInput, sourceFilename } = get();
 
                     if (!parsedData) {
                         set({
@@ -162,7 +181,17 @@ export const useAppStore = create<AppState>()(
                     set({ isLoading: true, downloadProgress: 0 });
 
                     try {
-                        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                        // Format Date: MM-DD-YY
+                        const now = new Date();
+                        const dateStr = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getFullYear()).slice(-2)}`;
+
+                        // Clean source filename (remove extension)
+                        const cleanSourceName = sourceFilename
+                            ? sourceFilename.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9-_]/g, "_")
+                            : 'data';
+
+                        // Viral Filename: jsonExport.com_OriginalName_MM-DD-YY
+                        const fileName = `jsonExport.com_${cleanSourceName}_${dateStr}`;
 
                         // Use the selected structure for export
                         const { smartUnwrap } = require('@/lib/parsers/unwrapper');
@@ -184,7 +213,6 @@ export const useAppStore = create<AppState>()(
                             schema = result.schema;
                         }
 
-                        const fileName = `export-${timestamp}`;
 
                         switch (format) {
                             case 'csv': {
