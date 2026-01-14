@@ -2,7 +2,7 @@ import { ConverterApp } from "@/components/ConverterApp";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'JSON to CSV Converter | Free Online Tool',
+    title: 'JSON to CSV for Data Analysts | Clean & Flatten Nested Data',
     description: 'Convert nested JSON to CSV instantly. Handles large files, arrays, and complex data structures. Free, secure, and client-side.',
     alternates: {
         canonical: 'https://jsonexport.com/json-to-csv',
@@ -15,8 +15,8 @@ export default function JsonToCsvPage() {
             <ConverterApp
                 heading={
                     <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-5 duration-700">
-                        Convert <span className="text-primary">JSON to CSV</span> <br />
-                        Online & Free.
+                        The Analyst&apos;s <span className="text-primary">JSON to CSV Converter</span>.<br />
+                        <span className="text-3xl md:text-5xl text-muted-foreground">Free & Private.</span>
                     </h1>
                 }
                 subheading="Transform complex JSON data into clean CSV files for Excel, Google Sheets, or Databases."

@@ -12,9 +12,9 @@ export function Footer() {
                             <span className="font-bold text-lg tracking-tight">JsonExport</span>
                         </div>
                         <p className="text-sm text-muted-foreground max-w-sm">
-                            The privacy-first JSON to Excel converter.
+                            The privacy-first Data Analyst Workbench.
                             <br />
-                            Process your data locally. No server uploads. 100% Secure.
+                            Visualize, clean, and export your data. 100% Local.
                         </p>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <div className="flex items-center gap-1.5"><Lock className="w-4 h-4" /> Secure</div>

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ModeToggle } from "@/components/mode-toggle";
 import { ProjectManager } from "@/components/ProjectManager";
 import { JsonEditor } from '@/components/JsonEditor/JsonEditor';
+import { HeroAnimation } from '@/components/HeroAnimation';
 import { DataGrid } from '@/components/DataGrid/DataGrid';
 import { ExportMenu } from '@/components/ExportMenu/ExportMenu';
 import {
@@ -100,7 +101,7 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
                 <section className="py-12 md:py-20 px-4 text-center relative overflow-hidden">
                     <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
-                    <div className="max-w-3xl mx-auto space-y-6">
+                    <div className="max-w-4xl mx-auto space-y-8">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-medium mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <Zap className="h-3.5 w-3.5" />
                             <span>Instant Conversion. Zero Latency.</span>
@@ -108,16 +109,18 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
 
                         {heading || (
                             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-5 duration-700">
-                                Stop Wrestling with JSON. <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">
-                                    Convert to Excel Instantly.
-                                </span>
+                                The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">Data Analyst Workbench</span><br />
+                                for JSON to Excel.
                             </h1>
                         )}
 
                         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
-                            {subheading || "The easiest way to turn raw data into readable spreadsheets. 100% Private. No software to install. No coding required."}
+                            {subheading || "Stop struggling with nested JSON. Visualize, flatten, and clean your data instantly—100% locally."}
                         </p>
+
+                        <div className="pt-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+                            <HeroAnimation />
+                        </div>
                     </div>
                 </section>
 
