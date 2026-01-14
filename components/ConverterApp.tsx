@@ -35,7 +35,12 @@ interface ConverterAppProps {
 
 export function ConverterApp({ heading, subheading }: ConverterAppProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
-    const { setRawInput, parseInput } = useAppStore();
+    const { setRawInput, parseInput, initWorker } = useAppStore();
+
+    // Initialize worker on mount
+    useEffect(() => {
+        initWorker();
+    }, [initWorker]);
 
     // Auto-load JSON from shareable URL on mount
     useEffect(() => {
