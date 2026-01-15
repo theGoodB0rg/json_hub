@@ -3,7 +3,8 @@ import { converterPages } from "@/lib/converters";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'JsonExport | Free Data Analyst Workbench (JSON to CSV/Excel)',
+    title: 'JsonExport | Free JSON to Excel Converter for Data Analysts (No Coding Required)',
+    description: 'Convert JSON to Excel instantly. 100% private (no upload), handles 50MB+ files, completely free forever. Perfect for data analysts who need quick, secure conversions without coding.',
     alternates: {
         canonical: 'https://jsonexport.com',
     }
