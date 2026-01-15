@@ -6,6 +6,7 @@ import { ConverterApp } from '@/components/ConverterApp';
 import { Card } from '@/components/ui/card';
 import { CheckCircle2, FileJson } from 'lucide-react';
 import { FAQ } from '@/components/FAQ';
+import { FAQSchema } from '@/components/FAQSchema';
 
 interface Props {
     params: {
@@ -125,6 +126,9 @@ export default function ConverterPage({ params }: Props) {
                         })
                     }}
                 />
+
+                {/* FAQ Schema for rich snippets */}
+                <FAQSchema faqs={pageConfig.faqs} />
             </div>
         </>
     );
