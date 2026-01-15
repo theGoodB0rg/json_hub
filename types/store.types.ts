@@ -55,6 +55,7 @@ export interface AppState {
     setColumnOrder: (order: string[]) => void;
     toggleColumnVisibility: (columnId: string) => void;
     reorderRow: (fromIndex: number, toIndex: number) => void;
+    renameColumn: (oldName: string, newName: string) => void;
     undo: () => void;
     redo: () => void;
     pastStates: any[]; // For zundo checking if undo is available

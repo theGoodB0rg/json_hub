@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { Column } from "@tanstack/react-table";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, EyeOff } from "lucide-react";
+import { GripVertical, EyeOff, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,7 +21,14 @@ interface DraggableHeaderProps<TData> {
 }
 
 export function DraggableHeader<TData>({ column, children }: DraggableHeaderProps<TData>) {
-    const { toggleColumnVisibility } = useAppStore(state => ({ toggleColumnVisibility: state.toggleColumnVisibility }));
+    const { toggleColumnVisibility, renameColumn } = useAppStore(state => ({
+        toggleColumnVisibility: state.toggleColumnVisibility,
+        renameColumn: state.renameColumn,
+    }));
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [editValue, setEditValue] = useState(column.id);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const {
         attributes,
@@ -32,11 +41,40 @@ export function DraggableHeader<TData>({ column, children }: DraggableHeaderProp
         id: column.id,
     });
 
+    useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.select();
+        }
+    }, [isEditing]);
+
+    const handleStartEdit = () => {
+        setEditValue(column.id);
+        setIsEditing(true);
+    };
+
+    const handleSave = () => {
+        const trimmed = editValue.trim();
+        if (trimmed && trimmed !== column.id) {
+            renameColumn(column.id, trimmed);
+        }
+        setIsEditing(false);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSave();
+        } else if (e.key === 'Escape') {
+            setIsEditing(false);
+            setEditValue(column.id);
+        }
+    };
+
     const style = {
         transform: CSS.Translate.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        // Ensure z-index is higher while dragging
         zIndex: isDragging ? 20 : 'auto',
     };
 
@@ -44,11 +82,26 @@ export function DraggableHeader<TData>({ column, children }: DraggableHeaderProp
         <div
             ref={setNodeRef}
             style={style}
-            className="flex items-center justify-between gap-1 group relative h-full w-full"
+            className="flex items-center justify-between gap-1 group relative h-full w-full px-2 py-1"
         >
-            <div className="flex-1 truncate">
-                {children}
-            </div>
+            {isEditing ? (
+                <Input
+                    ref={inputRef}
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={handleSave}
+                    onKeyDown={handleKeyDown}
+                    className="h-6 text-xs px-1 py-0 flex-1"
+                />
+            ) : (
+                <div
+                    className="flex-1 truncate cursor-text font-medium text-xs"
+                    onDoubleClick={handleStartEdit}
+                    title={`Double-click to rename "${column.id}"`}
+                >
+                    {children}
+                </div>
+            )}
 
             <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
                 {/* Drag Handle */}
@@ -71,6 +124,10 @@ export function DraggableHeader<TData>({ column, children }: DraggableHeaderProp
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
+                        <DropdownMenuItem onClick={handleStartEdit}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Rename Column
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggleColumnVisibility(column.id)}>
                             <EyeOff className="mr-2 h-4 w-4" />
                             Hide Column
@@ -81,3 +138,4 @@ export function DraggableHeader<TData>({ column, children }: DraggableHeaderProp
         </div>
     );
 }
+

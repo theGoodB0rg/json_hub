@@ -19,7 +19,17 @@ function isPrimitive(value: any): boolean {
 }
 
 export function NestedTable({ data, depth = 0, path = '' }: NestedTableProps) {
-    const { updateData } = useAppStore();
+    const { updateData, excludedColumns } = useAppStore();
+
+    // Helper to check if a key should be excluded
+    // For nested paths, check if any part of the path matches excludedColumns
+    const isColumnExcluded = (key: string, currentPath: string): boolean => {
+        const fullPath = currentPath ? `${currentPath}.${key}` : key;
+        // Check exact match and also top-level key match
+        return excludedColumns.includes(key) ||
+            excludedColumns.includes(fullPath) ||
+            excludedColumns.some(col => col.endsWith(`.${key}`));
+    };
 
     // Base case: primitive values
     if (isPrimitive(data)) {
@@ -51,8 +61,8 @@ export function NestedTable({ data, depth = 0, path = '' }: NestedTableProps) {
         );
     }
 
-    // Object: render as key-value table
-    const entries = Object.entries(data);
+    // Object: render as key-value table with excluded columns filtered out
+    const entries = Object.entries(data).filter(([key]) => !isColumnExcluded(key, path));
 
     if (entries.length === 0) {
         return <span className="text-muted-foreground italic">{'{}'}</span>;
