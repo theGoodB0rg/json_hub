@@ -1,4 +1,5 @@
 import { ConverterApp } from "@/components/ConverterApp";
+import { ComparisonTable } from "@/components/ComparisonTable";
 import { converterPages } from "@/lib/converters";
 import { Metadata } from 'next';
 
@@ -15,7 +16,15 @@ export default function Home() {
         <>
             <ConverterApp />
 
-            {/* Hidden SEO Text for crawlers (visible if desired, but kept low profile) */}
+            {/* Comparison Table Section */}
+            <section className="container mx-auto px-4 py-12 border-t border-border/40">
+                <h2 className="text-2xl font-bold mb-2">How JsonExport Compares to Alternatives</h2>
+                <p className="text-muted-foreground mb-6">
+                    See why data analysts choose JsonExport over Power Query, Python, and other converters
+                </p>
+                <ComparisonTable />
+            </section>
+
             {/* Popular Converters Links - SEO Hub */}
             <section className="container mx-auto px-4 py-12 border-t border-border/40">
                 <h2 className="text-2xl font-bold mb-6">Popular Conversions</h2>
