@@ -27,6 +27,7 @@ import { useEffect } from 'react';
 import { useAppStore } from '@/lib/store/store';
 import { BatchProcessor } from "@/components/BatchProcessor/BatchProcessor";
 import { MobileNav } from "@/components/MobileNav";
+import { SecurityBadges } from "@/components/SecurityBadges";
 
 interface ConverterAppProps {
     heading?: React.ReactNode;
@@ -128,6 +129,9 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
                         </div>
                     </div>
                 </section>
+
+                {/* Security Badges */}
+                <SecurityBadges />
 
                 {/* Usage Statistics */}
                 <UsageStats />
