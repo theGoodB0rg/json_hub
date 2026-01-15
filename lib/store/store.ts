@@ -270,6 +270,37 @@ export const useAppStore = create<AppState>()(
                         set({ flatData: newFlatData });
                     },
 
+                    renameColumn: (oldName: string, newName: string) => {
+                        if (oldName === newName || !newName.trim()) return;
+
+                        const { schema, columnOrder, excludedColumns, flatData } = get();
+
+                        // Update schema
+                        const newSchema = schema.map(col => col === oldName ? newName : col);
+
+                        // Update columnOrder
+                        const newColumnOrder = columnOrder.map(col => col === oldName ? newName : col);
+
+                        // Update excludedColumns if the renamed column was excluded
+                        const newExcludedColumns = excludedColumns.map(col => col === oldName ? newName : col);
+
+                        // Update all flatData rows - rename the key
+                        const newFlatData = flatData.map(row => {
+                            if (!(oldName in row)) return row;
+                            const newRow = { ...row };
+                            newRow[newName] = newRow[oldName];
+                            delete newRow[oldName];
+                            return newRow;
+                        });
+
+                        set({
+                            schema: newSchema,
+                            columnOrder: newColumnOrder,
+                            excludedColumns: newExcludedColumns,
+                            flatData: newFlatData,
+                        });
+                    },
+
                     // -------------------
 
                     exportData: async (format: ExportFormat) => {

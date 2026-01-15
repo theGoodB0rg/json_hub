@@ -8,8 +8,14 @@ interface TableViewGridProps {
 }
 
 export function TableViewGrid({ data, basePath = '' }: TableViewGridProps) {
-    const { updateData } = useAppStore();
+    const { updateData, excludedColumns } = useAppStore();
     const tableStructure = useMemo(() => analyzeStructure(data), [data]);
+
+    // Filter out excluded columns
+    const filteredColumns = useMemo(() => {
+        if (!tableStructure) return [];
+        return tableStructure.columns.filter(col => !excludedColumns.includes(col.name));
+    }, [tableStructure, excludedColumns]);
 
     if (!tableStructure) {
         return (
@@ -25,7 +31,7 @@ export function TableViewGrid({ data, basePath = '' }: TableViewGridProps) {
             <table className="w-full text-sm border-collapse">
                 <thead className="bg-muted sticky top-0 z-10">
                     <tr>
-                        {tableStructure.columns.map((col, idx) => (
+                        {filteredColumns.map((col, idx) => (
                             <th
                                 key={idx}
                                 className="px-3 py-2 text-left font-semibold border border-border resize-x overflow-hidden"
@@ -46,7 +52,7 @@ export function TableViewGrid({ data, basePath = '' }: TableViewGridProps) {
 
                         return (
                             <tr key={rowIdx} className="hover:bg-muted/50 transition-colors">
-                                {tableStructure.columns.map((col: any, colIdx: number) => {
+                                {filteredColumns.map((col: any, colIdx: number) => {
                                     const cellData = row[col.name];
                                     const cellPath = `${rowPath}.${col.name}`;
 
