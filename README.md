@@ -1,34 +1,119 @@
+<div align="center">
+
+![JsonExport Banner](./public/images/readme/hero.png)
+
 # JsonExport
 
-**The Smart JSON Bridge** - Convert complex JSON to Excel/CSV with auto-unescape and flattening.
+**The Smart JSON Bridge for Developers**
 
-A client-side web application that transforms nested, double-encoded JSON into clean spreadsheet formats. Perfect for developers dealing with messy API responses, database exports, or deeply nested data structures.
+Convert complex, nested JSON to clean Excel/CSV spreadsheets instantly.  
+Auto-Unescape • Smart Flattening • Privacy-First • 100% Client-Side
 
-## ✨ Features
+[![Live Demo](https://img.shields.io/badge/🌐_Live-Demo-2563eb?style=for-the-badge)](https://jsonexport.com)
+[![GitHub Stars](https://img.shields.io/github/stars/theGoodB0rg/json_hub?style=for-the-badge&logo=github)](https://github.com/theGoodB0rg/json_hub/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Build](https://img.shields.io/badge/Tests-98%25-success?style=for-the-badge)](tests/)
 
-- **🔄 Auto-Unescape**: Automatically detects and unescapes double/triple-encoded JSON strings
-- **📊 Smart Flattening**: Converts nested objects into flat spreadsheet rows using dot notation
-- **🎨 Monaco Editor**: Professional JSON editing with syntax highlighting
-- **📁 Multiple Export Formats**: CSV, Excel, HTML, or download all in a ZIP
-- **⚡ Client-Side Only**: All processing happens in your browser - your data never leaves your machine
-- **🎯 Drag & Drop**: Upload JSON files by dragging them into the editor
-- **🔍 Error Detection**: Detailed error messages with line and column numbers
-- **✏️ Unified Inline Editing**: Edit data directly in Flat, Table, or Nested views
-- **Undo/Redo**: Full history support for all edits and layout changes
-- **Column Management**: Reorder, hide, and manage columns via drag & drop
-- **📦 10MB File Support**: Handle large JSON files with ease
+</div>
 
-## 🚀 Quick Start
+---
+
+## The Problem
+
+Dealing with messy API responses? Complex nested JSON from databases? Double-encoded strings that break everything?
+
+**JsonExport solves this:**
+
+- Automatically detects and unescapes double/triple-encoded JSON
+- Flattens deeply nested structures into spreadsheet-friendly rows
+- Handles 10MB+ files without breaking a sweat
+- **100% client-side** - your data never leaves your browser
+
+---
+
+## Key Features
+
+### Auto-Unescape Detection
+Automatically handles double or triple-encoded JSON strings without manual intervention.
+
+```javascript
+// Input: "{\"name\":\"John\"}"
+// Output: {name: "John"}
+```
+
+### Smart & Flattening
+Converts nested structures to spreadsheet-friendly format using dot notation.
+
+```javascript
+// Input: {user: {address: {city: "NYC"}}}
+// Output: {"user.address.city": "NYC"}
+```
+
+### Professional Monaco Editor
+Industry-standard code editor with syntax highlighting, auto-completion, and error detection.
+
+### Unified Inline Editing
+Edit data directly in Flat, Table, or Nested views with full undo/redo support.
+
+### Multiple Export Formats
+Download as CSV, Excel (XLSX), HTML, or all formats in a single ZIP file.
+
+### Column Management
+Reorder, hide, and manage columns via intuitive drag & drop interface.
+
+### Privacy-First Architecture
+All processing happens in your browser. Zero network calls. No data upload.
+
+---
+
+## Screenshots
+
+<table>
+<tr>
+<td width="50%">
+
+### Export Options
+![Export Formats](./public/images/readme/export-options.png)
+
+</td>
+<td width="50%">
+
+### Data Grid Preview
+![Data Grid](./public/images/readme/data-grid.png)
+
+</td>
+</tr>
+</table>
+
+---
+
+## Perfect For
+
+- Converting **Stripe API responses** to Excel for analysis
+- Flattening **Shopify webhook data** to CSV
+- Transforming **MongoDB exports** to spreadsheets
+- Parsing **double-encoded JSON strings** from legacy systems
+- Handling **deeply nested objects** from REST APIs
+- Processing **large JSON files** up to 10MB
+- **Database export analysis** and reporting
+- **JSON to Excel converter** with intelligent auto-unescape
+- **API response visualization** in table format
+
+---
+
+## Quick Start
 
 ### Online (Recommended)
 
-Visit [json-hub.vercel.app](https://json-hub.vercel.app) - no installation required!
+**[Launch JsonExport →](https://jsonexport.com)**
+
+No installation needed. Works 100% in your browser.
 
 ### Local Development
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/json_hub.git
+git clone https://github.com/theGoodB0rg/json_hub.git
 cd json_hub
 
 # Install dependencies
@@ -40,55 +125,43 @@ npm run dev
 # Open http://localhost:3000
 ```
 
-## 📖 Usage
+---
+
+## How It Works
 
 1. **Input JSON**: Paste JSON or upload a file (drag & drop supported)
-2. **Parse & Flatten**: Click the button to process your JSON
-3. **Review Table**: View and edit the flattened data
-4. **Export**: Download as CSV, Excel, HTML, or all formats in a ZIP
+2. **Auto-Parse**: Automatically detects and unescapes encoded strings
+3. **Smart Flatten**: Converts nested structures to tabular format
+4. **Edit & Review**: Inline editing in your preferred view (Flat/Table/Nested)
+5. **Export**: Download as CSV, Excel, HTML, or all in a ZIP
 
-### Example
+---
 
-**Input** (nested JSON):
-```json
-{
-  "user": {
-    "name": "John Doe",
-    "address": {
-      "city": "New York",
-      "zip": "10001"
-    }
-  },
-  "items": ["apple", "banana"]
-}
-```
+## Tech Stack
 
-**Output** (flattened):
-| user.name | user.address.city | user.address.zip | items.0 | items.1 |
-|-----------|-------------------|------------------|---------|---------|
-| John Doe  | New York          | 10001            | apple   | banana  |
+| Category | Technology |
+|----------|-----------|
+| **Framework** | Next.js 14 (App Router, Static Export) |
+| **Language** | TypeScript |
+| **Styling** | Tailwind CSS + Shadcn/UI |
+| **State** | Zustand + Zundo (Temporal) |
+| **Editor** | Monaco Editor (VS Code) |
+| **Table** | TanStack Table v8 + @dnd-kit |
+| **Export** | SheetJS (xlsx), JSZip |
+| **Testing** | Jest + Playwright |
 
-## 🛠️ Tech Stack
+---
 
-- **Framework**: Next.js 14 (App Router, Static Export)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS + Shadcn/UI
-- **State**: Zustand + Zundo (Temporal)
-- **Editor**: Monaco Editor (VS Code editor)
-- **Table**: TanStack Table v8 + @dnd-kit
-- **Export**: SheetJS (xlsx), JSZip
-- **Testing**: Jest + Playwright
-
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 json_hub/
 ├── app/                    # Next.js app directory
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Main page
+│   ├── layout.tsx         # Root layout with SEO
+│   └── page.tsx           # Main converter page
 ├── components/            # React components
-│   ├── JsonEditor/       # Monaco editor component
-│   ├── DataGrid/         # Table preview component
+│   ├── JsonEditor/       # Monaco editor wrapper
+│   ├── DataGrid/         # Table preview with editing
 │   └── ExportMenu/       # Export controls
 ├── lib/
 │   ├── parsers/          # Core parsing logic
@@ -103,7 +176,9 @@ json_hub/
 └── types/                # TypeScript type definitions
 ```
 
-## 🧪 Testing
+---
+
+## Testing
 
 ```bash
 # Run unit tests
@@ -119,87 +194,94 @@ npm run test:e2e
 npm run build
 ```
 
-## 📊 Test Coverage
+### Test Coverage
 
-- **smartParse**: 20/20 tests passing (100%)
-- **flattener**: 21/21 tests passing (100%)
-- **converters**: 11/12 tests passing (92%)
-- **Overall**: 52/53 tests passing (98%)
-
-## 🌟 Key Features Explained
-
-### Auto-Unescape
-
-Handles double or triple-encoded JSON automatically:
-```javascript
-// Input: "{\"name\":\"John\"}"
-// Output: {name: "John"}
-```
-
-### Dot Notation Flattening
-
-Converts nested structures to spreadsheet-friendly format:
-```javascript
-// Input: {user: {address: {city: "NYC"}}}
-// Output: {"user.address.city": "NYC"}
-```
-
-### Circular Reference Detection
-
-Safely handles circular references without crashing:
-```javascript
-const obj = {name: "Test"};
-obj.self = obj; // Detected and handled gracefully
-```
-
-## 🚢 Deployment
-
-### Deployment (GitHub Pages & Vercel)
-
-**GitHub Pages (Automated)**:
-This repo includes a GitHub Action to automatically deploy to GitHub Pages.
-1. Go to your repository **Settings > Pages**.
-2. Under "Build and deployment", select **GitHub Actions** as the source.
-3. Push to `main`, and it will deploy automatically!
-
-**Vercel (Recommended for Speed)**:
-Connect your repository to Vercel for instant deployments. Note: To use AdSense, you must use a **Pro** plan or a custom domain, as Vercel Hobby plans do not support commercial activity.
-
-### 💰 Monetization & SEO Setup
-
-1. **AdSense**: 
-   - Open `public/ads.txt` and replace the content with your AdSense details.
-   - Open `app/layout.tsx` and replace `ca-pub-XXXXXXXXXXXXXXXX` with your Publisher ID.
-2. **PWA**: 
-   - Edit `public/manifest.json` to customize your app's installable name and theme.
-3. **SEO**: 
-   - Update `app/layout.tsx` metadata with your custom domain URL (`https://yourdomain.com`).
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Monaco Editor by Microsoft
-- TanStack Table by Tanner Linsley
-- SheetJS for Excel export
-- Shadcn/UI for beautiful components
-
-## 📧 Contact
-
-For questions or feedback, please open an issue on GitHub.
+- **smartParse**: 20/20 tests (100%)
+- **flattener**: 21/21 tests (100%)
+- **converters**: 11/12 tests (92%)
+- **Overall**: 52/53 tests (98%)
 
 ---
 
-**Made with ❤️ for developers dealing with messy JSON**
+## Deployment
+
+### GitHub Pages (Current)
+
+This repository uses GitHub Actions for automatic deployment:
+
+1. Push to `main` branch
+2. GitHub Actions builds and deploys automatically
+3. Live at [jsonexport.com](https://jsonexport.com)
+
+### Vercel (Alternative)
+
+Connect your fork to Vercel for instant deployments with preview URLs.
+
+---
+
+## How JsonExport Compares
+
+| Feature | JsonExport | Online Converters | Excel Manual |
+|---------|------------|-------------------|--------------|
+| Auto-Unescape | ✓ Automatic | ✗ Manual | ✗ Not possible |
+| Privacy | ✓ Client-side | ⚠️ Server upload | ✓ Local |
+| File Size | ✓ 10MB+ | ✗ Usually 5MB | ✓ Unlimited |
+| Inline Editing | ✓ All views | ✗ No editing | ✓ Yes |
+| Undo/Redo | ✓ Full history | ✗ None | ⚠️ Limited |
+| Cost | ✓ Free | 💰 Often paid | ✓ Free |
+
+---
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## Security
+
+All processing happens client-side. Your data never leaves your browser. See [SECURITY.md](SECURITY.md) for our security policy.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Acknowledgments
+
+Built with amazing open-source tools:
+
+- [Monaco Editor](https://microsoft.github.io/monaco-editor/) by Microsoft
+- [TanStack Table](https://tanstack.com/table) by Tanner Linsley
+- [SheetJS](https://sheetjs.com/) for Excel export
+- [Shadcn/UI](https://ui.shadcn.com/) for beautiful components
+
+---
+
+## Keywords
+
+`json to excel` • `json to csv` • `json converter` • `flatten json` • `nested json to table` • `json parser` • `unescape json` • `json flattener` • `api response to spreadsheet` • `mongodb export to excel` • `stripe json converter` • `shopify json to csv`
+
+---
+
+<div align="center">
+
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=social&logo=github)](https://github.com/theGoodB0rg)
+[![Twitter](https://img.shields.io/badge/Share-Tweet-blue?style=social&logo=twitter)](https://twitter.com/intent/tweet?text=Check%20out%20JsonExport%20-%20Convert%20complex%20JSON%20to%20Excel/CSV%20instantly!&url=https://github.com/theGoodB0rg/json_hub)
+
+**[🌐 Live Demo](https://jsonexport.com)** • **[📖 Documentation](https://github.com/theGoodB0rg/json_hub/wiki)** • **[🐛 Report Bug](https://github.com/theGoodB0rg/json_hub/issues)** • **[💡 Request Feature](https://github.com/theGoodB0rg/json_hub/discussions)**
+
+**⭐ Star this repository to support the project!**
+
+Made with ❤️ for developers dealing with messy JSON
+
+</div>
