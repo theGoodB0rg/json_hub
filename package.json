@@ -2,6 +2,32 @@
   "name": "json-hub",
   "version": "0.1.0",
   "private": true,
+  "description": "Convert complex JSON to Excel/CSV with auto-unescape and smart flattening. 100% client-side, privacy-first JSON to spreadsheet converter.",
+  "keywords": [
+    "json",
+    "excel",
+    "csv",
+    "converter",
+    "json-to-excel",
+    "json-to-csv",
+    "flatten-json",
+    "unescape-json",
+    "json-parser",
+    "spreadsheet",
+    "nextjs",
+    "data-visualization",
+    "client-side",
+    "privacy-first",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theGoodB0rg/json_hub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/theGoodB0rg/json_hub/issues"
+  },
+  "homepage": "https://jsonexport.com",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
