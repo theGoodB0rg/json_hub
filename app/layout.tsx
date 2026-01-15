@@ -13,11 +13,11 @@ export const metadata: Metadata = {
     alternates: {
         canonical: './',
     },
-    title: 'JsonExport | Convert JSON to Excel Free & Secure',
-    description: 'JsonExport is the privacy-first tool to convert JSON files to Excel (XLSX) or CSV. Secure, fast, and free. No coding required. Perfect for business analysts.',
+    title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
+    description: 'Convert JSON to Excel instantly. 100% private (no upload), handles 50MB+ files, completely free forever. Perfect for data analysts who need quick, secure conversions without coding.',
     applicationName: 'JsonExport',
     authors: [{ name: 'JsonExport Team' }],
-    keywords: ['json export', 'json to excel', 'convert json to xlsx', 'json to csv', 'no-code json converter', 'secure data converter', 'excel conversion tool', 'offline json parser'],
+    keywords: ['json to excel', 'json to excel converter', 'convert json to xlsx', 'json to csv', 'data analyst tools', 'json converter for data analysts', 'no-code json converter', 'secure json converter', 'json to excel free', 'flatten nested json', 'json to excel no upload', 'json to excel offline'],
     creator: 'JsonExport',
     publisher: 'JsonExport',
     formatDetection: {
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
         apple: '/icon.svg',
     },
     openGraph: {
-        title: 'JsonExport | Convert JSON to Excel Free & Secure',
-        description: 'Stop struggling with JSON. Convert data to Excel instantly with JsonExport. 100% Private & Secure.',
+        title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
+        description: 'Convert JSON to Excel instantly. 100% private, handles large files, completely free. No coding required.',
         url: 'https://jsonexport.com',
         siteName: 'JsonExport',
         locale: 'en_US',
@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'JsonExport | Convert JSON to Excel Free & Secure',
-        description: 'Stop struggling with JSON. Convert data to Excel instantly. 100% Private.',
+        title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
+        description: 'Convert JSON to Excel instantly. 100% private, no coding required. Free forever.',
         creator: '@jsonexport',
     },
     manifest: '/manifest.json',
