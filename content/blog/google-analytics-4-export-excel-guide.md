@@ -59,7 +59,7 @@ Instead of exporting 6 months at once, split it up:
 - Data is fairly consistent month-to-month
 
 **When this fails:**
-- You have >5K unique pages per month
+- You have more than 5K unique pages per month
 - Need year-over-year comparisons in one view
 
 ## Workaround 2: Filter Then Export
@@ -69,7 +69,7 @@ GA4 lets you add filters before exporting.
 **Example: Export only blog traffic**
 
 1. Add filter: "Page path contains /blog"
-2. Now you're only exporting blog pages (probably <5K)
+2. Now you're only exporting blog pages (probably less than 5K)
 3. Download CSV
 4. Repeat for other site sections
 
@@ -96,7 +96,7 @@ Standard GA4 reports are limited, but Explorations are more flexible:
 
 **Advantages over standard reports:**
 - Can create custom combinations
-- Sometimes handles >5K rows better (inconsistent)
+- Sometimes handles more than 5K rows better (inconsistent)
 - Save exploration to reuse monthly
 
 **Still capped at 5K rows** but you control exactly what those rows are.
