@@ -96,3 +96,25 @@
 .nested-table .nested-table {
   @apply ml-0 mt-1 mb-1 border border-border/30 rounded;
 }
+
+/* Performance: CSS Containment for paint isolation */
+.contain-layout {
+  contain: layout;
+}
+
+.contain-paint {
+  contain: paint;
+}
+
+.contain-strict {
+  contain: strict;
+}
+
+/* Performance: Reduce layout thrashing */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
