@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Undo2, Redo2, Columns } from 'lucide-react';
 import { useAppStore } from '@/lib/store/store';
+import { useStore } from 'zustand';
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -19,23 +20,19 @@ export function DataGridToolbar() {
         schema,
         excludedColumns,
         toggleColumnVisibility,
-        undo,
-        redo,
-        pastStates,
-        futureStates
     } = useAppStore(state => ({
         schema: state.schema,
         excludedColumns: state.excludedColumns,
         toggleColumnVisibility: state.toggleColumnVisibility,
         flatData: state.flatData,
-        undo: state.undo,
-        redo: state.redo,
-        pastStates: state.pastStates,
-        futureStates: state.futureStates
     }));
 
-    const canUndo = useAppStore.temporal?.getState().pastStates.length > 0;
-    const canRedo = useAppStore.temporal?.getState().futureStates.length > 0;
+    // Reactively subscribe to temporal state for undo/redo availability
+    const temporalStore = useAppStore.temporal;
+    const canUndo = useStore(temporalStore, (state) => state.pastStates.length > 0);
+    const canRedo = useStore(temporalStore, (state) => state.futureStates.length > 0);
+    const undo = useStore(temporalStore, (state) => state.undo);
+    const redo = useStore(temporalStore, (state) => state.redo);
 
     return (
         <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-2 p-1 bg-muted/20 rounded-lg border border-border/50">
@@ -47,7 +44,7 @@ export function DataGridToolbar() {
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={() => useAppStore.temporal.getState().undo()}
+                                onClick={() => undo()}
                                 disabled={!canUndo}
                             >
                                 <Undo2 className="h-4 w-4" />
@@ -64,7 +61,7 @@ export function DataGridToolbar() {
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={() => useAppStore.temporal.getState().redo()}
+                                onClick={() => redo()}
                                 disabled={!canRedo}
                             >
                                 <Redo2 className="h-4 w-4" />
