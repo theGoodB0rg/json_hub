@@ -38,7 +38,7 @@ export function DataGridToolbar() {
     const canRedo = useAppStore.temporal?.getState().futureStates.length > 0;
 
     return (
-        <div className="flex items-center gap-2 mb-2 p-1 bg-muted/20 rounded-lg border border-border/50">
+        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-2 p-1 bg-muted/20 rounded-lg border border-border/50">
             <div className="flex items-center gap-1 border-r border-border/50 pr-2">
                 <TooltipProvider>
                     <Tooltip>

@@ -24,7 +24,7 @@ export function UsageStats() {
     return (
         <section className="py-8 border-y border-border/40 bg-background">
             <div className="container mx-auto px-4">
-                <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+                <div className="flex flex-wrap justify-center gap-4 sm:gap-8 md:gap-16">
                     {stats.map((stat, index) => (
                         <div key={index} className="text-center">
                             <div className="flex items-center justify-center gap-2 mb-2">

@@ -31,24 +31,22 @@ const badges: Badge[] = [
 
 export function SecurityBadges() {
     return (
-        <div className="flex flex-wrap items-center justify-center gap-4 py-6">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 py-4 sm:py-6">
             {badges.map((badge, index) => {
                 const Icon = badge.icon;
                 return (
                     <div
                         key={index}
-                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800"
+                        className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800"
                     >
                         <Icon className="w-4 h-4 text-green-600 dark:text-green-400" />
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1">
-                            <span className="text-sm font-semibold text-green-700 dark:text-green-300">
-                                {badge.label}
-                            </span>
-                            <span className="hidden sm:inline text-green-600 dark:text-green-500">•</span>
-                            <span className="text-xs text-green-600 dark:text-green-500">
-                                {badge.description}
-                            </span>
-                        </div>
+                        <span className="text-xs sm:text-sm font-semibold text-green-700 dark:text-green-300">
+                            {badge.label}
+                        </span>
+                        <span className="hidden sm:inline text-green-600 dark:text-green-500">•</span>
+                        <span className="hidden sm:inline text-xs text-green-600 dark:text-green-500">
+                            {badge.description}
+                        </span>
                     </div>
                 );
             })}

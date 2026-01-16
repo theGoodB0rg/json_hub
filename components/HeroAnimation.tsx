@@ -126,8 +126,8 @@ export function HeroAnimation() {
                         </div>
 
                         <div className="p-0 overflow-hidden">
-                            <div className="w-full overflow-auto">
-                                <table className="w-full caption-bottom text-sm">
+                            <div className="w-full overflow-x-auto">
+                                <table className="w-full caption-bottom text-[10px] sm:text-sm min-w-[280px]">
                                     <thead className="[&_tr]:border-b">
                                         <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted hover:bg-transparent">
                                             <th className="h-8 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 text-[10px] font-bold text-primary">ID</th>
