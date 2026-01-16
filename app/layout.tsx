@@ -6,7 +6,11 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Footer } from "@/components/Footer"
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+    subsets: ['latin'],
+    display: 'swap', // Ensure text remains visible during font load
+    preload: true,
+})
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://jsonexport.com'),
@@ -56,7 +60,13 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
+            <head>
+                {/* Performance: Preconnect to external origins */}
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+            </head>
             <body className={inter.className}>
                 <ThemeProvider
                     attribute="class"
