@@ -43,3 +43,4 @@ SEO_IMPLEMENTATION_PLAN.md
 /test-results/
 /playwright-report/
 /playwright/.cache/
+test-data/

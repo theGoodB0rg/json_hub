@@ -1,121 +1,137 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppStore } from '@/lib/store/store';
-import dynamic from 'next/dynamic';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, Trash2, ClipboardPaste, Maximize2, Minimize2 } from 'lucide-react';
+import { Upload, Trash2, ClipboardPaste, Maximize2, Minimize2, Loader2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TemplateSelector } from '@/components/TemplateSelector/TemplateSelector';
-import { EditorFacade } from './EditorFacade';
+import { LightJsonEditor, isLargeFileSize, needsStreaming } from './LightJsonEditor';
 import { cn } from "@/lib/utils";
+import { Progress } from '@/components/ui/progress';
 
-// Dynamically import Monaco Editor - only loaded when activated
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
-    ssr: false,
-    loading: () => (
-        <div className="h-full flex items-center justify-center bg-[#1e1e1e]">
-            <div className="flex flex-col items-center gap-2">
-                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                <p className="text-sm text-muted-foreground">Loading editor...</p>
-            </div>
-        </div>
-    ),
-});
+// Size limits
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB absolute max
+const LARGE_FILE_THRESHOLD = 500 * 1024; // 500KB
 
 export function JsonEditor() {
-    const { rawInput, setRawInput, parseInput, isParsed, parseErrors, prettyPrint, setSourceFilename } = useAppStore();
-    const [isMaximized, setIsMaximized] = useState(false);
-    const [isEditorActivated, setIsEditorActivated] = useState(false);
+    const {
+        rawInput,
+        setRawInput,
+        parseInput,
+        parseInputStreaming,
+        isParsed,
+        parseErrors,
+        setSourceFilename,
+        isLoading,
+        streamingProgress
+    } = useAppStore();
 
-    // Auto-parse with debounce
+    const [isMaximized, setIsMaximized] = useState(false);
+    const [fileSize, setFileSize] = useState<number>(0);
+    const [isLargeFile, setIsLargeFile] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Auto-parse with debounce (only for small files)
     useEffect(() => {
+        if (isLargeFile) return; // Don't auto-parse large files
+
         const timer = setTimeout(() => {
             if (rawInput.trim()) {
                 parseInput();
             }
-        }, 1000);
+        }, 800);
 
         return () => clearTimeout(timer);
-    }, [rawInput, parseInput]);
+    }, [rawInput, parseInput, isLargeFile]);
 
-    const handleEditorChange = (value: string | undefined) => {
-        setRawInput(value || '');
-    };
+    const handleEditorChange = useCallback((value: string) => {
+        setRawInput(value);
+        // Reset large file flag if user is typing
+        if (isLargeFile && value.length < LARGE_FILE_THRESHOLD) {
+            setIsLargeFile(false);
+            setFileSize(0);
+        }
+    }, [setRawInput, isLargeFile]);
 
-    const handleClear = () => {
+    const handleClear = useCallback(() => {
         setRawInput('');
         setSourceFilename(null);
-    };
+        setFileSize(0);
+        setIsLargeFile(false);
+    }, [setRawInput, setSourceFilename]);
 
-    const handleActivateEditor = useCallback(() => {
-        if (!isEditorActivated) {
-            setIsEditorActivated(true);
-        }
-    }, [isEditorActivated]);
-
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        // Check file size (10MB limit)
-        const maxSize = 10 * 1024 * 1024;
-        if (file.size > maxSize) {
-            alert('File size exceeds 10MB limit');
+    const processFile = useCallback(async (file: File) => {
+        // Check file size
+        if (file.size > MAX_FILE_SIZE) {
+            alert(`File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)}MB limit`);
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target?.result as string;
-            setRawInput(content);
-            setSourceFilename(file.name);
-            // Activate editor when file is uploaded
-            handleActivateEditor();
-        };
-        reader.readAsText(file);
-    };
+        setFileSize(file.size);
+        setSourceFilename(file.name);
+        const isLarge = isLargeFileSize(file.size);
+        setIsLargeFile(isLarge);
 
-    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        if (needsStreaming(file.size)) {
+            // Use streaming for very large files (5MB+)
+            parseInputStreaming(file);
+        } else {
+            // Standard file read
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const content = e.target?.result as string;
+                setRawInput(content);
+
+                // Auto-parse unless it's a large file
+                if (!isLarge) {
+                    setTimeout(() => parseInput(), 100);
+                }
+            };
+            reader.readAsText(file);
+        }
+    }, [setRawInput, setSourceFilename, parseInput, parseInputStreaming]);
+
+    const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            processFile(file);
+        }
+        // Reset input so same file can be uploaded again
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    }, [processFile]);
+
+    const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         const file = event.dataTransfer.files[0];
-        if (!file) return;
-
-        // Check file size
-        const maxSize = 10 * 1024 * 1024;
-        if (file.size > maxSize) {
-            alert('File size exceeds 10MB limit');
-            return;
+        if (file) {
+            processFile(file);
         }
+    }, [processFile]);
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target?.result as string;
-            setRawInput(content);
-            setSourceFilename(file.name);
-            // Activate editor when file is dropped
-            handleActivateEditor();
-        };
-        reader.readAsText(file);
-    };
-
-    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
-    };
+    }, []);
 
-    const handlePaste = async () => {
+    const handlePaste = useCallback(async () => {
         try {
             const text = await navigator.clipboard.readText();
             setRawInput(text);
             setSourceFilename('clipboard_data');
-            // Activate editor after paste
-            handleActivateEditor();
+            setFileSize(text.length);
+            setIsLargeFile(isLargeFileSize(text.length));
         } catch (err) {
             console.error('Failed to read clipboard', err);
             alert('Could not access clipboard. Please paste manually (Ctrl+V or Cmd+V).');
         }
-    };
+    }, [setRawInput, setSourceFilename]);
+
+    const handleManualParse = useCallback(() => {
+        parseInput();
+    }, [parseInput]);
 
     return (
         <Card className={cn(
@@ -127,6 +143,7 @@ export function JsonEditor() {
                 <div className="flex gap-2 w-full sm:w-auto justify-end">
                     <TemplateSelector />
                     <input
+                        ref={fileInputRef}
                         type="file"
                         accept=".json,.txt"
                         onChange={handleFileUpload}
@@ -139,13 +156,14 @@ export function JsonEditor() {
                                 onClick={() => document.getElementById('file-upload')?.click()}
                                 variant="outline"
                                 size="icon"
+                                disabled={isLoading}
                             >
                                 <Upload className="h-4 w-4" />
                                 <span className="sr-only">Upload File</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Upload File</p>
+                            <p>Upload File (up to 100MB)</p>
                         </TooltipContent>
                     </Tooltip>
 
@@ -155,6 +173,7 @@ export function JsonEditor() {
                                 onClick={handleClear}
                                 variant="outline"
                                 size="icon"
+                                disabled={isLoading}
                             >
                                 <Trash2 className="h-4 w-4" />
                                 <span className="sr-only">Clear</span>
@@ -171,6 +190,7 @@ export function JsonEditor() {
                                 onClick={handlePaste}
                                 variant="outline"
                                 size="icon"
+                                disabled={isLoading}
                             >
                                 <ClipboardPaste className="h-4 w-4" />
                                 <span className="sr-only">Paste from Clipboard</span>
@@ -200,39 +220,58 @@ export function JsonEditor() {
                 </div>
             </div>
 
+            {/* Streaming progress */}
+            {isLoading && streamingProgress && (
+                <div className="mb-4 space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                        <span className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Processing large file...
+                        </span>
+                        <span className="text-muted-foreground">
+                            {streamingProgress.percent}% ({streamingProgress.itemCount.toLocaleString()} items)
+                        </span>
+                    </div>
+                    <Progress value={streamingProgress.percent} className="h-2" />
+                </div>
+            )}
+
             <div
                 className="flex-1 border rounded-md overflow-hidden relative"
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
             >
-                {!isEditorActivated ? (
-                    // Lightweight facade - renders instantly
-                    <EditorFacade
-                        value={rawInput}
-                        onChange={setRawInput}
-                        onActivate={handleActivateEditor}
-                    />
-                ) : (
-                    // Real Monaco Editor - loaded on demand
-                    <MonacoEditor
-                        height="100%"
-                        defaultLanguage="json"
-                        value={rawInput}
-                        onChange={handleEditorChange}
-                        theme="vs-dark"
-                        options={{
-                            minimap: { enabled: false },
-                            fontSize: 14,
-                            lineNumbers: 'on',
-                            scrollBeyondLastLine: false,
-                            automaticLayout: true,
-                            tabSize: 2,
-                        }}
-                    />
+                <LightJsonEditor
+                    value={rawInput}
+                    onChange={handleEditorChange}
+                    parseErrors={parseErrors}
+                    isLargeFile={isLargeFile}
+                    fileSize={fileSize}
+                    readOnly={isLoading}
+                />
+
+                {/* Loading overlay */}
+                {isLoading && !streamingProgress && (
+                    <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                        <div className="flex flex-col items-center gap-2">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            <p className="text-sm text-muted-foreground">Parsing JSON...</p>
+                        </div>
+                    </div>
                 )}
             </div>
 
-            {parseErrors.length > 0 && (
+            {/* Large file manual parse button */}
+            {isLargeFile && !isParsed && !isLoading && (
+                <div className="mt-4">
+                    <Button onClick={handleManualParse} className="w-full">
+                        Parse Large File ({(fileSize / (1024 * 1024)).toFixed(1)}MB)
+                    </Button>
+                </div>
+            )}
+
+            {/* Parse errors - only show if not already shown in editor */}
+            {parseErrors.length > 0 && !rawInput && (
                 <div className="mt-4 p-3 bg-destructive/10 border border-destructive rounded-md">
                     <p className="text-sm font-semibold text-destructive mb-1">Parse Errors:</p>
                     {parseErrors.map((error, index) => (
