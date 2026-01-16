@@ -37,6 +37,8 @@ docs/
 project_plan.txt
 .agentworkflow/
 
+SEO_IMPLEMENTATION_PLAN.md
+
 # Playwright
 /test-results/
 /playwright-report/
