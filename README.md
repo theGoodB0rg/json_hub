@@ -26,7 +26,7 @@ Dealing with messy API responses? Complex nested JSON from databases? Double-enc
 
 - Automatically detects and unescapes double/triple-encoded JSON
 - Flattens deeply nested structures into spreadsheet-friendly rows
-- Handles 10MB+ files without breaking a sweat
+- Handles **50MB+ files** with streaming parser - no browser freezes
 - **100% client-side** - your data never leaves your browser
 
 ---
@@ -49,8 +49,8 @@ Converts nested structures to spreadsheet-friendly format using dot notation.
 // Output: {"user.address.city": "NYC"}
 ```
 
-### Professional Monaco Editor
-Industry-standard code editor with syntax highlighting, auto-completion, and error detection.
+### Lightweight JSON Editor
+Custom-built editor optimized for large files (50MB+) with error highlighting and line numbers. No browser freezes.
 
 ### Unified Inline Editing
 Edit data directly in Flat, Table, or Nested views with full undo/redo support.
@@ -94,7 +94,7 @@ All processing happens in your browser. Zero network calls. No data upload.
 - Transforming **MongoDB exports** to spreadsheets
 - Parsing **double-encoded JSON strings** from legacy systems
 - Handling **deeply nested objects** from REST APIs
-- Processing **large JSON files** up to 10MB
+- Processing **large JSON files** up to 50MB+ with streaming
 - **Database export analysis** and reporting
 - **JSON to Excel converter** with intelligent auto-unescape
 - **API response visualization** in table format
@@ -145,7 +145,7 @@ npm run dev
 | **Language** | TypeScript |
 | **Styling** | Tailwind CSS + Shadcn/UI |
 | **State** | Zustand + Zundo (Temporal) |
-| **Editor** | Monaco Editor (VS Code) |
+| **Editor** | Custom Lightweight (50MB+ support) |
 | **Table** | TanStack Table v8 + @dnd-kit |
 | **Export** | SheetJS (xlsx), JSZip |
 | **Testing** | Jest + Playwright |
@@ -225,7 +225,7 @@ Connect your fork to Vercel for instant deployments with preview URLs.
 |---------|------------|-------------------|--------------|
 | Auto-Unescape | ✓ Automatic | ✗ Manual | ✗ Not possible |
 | Privacy | ✓ Client-side | ⚠️ Server upload | ✓ Local |
-| File Size | ✓ 10MB+ | ✗ Usually 5MB | ✓ Unlimited |
+| File Size | ✓ **50MB+** streaming | ✗ Usually 5MB | ✓ Unlimited |
 | Inline Editing | ✓ All views | ✗ No editing | ✓ Yes |
 | Undo/Redo | ✓ Full history | ✗ None | ⚠️ Limited |
 | Cost | ✓ Free | 💰 Often paid | ✓ Free |
@@ -262,6 +262,8 @@ Built with amazing open-source tools:
 
 - [Monaco Editor](https://microsoft.github.io/monaco-editor/) by Microsoft
 - [TanStack Table](https://tanstack.com/table) by Tanner Linsley
+- [TanStack Virtual](https://tanstack.com/virtual) for virtualization
+- [@streamparser/json](https://www.npmjs.com/package/@streamparser/json) for streaming large files
 - [SheetJS](https://sheetjs.com/) for Excel export
 - [Shadcn/UI](https://ui.shadcn.com/) for beautiful components
 

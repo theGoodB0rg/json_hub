@@ -1,3 +1,10 @@
+export interface StreamingProgress {
+    itemCount: number;
+    bytesProcessed: number;
+    totalBytes: number;
+    percent: number;
+}
+
 export interface AppState {
     // Input State
     rawInput: string;
@@ -21,6 +28,7 @@ export interface AppState {
     viewMode: 'flat' | 'nested' | 'table';
     isLoading: boolean;
     downloadProgress: number;
+    streamingProgress: StreamingProgress | null;
 
     // Configuration
     prettyPrint: boolean;
@@ -35,12 +43,14 @@ export interface AppState {
     savedProjects: any[]; // Using list type from db
 
     worker: Worker | null;
+    streamingWorker: Worker | null;
 
     // Actions
     initWorker: () => void;
     setRawInput: (input: string) => void;
     setSourceFilename: (name: string | null) => void;
     parseInput: () => void;
+    parseInputStreaming: (file: File) => void;
     flattenData: () => void;
     updateCell: (rowIndex: number, column: string, value: any) => void;
     updateData: (path: string, value: any) => void;
@@ -84,4 +94,3 @@ export interface ParseError {
 export type ExportFormat = 'csv' | 'xlsx' | 'docx' | 'html' | 'zip';
 
 export type ViewMode = 'flat' | 'nested' | 'table';
-

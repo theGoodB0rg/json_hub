@@ -26,6 +26,7 @@ const initialState = {
     viewMode: 'flat' as const,
     isLoading: false,
     downloadProgress: 0,
+    streamingProgress: null as { itemCount: number; bytesProcessed: number; totalBytes: number; percent: number } | null,
 
     // Configuration
     prettyPrint: true,
@@ -44,6 +45,7 @@ const initialState = {
 
     // Internal
     worker: null as Worker | null,
+    streamingWorker: null as Worker | null,
 };
 
 export const useAppStore = create<AppState>()(
@@ -140,6 +142,71 @@ export const useAppStore = create<AppState>()(
                                 set({ isLoading: false, parseErrors: [{ message: String(e) }] });
                             }
                         }
+                    },
+
+                    parseInputStreaming: (file: File) => {
+                        set({ isLoading: true, streamingProgress: { itemCount: 0, bytesProcessed: 0, totalBytes: file.size, percent: 0 } });
+
+                        // Create or reuse streaming worker
+                        let streamingWorker = get().streamingWorker;
+                        if (!streamingWorker) {
+                            streamingWorker = new Worker(new URL('../workers/streaming-parser.worker.ts', import.meta.url));
+
+                            streamingWorker.onmessage = (event) => {
+                                const { type, payload } = event.data;
+
+                                if (type === 'STREAM_PROGRESS') {
+                                    set({ streamingProgress: payload });
+                                } else if (type === 'STREAM_COMPLETE') {
+                                    set({
+                                        flatData: payload.rows,
+                                        schema: payload.schema,
+                                        columnOrder: payload.schema,
+                                        excludedColumns: [],
+                                        parsedData: payload.rows,
+                                        isParsed: true,
+                                        parseErrors: [],
+                                        isLoading: false,
+                                        streamingProgress: null
+                                    });
+                                } else if (type === 'PARSE_ERROR') {
+                                    set({
+                                        isLoading: false,
+                                        streamingProgress: null,
+                                        parseErrors: payload
+                                    });
+                                }
+                            };
+
+                            set({ streamingWorker });
+                        }
+
+                        // Start streaming
+                        streamingWorker.postMessage({ type: 'STREAM_START', payload: { totalSize: file.size } });
+
+                        // Read file in chunks
+                        const reader = file.stream().getReader();
+
+                        const readChunks = async () => {
+                            try {
+                                while (true) {
+                                    const { done, value } = await reader.read();
+                                    if (done) {
+                                        streamingWorker!.postMessage({ type: 'STREAM_END' });
+                                        break;
+                                    }
+                                    streamingWorker!.postMessage({ type: 'STREAM_CHUNK', payload: value.buffer });
+                                }
+                            } catch (error) {
+                                set({
+                                    isLoading: false,
+                                    streamingProgress: null,
+                                    parseErrors: [{ message: `File read error: ${error}` }]
+                                });
+                            }
+                        };
+
+                        readChunks();
                     },
 
                     flattenData: () => {
