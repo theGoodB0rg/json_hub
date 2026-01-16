@@ -33,9 +33,9 @@ const testimonials: Testimonial[] = [
         name: "Jennifer T.",
         role: "Marketing Data Analyst",
         company: "SaaS Startup",
-        content: "Our Google Analytics JSON exports are 15MB+. Most converters either crash or have file size limits. JsonExport handles them instantly without any issues. Plus it's completely free!",
+        content: "Google Analytics JSON exports used to be a hassle to convert. Other tools either crash or require uploads to their servers. JsonExport's auto-unescape handles our double-encoded data flawlessly. Plus it's completely free!",
         initials: "JT",
-        metric: "Handles 15MB+ files"
+        metric: "Auto-unescape magic"
     },
     {
         name: "David L.",
