@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAppStore } from '@/lib/store/store';
 import dynamic from 'next/dynamic';
 import { Card } from '@/components/ui/card';
@@ -8,14 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Upload, Trash2, ClipboardPaste, Maximize2, Minimize2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TemplateSelector } from '@/components/TemplateSelector/TemplateSelector';
+import { EditorFacade } from './EditorFacade';
 import { cn } from "@/lib/utils";
 
-// Dynamically import Monaco Editor with SSR disabled
-const Editor = dynamic(() => import('@monaco-editor/react'), {
+// Dynamically import Monaco Editor - only loaded when activated
+const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
     ssr: false,
     loading: () => (
-        <div className="h-full flex items-center justify-center bg-muted">
-            <p className="text-muted-foreground">Loading editor...</p>
+        <div className="h-full flex items-center justify-center bg-[#1e1e1e]">
+            <div className="flex flex-col items-center gap-2">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm text-muted-foreground">Loading editor...</p>
+            </div>
         </div>
     ),
 });
@@ -23,6 +27,7 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
 export function JsonEditor() {
     const { rawInput, setRawInput, parseInput, isParsed, parseErrors, prettyPrint, setSourceFilename } = useAppStore();
     const [isMaximized, setIsMaximized] = useState(false);
+    const [isEditorActivated, setIsEditorActivated] = useState(false);
 
     // Auto-parse with debounce
     useEffect(() => {
@@ -37,14 +42,18 @@ export function JsonEditor() {
 
     const handleEditorChange = (value: string | undefined) => {
         setRawInput(value || '');
-        // We don't necessarily want to clear filename on edit, 
-        // as users might just be tweaking the uploaded file.
     };
 
     const handleClear = () => {
         setRawInput('');
         setSourceFilename(null);
     };
+
+    const handleActivateEditor = useCallback(() => {
+        if (!isEditorActivated) {
+            setIsEditorActivated(true);
+        }
+    }, [isEditorActivated]);
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -62,6 +71,8 @@ export function JsonEditor() {
             const content = e.target?.result as string;
             setRawInput(content);
             setSourceFilename(file.name);
+            // Activate editor when file is uploaded
+            handleActivateEditor();
         };
         reader.readAsText(file);
     };
@@ -83,12 +94,27 @@ export function JsonEditor() {
             const content = e.target?.result as string;
             setRawInput(content);
             setSourceFilename(file.name);
+            // Activate editor when file is dropped
+            handleActivateEditor();
         };
         reader.readAsText(file);
     };
 
     const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
+    };
+
+    const handlePaste = async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            setRawInput(text);
+            setSourceFilename('clipboard_data');
+            // Activate editor after paste
+            handleActivateEditor();
+        } catch (err) {
+            console.error('Failed to read clipboard', err);
+            alert('Could not access clipboard. Please paste manually (Ctrl+V or Cmd+V).');
+        }
     };
 
     return (
@@ -142,16 +168,7 @@ export function JsonEditor() {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
-                                onClick={async () => {
-                                    try {
-                                        const text = await navigator.clipboard.readText();
-                                        setRawInput(text);
-                                        setSourceFilename('clipboard_data');
-                                    } catch (err) {
-                                        console.error('Failed to read clipboard', err);
-                                        alert('Could not access clipboard. Please paste manually (Ctrl+V or Cmd+V).');
-                                    }
-                                }}
+                                onClick={handlePaste}
                                 variant="outline"
                                 size="icon"
                             >
@@ -188,21 +205,31 @@ export function JsonEditor() {
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
             >
-                <Editor
-                    height="100%"
-                    defaultLanguage="json"
-                    value={rawInput}
-                    onChange={handleEditorChange}
-                    theme="vs-dark"
-                    options={{
-                        minimap: { enabled: false },
-                        fontSize: 14,
-                        lineNumbers: 'on',
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
-                        tabSize: 2,
-                    }}
-                />
+                {!isEditorActivated ? (
+                    // Lightweight facade - renders instantly
+                    <EditorFacade
+                        value={rawInput}
+                        onChange={setRawInput}
+                        onActivate={handleActivateEditor}
+                    />
+                ) : (
+                    // Real Monaco Editor - loaded on demand
+                    <MonacoEditor
+                        height="100%"
+                        defaultLanguage="json"
+                        value={rawInput}
+                        onChange={handleEditorChange}
+                        theme="vs-dark"
+                        options={{
+                            minimap: { enabled: false },
+                            fontSize: 14,
+                            lineNumbers: 'on',
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            tabSize: 2,
+                        }}
+                    />
+                )}
             </div>
 
             {parseErrors.length > 0 && (
