@@ -16,10 +16,10 @@ export function ViewModeToggle() {
                         variant={viewMode === 'flat' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => setViewMode('flat')}
-                        className="gap-1.5 h-8 text-xs"
+                        className="gap-1.5 h-8 text-xs px-2 sm:px-3"
                     >
                         <Table2 className="h-3.5 w-3.5" />
-                        Flat
+                        <span className="hidden sm:inline">Flat</span>
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -33,10 +33,10 @@ export function ViewModeToggle() {
                         variant={viewMode === 'table' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => setViewMode('table')}
-                        className="gap-1.5 h-8 text-xs"
+                        className="gap-1.5 h-8 text-xs px-2 sm:px-3"
                     >
                         <TableCellsMerge className="h-3.5 w-3.5" />
-                        Table
+                        <span className="hidden sm:inline">Table</span>
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -50,10 +50,10 @@ export function ViewModeToggle() {
                         variant={viewMode === 'nested' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => setViewMode('nested')}
-                        className="gap-1.5 h-8 text-xs"
+                        className="gap-1.5 h-8 text-xs px-2 sm:px-3"
                     >
                         <GitBranch className="h-3.5 w-3.5" />
-                        Nested
+                        <span className="hidden sm:inline">Nested</span>
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
