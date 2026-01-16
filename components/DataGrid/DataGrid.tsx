@@ -185,7 +185,7 @@ export function DataGrid() {
             <div className="mb-2 md:mb-4">
                 <div className="flex flex-col md:flex-row justify-between items-start gap-2 md:gap-0 mb-2">
                     <div>
-                        <h2 className="text-base md:text-lg font-semibold">
+                        <h2 className="text-sm sm:text-base md:text-lg font-semibold truncate">
                             {viewMode === 'flat' ? 'Table Preview' : viewMode === 'table' ? 'Table View (Nested)' : 'Nested View'}
                         </h2>
                         <p className="text-xs md:text-sm text-muted-foreground">

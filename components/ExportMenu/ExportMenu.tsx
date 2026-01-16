@@ -92,8 +92,8 @@ export function ExportMenu() {
                         className={`justify-start border-white/5 ${selectedFormat === format.value ? 'shadow-lg shadow-primary/20' : ''}`}
                         onClick={() => setSelectedFormat(format.value)}
                     >
-                        <format.icon className="w-4 h-4 mr-2" />
-                        {format.label}
+                        <format.icon className="w-4 h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                        <span className="truncate">{format.label}</span>
                     </Button>
                 ))}
             </div>
