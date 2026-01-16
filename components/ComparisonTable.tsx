@@ -23,7 +23,7 @@ const comparisonData: ComparisonItem[] = [
         tool: "JsonExport",
         codingRequired: false,
         privacy: "Excellent",
-        fileSizeLimit: "50MB+",
+        fileSizeLimit: "Up to 1MB",
         cost: "Free Forever",
         learningCurve: "Easy",
         highlight: true,
@@ -113,8 +113,8 @@ export function ComparisonTable() {
                         <tr
                             key={item.tool}
                             className={`border-b border-border transition-colors ${item.highlight
-                                    ? "bg-green-50/50 dark:bg-green-950/20 font-medium"
-                                    : "hover:bg-muted/30"
+                                ? "bg-green-50/50 dark:bg-green-950/20 font-medium"
+                                : "hover:bg-muted/30"
                                 }`}
                         >
                             <td className="p-4">
@@ -156,7 +156,7 @@ export function ComparisonTable() {
                 <p className="font-semibold">Why JsonExport?</p>
                 <ul className="space-y-1 list-disc list-inside text-muted-foreground">
                     <li><strong>No upload:</strong> Your data never leaves your browser (100% client-side)</li>
-                    <li><strong>No limits:</strong> Handle files 50MB+ without issues</li>
+                    <li><strong>No upload needed:</strong> Your data never leaves your browser</li>
                     <li><strong>No coding:</strong> Simple drag-and-drop interface</li>
                     <li><strong>No cost:</strong> Free forever, no hidden fees or premium tiers</li>
                 </ul>
