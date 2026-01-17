@@ -119,6 +119,24 @@ export default function RootLayout({
                             })
                         }}
                     />
+
+                    {/* Organization Schema for Google Search Logo */}
+                    <Script
+                        id="schema-organization"
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify({
+                                "@context": "https://schema.org",
+                                "@type": "Organization",
+                                "name": "JsonExport",
+                                "url": "https://jsonexport.com",
+                                "logo": "https://jsonexport.com/logo-512.png",
+                                "sameAs": [
+                                    "https://github.com/theGoodB0rg/json_hub"
+                                ]
+                            })
+                        }}
+                    />
                 </ThemeProvider>
             </body>
         </html>
