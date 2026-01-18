@@ -64,21 +64,14 @@ export function JsonEditor() {
         setFileSize(file.size);
         setSourceFilename(file.name);
 
-        // Check if file is too large - show upsell modal
+        // Check if file is too large
         if (!bypassWarning && file.size > HARD_MAX_SIZE) {
             setPendingFile(file);
             setShowUpsell(true);
             return;
         }
 
-        // For large files, use streaming parser to avoid blocking main thread
-        if (file.size > RECOMMENDED_MAX_SIZE) {
-            // Use streaming parser - processes chunks via Web Worker
-            parseInputStreaming(file);
-            return;
-        }
-
-        // For smaller files, use standard approach
+        // Read and process file
         const reader = new FileReader();
         reader.onload = (e) => {
             const content = e.target?.result as string;
@@ -90,7 +83,7 @@ export function JsonEditor() {
             }
         };
         reader.readAsText(file);
-    }, [setRawInput, setSourceFilename, parseInput, parseInputStreaming]);
+    }, [setRawInput, setSourceFilename, parseInput]);
 
     const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
