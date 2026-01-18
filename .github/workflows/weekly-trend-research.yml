@@ -1,0 +1,175 @@
+name: Weekly SEO Trend Research
+
+on:
+  schedule:
+    # Run every Sunday at 8:00 UTC (9:00 AM CET / your timezone)
+    - cron: '0 8 * * 0'
+  workflow_dispatch:
+    # Allow manual triggering for testing
+    inputs:
+      debug:
+        description: 'Enable debug logging'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run trend research
+        id: research
+        run: |
+          echo "Starting SEO trend research..."
+          npm run trend-research
+          echo "Research complete!"
+        continue-on-error: true
+
+      - name: Check if reports exist
+        id: check_reports
+        run: |
+          if [ -f "scripts/trend-research/output/trends_report.json" ]; then
+            echo "json_exists=true" >> $GITHUB_OUTPUT
+            echo "JSON report found"
+          else
+            echo "json_exists=false" >> $GITHUB_OUTPUT
+            echo "JSON report not found"
+          fi
+          
+          if [ -f "scripts/trend-research/output/trends_report.md" ]; then
+            echo "md_exists=true" >> $GITHUB_OUTPUT
+            echo "Markdown report found"
+          else
+            echo "md_exists=false" >> $GITHUB_OUTPUT
+            echo "Markdown report not found"
+          fi
+
+      - name: Upload JSON report artifact
+        if: steps.check_reports.outputs.json_exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: trend-report-${{ github.run_number }}-json
+          path: scripts/trend-research/output/trends_report.json
+          retention-days: 30
+
+      - name: Upload Markdown report artifact
+        if: steps.check_reports.outputs.md_exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: trend-report-${{ github.run_number }}-md
+          path: scripts/trend-research/output/trends_report.md
+          retention-days: 30
+
+      - name: Upload combined report artifact
+        if: steps.check_reports.outputs.json_exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-trend-report-week-${{ github.run_number }}
+          path: |
+            scripts/trend-research/output/trends_report.json
+            scripts/trend-research/output/trends_report.md
+          retention-days: 90
+
+      - name: Read report summary
+        if: steps.check_reports.outputs.json_exists == 'true'
+        id: summary
+        run: |
+          # Extract summary from JSON report
+          TOTAL=$(jq -r '.summary.total_opportunities // 0' scripts/trend-research/output/trends_report.json)
+          HIGH=$(jq -r '.summary.high_priority // 0' scripts/trend-research/output/trends_report.json)
+          MEDIUM=$(jq -r '.summary.medium_priority // 0' scripts/trend-research/output/trends_report.json)
+          LOW=$(jq -r '.summary.low_priority // 0' scripts/trend-research/output/trends_report.json)
+          TOP_KEYWORD=$(jq -r '.summary.top_opportunity.keyword // "None found"' scripts/trend-research/output/trends_report.json)
+          TOP_TITLE=$(jq -r '.summary.top_opportunity.title // "None found"' scripts/trend-research/output/trends_report.json)
+          TOP_SCORE=$(jq -r '.summary.top_opportunity.score // 0' scripts/trend-research/output/trends_report.json)
+          
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "high=$HIGH" >> $GITHUB_OUTPUT
+          echo "medium=$MEDIUM" >> $GITHUB_OUTPUT
+          echo "low=$LOW" >> $GITHUB_OUTPUT
+          echo "top_keyword=$TOP_KEYWORD" >> $GITHUB_OUTPUT
+          echo "top_title=$TOP_TITLE" >> $GITHUB_OUTPUT
+          echo "top_score=$TOP_SCORE" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Issue with report
+        if: steps.check_reports.outputs.md_exists == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read the markdown report
+            let reportContent;
+            try {
+              reportContent = fs.readFileSync('scripts/trend-research/output/trends_report.md', 'utf8');
+            } catch (error) {
+              console.log('Could not read markdown report:', error.message);
+              reportContent = 'Report generation failed. Check workflow logs for details.';
+            }
+            
+            // Truncate if too long (GitHub has 65536 character limit for issue body)
+            const maxLength = 60000;
+            if (reportContent.length > maxLength) {
+              reportContent = reportContent.substring(0, maxLength) + '\n\n---\n\n*Report truncated. Download the full report from workflow artifacts.*';
+            }
+            
+            // Get current date for title
+            const now = new Date();
+            const weekNum = Math.ceil((((now - new Date(now.getFullYear(),0,1)) / 86400000) + new Date(now.getFullYear(),0,1).getDay()+1)/7);
+            const dateStr = now.toISOString().slice(0, 10);
+            
+            // Summary from previous step
+            const total = '${{ steps.summary.outputs.total }}' || '0';
+            const high = '${{ steps.summary.outputs.high }}' || '0';
+            const topKeyword = '${{ steps.summary.outputs.top_keyword }}' || 'None';
+            
+            const title = `📈 Weekly SEO Trend Report - ${dateStr} (${total} opportunities, ${high} high priority)`;
+            
+            // Create the issue
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: reportContent,
+              labels: ['seo', 'content', 'automated', 'weekly-report']
+            });
+            
+            console.log(`Created issue: ${title}`);
+
+      - name: Report status
+        if: always()
+        run: |
+          echo "==================================="
+          echo "SEO Trend Research - Summary"
+          echo "==================================="
+          echo "Research step: ${{ steps.research.outcome }}"
+          echo "JSON report exists: ${{ steps.check_reports.outputs.json_exists }}"
+          echo "MD report exists: ${{ steps.check_reports.outputs.md_exists }}"
+          echo ""
+          if [ "${{ steps.check_reports.outputs.json_exists }}" == "true" ]; then
+            echo "Total opportunities: ${{ steps.summary.outputs.total }}"
+            echo "High priority: ${{ steps.summary.outputs.high }}"
+            echo "Medium priority: ${{ steps.summary.outputs.medium }}"
+            echo "Low priority: ${{ steps.summary.outputs.low }}"
+            echo ""
+            echo "Top opportunity: ${{ steps.summary.outputs.top_keyword }}"
+          fi
+          echo "==================================="
