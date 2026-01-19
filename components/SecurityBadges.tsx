@@ -19,8 +19,8 @@ const badges: Badge[] = [
     },
     {
         icon: Zap,
-        label: "No File Size Limits",
-        description: "Built for speed"
+        label: "Instant Processing",
+        description: "For everyday files"
     },
     {
         icon: DollarSign,

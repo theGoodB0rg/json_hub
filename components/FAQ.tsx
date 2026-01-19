@@ -19,8 +19,8 @@ const faqs: FAQItem[] = [
         answer: "We support standard JSON, double-encoded JSON (escaped strings), nested objects, arrays, and even GeoJSON. Our smart parser automatically detects and handles complex structures."
     },
     {
-        question: "Can I convert large JSON files?",
-        answer: "Yes! JsonExport supports files up to 10MB and can handle 100,000+ rows. For very large datasets, we recommend using the flat export mode for better performance."
+        question: "What file sizes work best?",
+        answer: "JsonExport works best with files up to 1MB (most API exports and everyday files). For larger files, performance depends on your device. For very large datasets (10MB+), we recommend Python with Pandas - see our guide for instructions."
     },
     {
         question: "What's the difference between flat and nested export?",

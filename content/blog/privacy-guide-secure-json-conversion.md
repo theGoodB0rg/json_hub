@@ -25,7 +25,7 @@ Most online converters operate on a **Server-Side** model.
 
 ## The Solution: 100% Client-Side Processing
 
-Modern browsers are powerful enough to process massive datasets right on your machine. You don't *need* a server to convert text.
+Modern browsers are powerful enough to process everyday datasets right on your machine. You don't *need* a server to convert text.
 
 **This is how `jsonExport.com` works.**
 
@@ -40,7 +40,7 @@ Don't believe us? Try this test:
 
 1.  Load [jsonExport.com](https://jsonexport.com).
 2.  **Disconnect your WiFi** (or turn on Airplane Mode).
-3.  Drag in your 50MB confidental JSON file.
+3.  Drag in your confidential JSON file.
 4.  Click "Export to Excel".
 
 **It works perfectly.**
@@ -53,7 +53,7 @@ Because we don't need the internet to process your data, you can be 100% certain
 | :--- | :--- | :--- |
 | **Data Location** | Uploaded to Remote Server | **Stays on Device** |
 | **Works Offline?** | No | **Yes (Try it!)** |
-| **Max File Size** | 10MB - 50MB (Server limits) | **1GB+ (Browser limits)** |
+| **Max File Size** | 5-10MB (Server limits) | **Up to 1MB (optimal)** |
 | **GDPR Compliant** | Difficult to verify | **Native Compliance** |
 
 ## Conclusion

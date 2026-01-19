@@ -35,7 +35,7 @@ You don't need a server to convert text. Modern browsers are incredibly powerful
 ### How It Works
 *   **0% Uploads:** When you drag a file into JsonExport, it is opened by *your browser* (Chrome/Edge/Firefox).
 *   **Local Calculation:** Looking at the "Network" tab in Developer Tools confirms that **no API calls** are made with your data.
-*   **Instant Speed:** Because there is no network latency, even 50MB files convert instantly.
+*   **Instant Speed:** Because there is no network latency, everyday files convert instantly.
 
 ## The Analyst's Checklist for Safe Tools
 
