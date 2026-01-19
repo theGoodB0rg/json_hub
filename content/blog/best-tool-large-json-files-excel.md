@@ -226,64 +226,55 @@ print("Done!")
 
 ---
 
-## Tool #4: JsonExport (✅ Recommended for 10-50MB)
+## Tool #4: JsonExport (✅ Recommended for Small-Medium Files)
 
-**File Size Limit:** 50 MB+  
-**Rating:** 8/10 for large files
+**File Size Limit:** Up to 1MB (optimal), 2MB (max)  
+**Rating:** 9/10 for everyday files, 3/10 for truly large files
 
-### Why It Works Well
+### Why It's Great (For the Right Use Case)
 
-1. **Client-side processing** – Uses your computer's full resources
-2. **Web Workers** – Processes in background (doesn't freeze browser)
-3. **Optimized parser** – Efficient JSON flattening algorithm
-4. **No upload** – Process locally (faster + private)
+1. **Client-side processing** – 100% private, no uploads
+2. **Instant for everyday files** – API exports, config files, small datasets
+3. **No coding required** – Visual interface with preview
+4. **Auto-flattening** – Handles nested JSON automatically
 
-### Test Results
+### Honest Performance Reality
 
-**My Setup:** Chrome 120, Windows 11, 16GB RAM
+JsonExport is a **browser-based tool**, which means it inherits browser limitations:
 
-| File Size | Result | Time | Notes |
-|-----------|--------|------|-------|
-| 10 MB | ✅ Success | 3 sec | Instant preview |
-| 15 MB | ✅ Success | 5 sec | Google Analytics export |
-| 25 MB | ✅ Success | 10 sec | Shopify orders |
-| 40 MB | ✅ Success | 18 sec | MongoDB export |
-| 50 MB | ✅ Success | 25 sec | Near limit |
-| 75 MB | ⚠️ Slow | 60 sec | Browser lag |
-| 100 MB | ❌ Crash | N/A | Browser memory limit |
+| File Size | Experience | Recommendation |
+|-----------|------------|----------------|
+| < 500 KB | ✅ Instant, smooth | Perfect |
+| 500 KB - 1 MB | ✅ Fast | Great |
+| 1 MB - 2 MB | ⚠️ May be slow | Use with caution |
+| > 2 MB | ❌ Not recommended | Use Python instead |
 
-**Sweet spot:** 10-50 MB
+**Why the limit?** Browser JavaScript is single-threaded and memory-constrained. Processing + rendering + Excel generation for large files overwhelms most devices.
 
-### Real-World Example
+### Best Use Cases for JsonExport
 
-**Google Analytics 4 Export (15 MB)**
-
-1. Download GA4 event data (15 MB JSON)
-2. Drag into JsonExport
-3. Preview appears in 5 seconds
-4. See 50,000 rows, auto-flattened
-5. Click "Download Excel"
-6. Done
-
-**No upload. No server. 100% private.**
+- **API response debugging** (Postman exports, Stripe webhooks)
+- **SaaS exports** (Salesforce contacts, HubSpot deals)
+- **Config files** (Firebase, AWS, Terraform outputs)
+- **Quick one-off conversions** (no setup required)
 
 ### Pros ✅
 
-- **Fast for 10-50 MB files**
-- No coding required (visual interface)
-- 100% private (client-side processing)
+- **Lightning fast for everyday files**
+- No coding required
+- 100% private (no server upload)
 - Auto-handles nested structures
 - Free forever
 
 ### Cons ❌
 
-- **Browser memory limit** (~50-75 MB max)
-- Not suitable for 100 MB+ files
-- Requires modern browser
+- **Not designed for truly large files (10MB+)**
+- Performance depends on user's device
+- Browser memory constraints
 
 ### Verdict
 
-✅ **Best balance of ease and power for 10-50MB files.** Perfect for most business use cases.
+✅ **Best for everyday data analyst tasks (files under 1MB).** For truly large files, use Python.
 
 ---
 
@@ -291,11 +282,11 @@ print("Done!")
 
 | File Size | Recommended Tool | Alternative |
 |-----------|------------------|-------------|
-| **< 5 MB** | Any tool works | JsonExport (fastest) |
-| **5-10 MB** | JsonExport | Power Query |
-| **10-20 MB** | JsonExport | Python |
-| **20-50 MB** | JsonExport | Python (required for 50MB+) |
-| **50-100 MB** | Python + Pandas | Split file + Power Query |
+| **< 500 KB** | JsonExport | Any tool |
+| **500 KB - 1 MB** | JsonExport | Power Query |
+| **1 - 5 MB** | Power Query | Python |
+| **5 - 20 MB** | Python + Pandas | Power Query (split files) |
+| **20 - 100 MB** | Python + Pandas | Split file + Power Query |
 | **100 MB+** | Python (chunked) | None (must use Python) |
 
 ---
@@ -432,28 +423,30 @@ with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
 
 ## Conclusion: Choose the Right Tool for Your File Size
 
-**For most data analysts (10-50 MB files):**  
-→ **Use JsonExport** – fastest, easiest, no coding
+**For everyday files (under 1 MB):**  
+→ **Use JsonExport** – instant, private, no coding required
 
-**For developers (50 MB+ files):**  
-→ **Use Python + Pandas** – unlimited size, highly customizable
+**For medium-large files (1-20 MB):**  
+→ **Use Power Query or Python** – both handle this range well
 
-**For Excel experts (occasional large files):**  
-→ **Use Power Query** – but split files above 20 MB
+**For large files (20 MB+):**  
+→ **Use Python + Pandas** – the only reliable solution
 
 **Never use:**  
 ❌ Online upload-based converters (unreliable, slow, privacy risk)
 
 ---
 
-### My Recommendation by File Size
+### Honest Recommendation by File Size
 
-- **10-20 MB:** JsonExport (8 sec processing)
-- **20-50 MB:** JsonExport (still fast, ~20 sec)
-- **50-100 MB:** Python + Pandas (required)
-- **100 MB+:** Python with chunked processing
+- **< 1 MB:** JsonExport (instant, no setup)
+- **1-5 MB:** Power Query or Python
+- **5-50 MB:** Python + Pandas (recommended)
+- **50 MB+:** Python with chunked processing (required)
 
-[Try JsonExport for Large Files (Free)](https://jsonexport.com)
+**JsonExport's strength isn't file size – it's privacy and convenience for everyday data tasks.**
+
+[Try JsonExport for Quick Conversions](https://jsonexport.com)
 
 ---
 
