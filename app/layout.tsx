@@ -31,11 +31,12 @@ export const metadata: Metadata = {
     },
     icons: {
         icon: [
+            { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+            { url: '/logo-512.png', sizes: '512x512', type: 'image/png' },
             { url: '/icon.svg', type: 'image/svg+xml' },
-            { url: '/icon.svg', sizes: 'any' },
         ],
-        shortcut: '/icon.svg',
-        apple: '/icon.svg',
+        shortcut: '/favicon.ico',
+        apple: '/logo-512.png',
     },
     openGraph: {
         title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
