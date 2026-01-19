@@ -203,7 +203,7 @@ This gives you a **perfectly flat CSV**, but requires MongoDB query knowledge.
 | Compass CSV | ❌ Breaks | ❌ Breaks | 100MB max | Easy |
 | mongoexport CSV | ❌ No nesting | ❌ No arrays | Unlimited | Medium |
 | Aggregation + export | ✅ Manual | ✅ Manual | Unlimited | Hard |
-| **JsonExport** | ✅ Auto | ✅ Auto | 10MB | Easy |
+| **JsonExport** | ✅ Auto | ✅ Auto | 1MB (optimal) | Easy |
 
 ## Real-World Use Case: E-Commerce Analytics
 
@@ -294,14 +294,15 @@ Your JSON export is malformed. Usually happens with:
 
 **Fix:** Re-run the export with `--jsonArray` flag.
 
-### Error: File too large (>10MB)
+### Error: File too large
 
-JsonExport limit is 10MB for browser processing.
+JsonExport works best with files under 1MB. For larger exports:
 
 **Solutions:**
 1. Filter your export (`--query`)
 2. Split into batches (`--skip`, `--limit`)
 3. Export only needed fields (`--fields`)
+4. Use Python with Pandas for large datasets
 
 ## Complete Workflow Example
 
