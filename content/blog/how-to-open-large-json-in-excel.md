@@ -20,15 +20,15 @@ Excel is a spreadsheet tool, not a database. It has hard limits:
 
 | File Size | JsonExport Experience | Better Option |
 | :--- | :--- | :--- |
-| **< 500 KB** | ✅ Instant | N/A - works great! |
-| **500 KB - 1 MB** | ✅ Fast | N/A - works well |
-| **1-2 MB** | ⚠️ May be slow | Consider Python |
-| **5 MB+** | ❌ Not recommended | Use Python + Pandas |
-| **50 MB+** | ❌ Will crash | Python (required) |
+| **< 1 MB** | ✅ Instant | N/A - works great! |
+| **1 - 10 MB** | ✅ Fast (2-5 sec) | N/A - works well |
+| **10 - 50 MB** | ✅ Works (5-15 sec) | Python for speed |
+| **50 - 100 MB** | ⚠️ Device-dependent | Python recommended |
+| **100 MB+** | ❌ Browser memory limit | Python (required) |
 
-## The Real Solution for Large Files: Python
+## The Real Solution for Very Large Files: Python
 
-For files over 1-2 MB, Python with Pandas is the reliable solution:
+For files over 100 MB, Python with Pandas is the reliable solution:
 
 ```python
 import pandas as pd
@@ -69,33 +69,36 @@ for record in parse_large_json('huge_file.json'):
 
 JsonExport excels at:
 
-- ✅ **Quick conversions** of everyday files (under 1MB)
+- ✅ **Quick conversions** of files up to 50MB
 - ✅ **Privacy-sensitive data** (100% client-side, no uploads)
 - ✅ **No-setup convenience** (no Python installation needed)
 - ✅ **Nested JSON flattening** (automatic, no coding)
 
-**Use JsonExport when:** You have a small-medium API export, config file, or sample dataset and need quick results without coding.
+**Use JsonExport when:** You have files up to 50MB and want quick results without coding.
 
-**Use Python when:** You have large files (5MB+), need batch processing, or work with big data regularly.
+**Use Python when:** You have very large files (100MB+), need batch processing, or work with big data regularly.
 
 ## Practical Workflow Guide
 
-### For Files Under 1MB
+### For Files Under 10MB
 1. Go to [JsonExport.com](https://jsonexport.com)
 2. Upload or paste your JSON
 3. Download Excel or CSV
 4. Done in seconds
 
-### For Files 1-10MB
-1. Consider splitting your data at the source (API pagination, date filters)
-2. Use Power Query in Excel
-3. Or use Python (recommended)
+### For Files 10-50MB
+1. JsonExport still works! Just give it 5-15 seconds.
+2. Or use Python for faster processing
 
-### For Files 10MB+
+### For Files 50-100MB
+1. Try JsonExport (may work depending on your device)
+2. Python + Pandas is more reliable
+3. Install: `pip install pandas openpyxl`
+
+### For Files 100MB+
 1. Python + Pandas is your only reliable option
-2. Install: `pip install pandas openpyxl`
-3. Use the code examples above
-4. For 100MB+, use streaming parsers like `ijson`
+2. Use the code examples above
+3. For very large files, use streaming parsers like `ijson`
 
 ## Summary
 
@@ -103,9 +106,9 @@ JsonExport excels at:
 
 | Tool | Sweet Spot | Max Practical |
 | :--- | :--- | :--- |
-| **JsonExport** | < 500KB | ~1MB |
+| **JsonExport** | < 10MB | ~50MB |
 | **Power Query** | 1-20MB | ~50MB |
-| **Python + Pandas** | 5-100MB | Unlimited |
+| **Python + Pandas** | 10-500MB | Unlimited |
 
 Don't fight tool limitations. Use the right tool for your file size.
 

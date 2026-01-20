@@ -225,7 +225,7 @@ Connect your fork to Vercel for instant deployments with preview URLs.
 |---------|------------|-------------------|--------------|
 | Auto-Unescape | ✓ Automatic | ✗ Manual | ✗ Not possible |
 | Privacy | ✓ Client-side | ⚠️ Server upload | ✓ Local |
-| File Size | ✓ Up to 1MB | ✗ Usually 5MB | ✓ Unlimited |
+| File Size | ✓ Up to 50MB | ✗ Usually 5MB | ✓ Unlimited |
 | Inline Editing | ✓ All views | ✗ No editing | ✓ Yes |
 | Undo/Redo | ✓ Full history | ✗ None | ⚠️ Limited |
 | Cost | ✓ Free | 💰 Often paid | ✓ Free |

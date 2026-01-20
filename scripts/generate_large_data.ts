@@ -60,7 +60,6 @@ function generateFile(targetSizeMB: number, filename: string) {
     console.log(`\nDone! Created ${filename} with ${id} records.`);
 }
 
-// Generate 50MB and 100MB files
-generateFile(50, 'test-50mb.json');
-// generateFile(100, 'test-100mb.json');
-// Commented out 100MB to save time, user can uncomment if needed
+// Generate 50MB and 500MB files
+// generateFile(50, 'test-50mb.json');
+generateFile(500, 'test-500mb.json');
