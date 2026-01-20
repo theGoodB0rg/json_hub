@@ -5,6 +5,7 @@ import { useAppStore } from '@/lib/store/store';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload, Trash2, ClipboardPaste, Maximize2, Minimize2, Loader2 } from 'lucide-react';
+import { LargeFileViewer } from './LargeFileViewer';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TemplateSelector } from '@/components/TemplateSelector/TemplateSelector';
 import { LightJsonEditor } from './LightJsonEditor';
@@ -27,7 +28,8 @@ export function JsonEditor() {
         parseErrors,
         setSourceFilename,
         isLoading,
-        streamingProgress
+        streamingProgress,
+        sourceFilename
     } = useAppStore();
 
     const [isMaximized, setIsMaximized] = useState(false);
@@ -71,6 +73,24 @@ export function JsonEditor() {
             return;
         }
 
+        // OPTIMIZATION: For large files (>2MB), verify we can read it AND parse it
+        if (file.size > HARD_MAX_SIZE) {
+            // 1. Start streaming parser (background worker)
+            parseInputStreaming(file);
+
+            // 2. Read content for "Read-Only" display using FileReader
+            // Note: Reading 50MB into a string is fast (~200ms), rendering it is the bottleneck.
+            // LargeFileViewer handles the rendering bottleneck.
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setRawInput(e.target?.result as string);
+                setSourceFilename(file.name);
+                setFileSize(file.size);
+            };
+            reader.readAsText(file);
+            return;
+        }
+
         // Read and process file
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -83,7 +103,7 @@ export function JsonEditor() {
             }
         };
         reader.readAsText(file);
-    }, [setRawInput, setSourceFilename, parseInput]);
+    }, [setRawInput, setSourceFilename, parseInput, parseInputStreaming]);
 
     const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -261,14 +281,22 @@ export function JsonEditor() {
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
                 >
-                    <LightJsonEditor
-                        value={rawInput}
-                        onChange={handleEditorChange}
-                        parseErrors={parseErrors}
-                        isLargeFile={isLargeInput}
-                        fileSize={fileSize}
-                        readOnly={isLoading}
-                    />
+                    {isLargeInput ? (
+                        <LargeFileViewer
+                            content={rawInput}
+                            fileName={sourceFilename || 'Large File'}
+                            fileSize={fileSize}
+                        />
+                    ) : (
+                        <LightJsonEditor
+                            value={rawInput}
+                            onChange={handleEditorChange}
+                            parseErrors={parseErrors}
+                            isLargeFile={false} // Handled by LargeFileViewer now
+                            fileSize={fileSize}
+                            readOnly={isLoading}
+                        />
+                    )}
 
                     {/* Loading overlay */}
                     {isLoading && (
