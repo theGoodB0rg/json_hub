@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Github, Lock, Zap, FileJson, FileSpreadsheet, FileText } from 'lucide-react';
+import { LinkToUs } from '@/components/LinkToUs';
 
 export function Footer() {
     return (
@@ -63,6 +64,9 @@ export function Footer() {
                                 >
                                     <Github className="w-3.5 h-3.5" /> GitHub
                                 </a>
+                            </li>
+                            <li>
+                                <LinkToUs />
                             </li>
                         </ul>
                     </div>
