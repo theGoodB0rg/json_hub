@@ -287,9 +287,10 @@ export const useAppStore = create<AppState>()(
                         if (!parsedData) return;
 
                         try {
-                            // Deep clone or shallow clone? Deep clone is safer but expensive.
-                            // Let's do a structured clone for safety used in editing
-                            const newData = JSON.parse(JSON.stringify(parsedData));
+                            // Use structuredClone if available (faster than JSON parse/stringify)
+                            const newData = typeof structuredClone === 'function'
+                                ? structuredClone(parsedData)
+                                : JSON.parse(JSON.stringify(parsedData));
 
                             const setDeep = (obj: any, p: string, val: any) => {
                                 const keys = p.split('.');
@@ -307,7 +308,6 @@ export const useAppStore = create<AppState>()(
                             set({ parsedData: newData });
 
                             // Re-flatten to keep Flat View in sync
-                            // (This might be heavy for large datasets, consider debounce in UI if problematic)
                             get().flattenData();
                         } catch (e) {
                             console.error("Failed to update data", e);
@@ -350,6 +350,19 @@ export const useAppStore = create<AppState>()(
 
                         // Update excludedColumns if the renamed column was excluded
                         const newExcludedColumns = excludedColumns.map(col => col === oldName ? newName : col);
+
+                        // Optimization: Only remap data if column exists in first row
+                        // This avoids O(rows) operation when renaming columns that don't exist
+                        const needsDataRemap = flatData.length > 0 && oldName in flatData[0];
+
+                        if (!needsDataRemap) {
+                            set({
+                                schema: newSchema,
+                                columnOrder: newColumnOrder,
+                                excludedColumns: newExcludedColumns,
+                            });
+                            return;
+                        }
 
                         // Update all flatData rows - rename the key
                         const newFlatData = flatData.map(row => {

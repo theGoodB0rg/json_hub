@@ -10,7 +10,7 @@ import {
     ColumnDef,
     ColumnOrderState,
 } from '@tanstack/react-table';
-import { useMemo, useState, useRef, useEffect } from 'react';
+import { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { NestedTable } from './NestedTable';
 import { ViewModeToggle } from './ViewModeToggle';
 import { TableViewGrid } from './TableViewGrid';
@@ -78,9 +78,13 @@ export function DataGrid() {
     const [isMaximized, setIsMaximized] = useState(false);
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
-    // Dnd Sensors
+    // Dnd Sensors with threshold to prevent accidental drags
     const sensors = useSensors(
-        useSensor(PointerSensor), // Default: pointer works
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8, // 8px threshold before drag activates
+            },
+        }),
         useSensor(KeyboardSensor)
     );
 
@@ -138,21 +142,16 @@ export function DataGrid() {
         overscan: 5,
     });
 
-    // Handle Drag End for Columns
-    const handleColumnDragEnd = (event: DragEndEvent) => {
+    // Handle Drag End for Columns - memoized to prevent re-renders
+    const handleColumnDragEnd = useCallback((event: DragEndEvent) => {
         const { active, over } = event;
         if (active && over && active.id !== over.id) {
             const oldIndex = visibleColumns.indexOf(active.id as string);
             const newIndex = visibleColumns.indexOf(over.id as string);
             const newOrder = arrayMove(visibleColumns, oldIndex, newIndex);
-
-            // We need to merge this back into the full columnOrder (including hidden ones?)
-            // For now, simpler to just set the new order of visible columns. 
-            // Any hidden columns might effectively get pushed to the end or lost position if we aren't careful.
-            // A robust solution would map indices back to the full list.
             setColumnOrder(newOrder);
         }
-    };
+    }, [visibleColumns, setColumnOrder]);
 
     // Handle Drag End for Rows (Not yet implemented visually in a virtualized list easily)
     // Virtualization + DnD is tricky. We'd need to use the `items` prop on SortableContext 
