@@ -34,7 +34,7 @@ export function LinkToUs() {
                 <DialogHeader>
                     <DialogTitle>Share the Love ❤️</DialogTitle>
                     <DialogDescription>
-                        If JsonExport helped you, a link back helps us keep it free forever.
+                        If JsonExport helped you, a link back helps us keep improving it.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="flex items-center space-x-2 mt-4">
