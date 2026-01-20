@@ -13,10 +13,10 @@ import { LargeFileUpsell } from '@/components/LargeFileUpsell/LargeFileUpsell';
 import { cn } from "@/lib/utils";
 import { Progress } from '@/components/ui/progress';
 
-// Realistic file size limits based on testing
-const RECOMMENDED_MAX_SIZE = 500 * 1024; // 500KB - works smoothly
-const WARNING_SIZE = 1 * 1024 * 1024; // 1MB - may cause slowness
-const HARD_MAX_SIZE = 2 * 1024 * 1024; // 2MB - show upsell
+// Realistic file size limits based on testing (January 2026)
+const RECOMMENDED_MAX_SIZE = 10 * 1024 * 1024; // 10MB - works instantly
+const WARNING_SIZE = 50 * 1024 * 1024; // 50MB - tested, works smoothly
+const HARD_MAX_SIZE = 100 * 1024 * 1024; // 100MB - show upsell (device-dependent above this)
 
 export function JsonEditor() {
     const {

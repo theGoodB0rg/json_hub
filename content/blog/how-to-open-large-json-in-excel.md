@@ -23,7 +23,7 @@ Excel is a spreadsheet tool, not a database. It has hard limits:
 | **< 1 MB** | ✅ Instant | N/A - works great! |
 | **1 - 10 MB** | ✅ Fast (2-5 sec) | N/A - works well |
 | **10 - 50 MB** | ✅ Works (5-15 sec) | Python for speed |
-| **50 - 100 MB** | ⚠️ Device-dependent | Python recommended |
+| **50 - 100 MB** | ✅ Works | Device-dependent |
 | **100 MB+** | ❌ Browser memory limit | Python (required) |
 
 ## The Real Solution for Very Large Files: Python
@@ -69,12 +69,12 @@ for record in parse_large_json('huge_file.json'):
 
 JsonExport excels at:
 
-- ✅ **Quick conversions** of files up to 50MB
+- ✅ **Quick conversions** of files up to 100MB
 - ✅ **Privacy-sensitive data** (100% client-side, no uploads)
 - ✅ **No-setup convenience** (no Python installation needed)
 - ✅ **Nested JSON flattening** (automatic, no coding)
 
-**Use JsonExport when:** You have files up to 50MB and want quick results without coding.
+**Use JsonExport when:** You have files up to 100MB and want quick results without coding.
 
 **Use Python when:** You have very large files (100MB+), need batch processing, or work with big data regularly.
 
@@ -106,9 +106,9 @@ JsonExport excels at:
 
 | Tool | Sweet Spot | Max Practical |
 | :--- | :--- | :--- |
-| **JsonExport** | < 10MB | ~50MB |
+| **JsonExport** | < 50MB | ~100MB |
 | **Power Query** | 1-20MB | ~50MB |
-| **Python + Pandas** | 10-500MB | Unlimited |
+| **Python + Pandas** | 50-500MB | Unlimited |
 
 Don't fight tool limitations. Use the right tool for your file size.
 

@@ -296,7 +296,7 @@ Your JSON export is malformed. Usually happens with:
 
 ### Error: File too large
 
-JsonExport works best with files under 1MB. For larger exports:
+JsonExport handles files up to 100MB. For even larger exports:
 
 **Solutions:**
 1. Filter your export (`--query`)

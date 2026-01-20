@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
     title: 'JsonExport | Free JSON to Excel Converter for Data Analysts (No Coding Required)',
-    description: 'Convert JSON to Excel instantly. 100% private (no upload), perfect for API responses and small files, completely free forever. Ideal for quick, secure conversions without coding.',
+    description: 'Convert JSON to Excel instantly. 100% private (no upload), handles files up to 100MB, completely free forever. Ideal for data analysts who need quick, secure conversions without coding.',
     alternates: {
         canonical: 'https://jsonexport.com',
     }

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         canonical: './',
     },
     title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
-    description: 'Convert JSON to Excel instantly. 100% private (no upload), perfect for API responses and small files, completely free forever. Ideal for quick, secure conversions without coding.',
+    description: 'Convert JSON to Excel instantly. 100% private (no upload), handles files up to 100MB, completely free forever. Ideal for data analysts who need quick, secure conversions without coding.',
     applicationName: 'JsonExport',
     authors: [{ name: 'JsonExport Team' }],
     keywords: ['json to excel', 'json to excel converter', 'convert json to xlsx', 'json to csv', 'data analyst tools', 'json converter for data analysts', 'no-code json converter', 'secure json converter', 'json to excel free', 'flatten nested json', 'json to excel no upload', 'json to excel offline'],

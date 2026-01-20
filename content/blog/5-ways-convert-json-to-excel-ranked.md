@@ -252,7 +252,7 @@ JsonExport is a **client-side web app** that processes JSON entirely in your bro
 ### Pros ✅
 
 - **100% private** – Client-side processing (GDPR/HIPAA compliant)
-- **No file size limit** – Handles 50MB+ files smoothly
+- **No file size limit** – Handles 100MB+ files smoothly
 - **Free forever** – No hidden fees, no premium tiers
 - **No coding required** – Visual interface
 - **Auto-unescape** – Fixes double-encoded JSON automatically
