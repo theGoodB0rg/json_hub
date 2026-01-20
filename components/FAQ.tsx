@@ -20,7 +20,7 @@ const faqs: FAQItem[] = [
     },
     {
         question: "What file sizes work best?",
-        answer: "JsonExport works best with files up to 1MB (most API exports and everyday files). For larger files, performance depends on your device. For very large datasets (10MB+), we recommend Python with Pandas - see our guide for instructions."
+        answer: "JsonExport handles files up to 50MB smoothly (tested with ~100,000 rows). For everyday files under 10MB, it's instant. For very large datasets (100MB+), we recommend Python with Pandas - see our guide for instructions."
     },
     {
         question: "What's the difference between flat and nested export?",
