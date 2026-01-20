@@ -286,7 +286,7 @@ The `[object Object]` error happens because Excel can't natively handle nested J
 
 For 95% of data analysts, **JsonExport is the fastest solution**.
 
-[Try JsonExport Now (Free Forever)](https://jsonexport.com)
+[Try JsonExport Now (Free, No Signup)](https://jsonexport.com)
 
 ---
 
