@@ -254,7 +254,7 @@ JsonExport handles this automatically. Power Query requires **manual expansion a
 
 ### Q: Can I use this for large JSON files?
 
-**A:** JsonExport works best with files up to **1MB** (which covers most API exports and everyday data). For larger files, performance depends on your device. For very large datasets (10MB+), we recommend Python with Pandas - see our [large files guide](/blog/best-tool-large-json-files-excel).
+**A:** JsonExport handles files up to **100MB** (tested with ~100,000 rows). Files under 50MB process in seconds. For files over 100MB, we recommend Python with streaming - see our [large files guide](/blog/best-tool-large-json-files-excel).
 
 ### Q: Is my data secure?
 

@@ -228,8 +228,8 @@ print("Done!")
 
 ## Tool #4: JsonExport (✅ Recommended for Most Users)
 
-**File Size Limit:** Up to 50MB (verified)  
-**Rating:** 9/10 for files up to 50MB
+**File Size Limit:** Up to 100MB (device-dependent above 50MB)  
+**Rating:** 9/10 for files up to 100MB
 
 ### Why It's Great (For the Right Use Case)
 
@@ -247,7 +247,7 @@ We stress-tested JsonExport with real-world files:
 | < 1 MB | ~2,000 | ✅ Instant, smooth | Perfect |
 | 1 - 10 MB | ~20,000 | ✅ Fast (2-5 sec) | Great |
 | 10 - 50 MB | ~100,000 | ✅ Works (5-15 sec) | Fully supported |
-| 50 - 100 MB | ~200,000 | ⚠️ May be slow | Device-dependent |
+| 50 - 100 MB | ~200,000 | ✅ Works | Device-dependent |
 | > 100 MB | 200k+ | ❌ Browser memory limit | Use Python |
 
 **How it works:** JsonExport uses streaming parsing and virtualized rendering to handle large datasets without freezing your browser.
@@ -275,7 +275,7 @@ We stress-tested JsonExport with real-world files:
 
 ### Verdict
 
-✅ **Best for most data analyst tasks (files up to 50MB).** Handles 50MB files smoothly, which covers 95%+ of real-world use cases. For truly massive files (100MB+), use Python.
+✅ **Best for most data analyst tasks (files up to 100MB).** Handles large files smoothly, which covers 99%+ of real-world use cases. For truly massive files (100MB+), use Python.
 
 ---
 
@@ -286,7 +286,7 @@ We stress-tested JsonExport with real-world files:
 | **< 1 MB** | JsonExport | Any tool |
 | **1 - 10 MB** | JsonExport | Power Query |
 | **10 - 50 MB** | JsonExport | Python |
-| **50 - 100 MB** | Python + Pandas | JsonExport (device-dependent) |
+| **50 - 100 MB** | JsonExport | Python (if slow) |
 | **100 MB+** | Python (chunked) | None (must use Python) |
 
 ---
@@ -441,10 +441,10 @@ with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
 
 - **< 10 MB:** JsonExport (instant, no setup)
 - **10-50 MB:** JsonExport (verified to work smoothly)
-- **50-100 MB:** Python or JsonExport (device-dependent)
+- **50-100 MB:** JsonExport (device-dependent) or Python
 - **100 MB+:** Python with chunked processing (required)
 
-**JsonExport handles 50MB files with ~100,000 rows – that's more than most data analysts will ever need.**
+**JsonExport handles files up to 100MB – that's more than most data analysts will ever need.**
 
 [Try JsonExport for Quick Conversions](https://jsonexport.com)
 

@@ -23,7 +23,7 @@ export function LargeFileUpsell({ isOpen, onClose, onProceedAnyway, fileSize }: 
                         Large File Detected ({fileSizeMB}MB)
                     </DialogTitle>
                     <DialogDescription>
-                        Browser-based tools work best with files under 1MB. For larger files, we recommend these specialized tools:
+                        Files over 100MB may exceed browser memory limits. For best results with very large files, consider these specialized tools:
                     </DialogDescription>
                 </DialogHeader>
 
@@ -93,7 +93,7 @@ export function LargeFileUpsell({ isOpen, onClose, onProceedAnyway, fileSize }: 
                 </div>
 
                 <p className="text-xs text-muted-foreground text-center">
-                    JsonExport works best with API responses, webhook payloads, and small exports.
+                    JsonExport handles files up to 100MB. For larger datasets, these tools offer streaming processing.
                 </p>
             </DialogContent>
         </Dialog>
