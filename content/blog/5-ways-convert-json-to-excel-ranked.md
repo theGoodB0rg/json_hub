@@ -253,7 +253,7 @@ JsonExport is a **client-side web app** that processes JSON entirely in your bro
 
 - **100% private** – Client-side processing (GDPR/HIPAA compliant)
 - **No file size limit** – Handles 100MB+ files smoothly
-- **Free forever** – No hidden fees, no premium tiers
+- **Free to use** – No signup required, no premium tiers
 - **No coding required** – Visual interface
 - **Auto-unescape** – Fixes double-encoded JSON automatically
 - **Three view modes:**
@@ -502,7 +502,7 @@ JSON with arrays inside arrays:
 4. **Online Converters** – Only for non-sensitive public data (5/10)
 5. **Manual Copy-Paste** – Just... no (2/10)
 
-[Try JsonExport Now (Free Forever)](https://jsonexport.com)
+[Try JsonExport Now (Free, No Signup)](https://jsonexport.com)
 
 ---
 

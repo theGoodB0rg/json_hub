@@ -24,7 +24,7 @@ const comparisonData: ComparisonItem[] = [
         codingRequired: false,
         privacy: "Excellent",
         fileSizeLimit: "Up to 1MB",
-        cost: "Free Forever",
+        cost: "Free to Use",
         learningCurve: "Easy",
         highlight: true,
     },
@@ -158,7 +158,7 @@ export function ComparisonTable() {
                     <li><strong>No upload:</strong> Your data never leaves your browser (100% client-side)</li>
                     <li><strong>No upload needed:</strong> Your data never leaves your browser</li>
                     <li><strong>No coding:</strong> Simple drag-and-drop interface</li>
-                    <li><strong>No cost:</strong> Free forever, no hidden fees or premium tiers</li>
+                    <li><strong>No cost:</strong> Free to use, no signup or premium tiers</li>
                 </ul>
             </div>
         </div>

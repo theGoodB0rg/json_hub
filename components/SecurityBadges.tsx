@@ -24,8 +24,8 @@ const badges: Badge[] = [
     },
     {
         icon: DollarSign,
-        label: "Free Forever",
-        description: "No hidden fees"
+        label: "Free to Use",
+        description: "No signup needed"
     }
 ];
 

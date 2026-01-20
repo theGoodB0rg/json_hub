@@ -28,7 +28,7 @@ const faqs = [
     },
     {
         question: "Is JsonExport free like Power Query?",
-        answer: "Yes, JsonExport is 100% free forever with no hidden fees or premium tiers. Unlike some online converters, there's no file size paywall."
+        answer: "Yes, JsonExport is 100% free to use with no signup required. Unlike some online converters, there's no file size paywall."
     }
 ];
 
