@@ -265,7 +265,7 @@ We stress-tested JsonExport with real-world files:
 - No coding required
 - 100% private (no server upload)
 - Auto-handles nested structures
-- Free forever
+- Free to use, no signup
 
 ### Cons ❌
 
