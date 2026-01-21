@@ -26,7 +26,7 @@ describe('smartParse', () => {
             const result = validateAndParse(doubleEncoded);
 
             expect(result.success).toBe(true);
-            expect(result.data).toEqual(original);
+            expect(result.data).toEqual([original]);
         });
 
         it('should auto-unescape triple-encoded JSON', () => {
@@ -37,7 +37,7 @@ describe('smartParse', () => {
             const result = validateAndParse(tripleEncoded);
 
             expect(result.success).toBe(true);
-            expect(result.data).toEqual(original);
+            expect(result.data).toEqual([original]);
         });
 
         it('should handle empty input', () => {

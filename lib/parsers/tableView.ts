@@ -24,6 +24,7 @@ function isPrimitive(value: any): boolean {
  * Detects if an array contains only primitive values
  */
 function isPrimitiveArray(arr: any[]): boolean {
+    if (arr.length === 0) return false;
     return arr.every(item => isPrimitive(item));
 }
 
@@ -233,47 +234,82 @@ export function jsonToTableViewStructure(data: any): {
         return { headers: [], rows: [] };
     }
 
-    // Analyze first item to determine structure
-    const firstItem = data[0];
-    const headers: string[] = [];
-    const cells: Record<string, 'primitive' | 'table'> = {};
+    // Phase 1: Scan ALL items to build a unified schema
+    // We need to know if a column should be treated as a table (complex) or primitive ANYWHERE in the dataset
+    const schema = new Map<string, 'primitive' | 'table'>();
+    const allHeaders = new Set<string>();
 
-    for (const [key, value] of Object.entries(firstItem)) {
-        headers.push(key);
+    for (const item of data) {
+        for (const [key, value] of Object.entries(item)) {
+            allHeaders.add(key);
 
-        if (Array.isArray(value) && value.length > 0 && !isPrimitive(value[0])) {
-            cells[key] = 'table';
-        } else {
-            cells[key] = 'primitive';
+            // If we've already decided this is a table, skip checking
+            if (schema.get(key) === 'table') continue;
+
+            // Check if this value implies a table structure
+            // It's a table if it's an array and NOT a primitive array
+            // Note: We intentionally handle empty arrays as "potential tables" if another row has a real table
+            // But if ALL rows have empty arrays for this key, it defaults to primitive? 
+            // Better strategy: 
+            // - If we see a complex array (objects/nested arrays), mark as 'table'.
+            // - If we see a primitive array or primitive value, keep as 'primitive' (unless already marked table).
+            // - If we see an empty array, it's ambiguous, but if we later see a complex array, it becomes table.
+
+            if (Array.isArray(value) && value.length > 0 && !isPrimitive(value[0])) {
+                schema.set(key, 'table');
+            } else if (!schema.has(key)) {
+                // Default to primitive if not yet seen
+                schema.set(key, 'primitive');
+            }
         }
     }
 
-    // Build rows
+    const headers = Array.from(allHeaders);
+
+    // Phase 2: Build rows using the unified schema
     const rows = data.map((item: any) => {
         const row: Record<string, TableViewCell> = {};
 
         for (const header of headers) {
             const value = item[header];
+            const type = schema.get(header) || 'primitive';
 
-            if (cells[header] === 'table' && Array.isArray(value)) {
-                // Create nested table structure
-                if (value.length === 0) {
+            if (type === 'table') {
+                // It's a table column. Value SHOULD be an array of objects.
+                if (Array.isArray(value)) {
+                    if (value.length === 0) {
+                        row[header] = { type: 'primitive', value: null };
+                    } else if (isPrimitiveArray(value)) {
+                        // Edge case: One row has objects (making it a table column), this row has primitives.
+                        // We should probably convert primitives to a table structure or just show as value?
+                        // For consistency with "Table View", let's try to show as value if possible, 
+                        // but strictly the UI expects tableData for 'table' type cells usually?
+                        // Actually, the UI might handle 'primitive' cells in a 'table' column gracefully?
+                        // Let's assume the UI checks the cell.type, not the column type.
+                        row[header] = { type: 'primitive', value: value.join(', ') };
+                    } else {
+                        const nestedHeaders = Object.keys(value[0]);
+                        row[header] = {
+                            type: 'table',
+                            tableData: {
+                                headers: nestedHeaders,
+                                rows: value
+                            }
+                        };
+                    }
+                } else if (value === null || value === undefined) {
                     row[header] = { type: 'primitive', value: null };
                 } else {
-                    const nestedHeaders = Object.keys(value[0]);
-                    row[header] = {
-                        type: 'table',
-                        tableData: {
-                            headers: nestedHeaders,
-                            rows: value
-                        }
-                    };
+                    // Should not happen for table column usually, but fallback
+                    row[header] = { type: 'primitive', value: String(value) };
                 }
-            } else if (Array.isArray(value) && isPrimitiveArray(value)) {
-                // Format primitive arrays
-                row[header] = { type: 'primitive', value: value.join(', ') };
             } else {
-                row[header] = { type: 'primitive', value };
+                // Primitive column
+                if (Array.isArray(value)) {
+                    row[header] = { type: 'primitive', value: value.join(', ') };
+                } else {
+                    row[header] = { type: 'primitive', value };
+                }
             }
         }
 
