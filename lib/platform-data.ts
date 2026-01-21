@@ -6,6 +6,7 @@ export interface ConverterPageConfig {
     description: string; // Meta description
     h1: string; // H1 Heading
     subheading: string;
+    tldr?: string; // Zero-click answer for AI
     content: {
         intro: string;
         features: string[];
@@ -25,6 +26,7 @@ export const converterPages: ConverterPageConfig[] = [
         description: 'Instantly convert Stripe API responses (Charges, Invoices, Customers) to Excel. Flatten nested metadata and line items automatically.',
         h1: 'Stripe JSON to Excel Converter',
         subheading: 'Turn raw Stripe API logs into clean, readable financial reports.',
+        tldr: "To convert Stripe JSON to Excel, simply copy the full JSON response from your Stripe Developer Dashboard logs and paste it into the converter below. The tool automatically flattens nested metadata and line items into separate columns.",
         content: {
             intro: 'Stripe API data is powerful but difficult to read in its raw JSON format. Nested objects like `metadata`, `shipping`, and `payment_method_details` make it hard to analyze in spreadsheets.',
             features: [
@@ -42,6 +44,14 @@ export const converterPages: ConverterPageConfig[] = [
             {
                 question: "Does this handle nested Stripe metadata?",
                 answer: "Yes! Our 'Smart Flattener' algorithm detects nested objects like metadata and creates separate columns (e.g., metadata.order_id, metadata.customer_ref) automatically."
+            },
+            {
+                question: "Is my Stripe financial data secure?",
+                answer: "Yes. This tool runs 100% in your browser. Your financial data is never sent to any server, making it safe for sensitive PII and transaction details."
+            },
+            {
+                question: "Can I convert Stripe Invoices to CSV?",
+                answer: "Absolutely. Paste the JSON for an Invoice object (or a list of Invoices), and we'll generate a CSV or Excel file with all line items detailed."
             }
         ]
     },
@@ -52,6 +62,7 @@ export const converterPages: ConverterPageConfig[] = [
         description: 'Export Shopify Orders and Products JSON to CSV. Smart handling for Line Items, Variants, and Tax Lines.',
         h1: 'Shopify JSON to CSV Converter',
         subheading: 'Visualize Shopify Order structures and Line Items in flat CSV format.',
+        tldr: "Convert Shopify JSON to CSV by pasting your Admin API response (e.g., orders.json) into the tool. It automatically creates rows for each Line Item while preserving order-level details.",
         content: {
             intro: 'Shopify JSON objects are deeply nested. Orders contain Line Items, which contain Tax Lines and Discount Allocations. Standard converters break this structure.',
             features: [
@@ -65,6 +76,14 @@ export const converterPages: ConverterPageConfig[] = [
             {
                 question: "Can I convert Shopify Orders JSON to CSV?",
                 answer: "Yes. Simply paste your Shopify Admin API response (e.g., from the /orders.json endpoint) into the editor to get a clean CSV export."
+            },
+            {
+                question: "How do I handle multiple line items per order?",
+                answer: "Our converter automatically 'unwinds' the line_items array, creating a row for each item while repeating the parent order information, perfect for pivot tables."
+            },
+            {
+                question: "Do I need a Shopify App or API Token?",
+                answer: "No. You don't need to install any app. Just copy the JSON data you already have and paste it here."
             }
         ]
     },
@@ -75,6 +94,7 @@ export const converterPages: ConverterPageConfig[] = [
         description: 'Convert Jira API exports to Excel. Analyze issues, comments, and sprint cycles in a clean spreadsheet.',
         h1: 'Jira JSON to Excel Converter',
         subheading: 'Analyze your team\'s velocity by converting Jira JSON dumps to Excel.',
+        tldr: "To analyze Jira data in Excel, simply export your issues as JSON from the Jira Advanced Search or API, then paste the result here. We extract custom fields into their own columns for easy sorting.",
         content: {
             intro: 'Jira exports allow for deep analysis of ticket velocity and sprint health, but the JSON format is complex. Convert it to Excel to build your own custom dashboards.',
             features: [
@@ -88,6 +108,10 @@ export const converterPages: ConverterPageConfig[] = [
             {
                 question: "How to specific custom fields from Jira JSON?",
                 answer: "Our converter flattens the 'fields' object, so 'fields.customfield_1001' becomes a column you can easily rename and analyze in Excel."
+            },
+            {
+                question: "Can I visualize Sprint burndown charts?",
+                answer: "Yes. Once converted to Excel, you can use the 'Created' and 'Resolution Date' columns to build custom burndown or velocity charts."
             }
         ]
     },
@@ -98,6 +122,7 @@ export const converterPages: ConverterPageConfig[] = [
         description: 'Export Trello Boards and Cards to CSV. Backup your specialized Trello workflows to a universal format.',
         h1: 'Trello JSON to CSV Converter',
         subheading: 'Backup and analyze your Trello Boards in standard CSV format.',
+        tldr: "Quickly convert Trello JSON to CSV by appending '.json' to your board URL, copying the data, and pasting it here. We link Cards to Lists and Labels suitable for import into other tools.",
         content: {
             intro: 'Trello offers a JSON export for every board. This tool lets you turn that backup into a readable CSV database of all your cards, lists, and members.',
             features: [
@@ -111,6 +136,10 @@ export const converterPages: ConverterPageConfig[] = [
             {
                 question: "How do I get JSON from Trello?",
                 answer: "Add '.json' to the end of any Trello Board URL (e.g., trello.com/b/boardID.json) to instantly get the raw data, then paste it here."
+            },
+            {
+                question: "Can I see which list a card belongs to?",
+                answer: "Yes. Trello stores lists separately, but our tool automatically looks up the 'idList' for each card and resolves it to a readable List Name in your CSV."
             }
         ]
     },
@@ -121,6 +150,7 @@ export const converterPages: ConverterPageConfig[] = [
         description: 'Convert YouTube Data API responses to Excel. Analyze video performance, comments, and playlists.',
         h1: 'YouTube Analytics JSON to Excel',
         subheading: 'Deep dive into your channel performance with custom Excel analysis.',
+        tldr: "Export more than 500 rows of analytics data by taking the JSON response from YouTube Studio (or Data API) and converting it to Excel here. Analyze video tags, earnings, and watch time in bulk.",
         content: {
             intro: 'The YouTube Data API provides rich insights that aren\'t always available in YouTube Studio. Export raw data to Excel to build custom growth models.',
             features: [
@@ -134,6 +164,10 @@ export const converterPages: ConverterPageConfig[] = [
             {
                 question: "Is this safe for channel data?",
                 answer: "Yes. Since we process everything in the browser, your channel data never touches our servers. It's the safest way to convert private analytics data."
+            },
+            {
+                question: "How do I get my YouTube Comments into Excel?",
+                answer: "Use the YouTube Data API to fetch 'commentThreads'. Paste that JSON here to get a spreadsheet of all comments, authors, and like counts."
             }
         ]
     },
