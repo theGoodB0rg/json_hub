@@ -1,6 +1,7 @@
 
 export interface ConverterPageConfig {
     slug: string; // e.g., 'stripe-json-to-excel'
+    platformName: string; // e.g., 'Stripe'
     title: string; // Meta title
     description: string; // Meta description
     h1: string; // H1 Heading
@@ -15,9 +16,11 @@ export interface ConverterPageConfig {
     }[];
 }
 
+// Top 10 High-Value Platforms for "Drip Feed" Launch
 export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'stripe-json-to-excel',
+        platformName: 'Stripe',
         title: 'Convert Stripe JSON to Excel (XLSX) - Free & Private',
         description: 'Instantly convert Stripe API responses (Charges, Invoices, Customers) to Excel. Flatten nested metadata and line items automatically.',
         h1: 'Stripe JSON to Excel Converter',
@@ -44,6 +47,7 @@ export const converterPages: ConverterPageConfig[] = [
     },
     {
         slug: 'shopify-json-to-csv',
+        platformName: 'Shopify',
         title: 'Convert Shopify JSON to CSV - Order & Product Export',
         description: 'Export Shopify Orders and Products JSON to CSV. Smart handling for Line Items, Variants, and Tax Lines.',
         h1: 'Shopify JSON to CSV Converter',
@@ -66,6 +70,7 @@ export const converterPages: ConverterPageConfig[] = [
     },
     {
         slug: 'jira-json-to-excel',
+        platformName: 'Jira',
         title: 'Jira JSON to Excel Converter - Issues & Sprints',
         description: 'Convert Jira API exports to Excel. Analyze issues, comments, and sprint cycles in a clean spreadsheet.',
         h1: 'Jira JSON to Excel Converter',
@@ -88,6 +93,7 @@ export const converterPages: ConverterPageConfig[] = [
     },
     {
         slug: 'trello-json-to-csv',
+        platformName: 'Trello',
         title: 'Trello JSON to CSV - Card & Board Export',
         description: 'Export Trello Boards and Cards to CSV. Backup your specialized Trello workflows to a universal format.',
         h1: 'Trello JSON to CSV Converter',
@@ -110,6 +116,7 @@ export const converterPages: ConverterPageConfig[] = [
     },
     {
         slug: 'youtube-analytics-json-to-excel',
+        platformName: 'YouTube',
         title: 'YouTube Analytics JSON to Excel Converter',
         description: 'Convert YouTube Data API responses to Excel. Analyze video performance, comments, and playlists.',
         h1: 'YouTube Analytics JSON to Excel',
@@ -132,6 +139,7 @@ export const converterPages: ConverterPageConfig[] = [
     },
     {
         slug: 'slack-json-to-csv',
+        platformName: 'Slack',
         title: 'Convert Slack Export JSON to CSV - Channels & Messages',
         description: 'Convert Slack workspace exports to CSV. Analyze message history, user activity, and channel logs in Excel.',
         h1: 'Slack JSON to CSV Converter',
@@ -154,6 +162,7 @@ export const converterPages: ConverterPageConfig[] = [
     },
     {
         slug: 'discord-json-to-excel',
+        platformName: 'Discord',
         title: 'Discord Chat JSON to Excel Converter',
         description: 'Export Discord chat history to Excel. Analyze community engagement, user activity, and message trends.',
         h1: 'Discord JSON to Excel Converter',
@@ -176,6 +185,7 @@ export const converterPages: ConverterPageConfig[] = [
     },
     {
         slug: 'mongodb-bson-json-to-excel',
+        platformName: 'MongoDB',
         title: 'MongoDB Export JSON to Excel Converter',
         description: 'Convert MongoDB exports (JSON/BSON) to Excel. Flattens deep objects and arrays for easier analysis.',
         h1: 'MongoDB JSON to Excel Converter',
@@ -198,6 +208,7 @@ export const converterPages: ConverterPageConfig[] = [
     },
     {
         slug: 'postgresql-json-to-csv',
+        platformName: 'PostgreSQL',
         title: 'PostgreSQL JSON Column to CSV Converter',
         description: 'Export PostgreSQL JSON/JSONB columns to CSV. Flatten jsonb fields into separate columns for analysis.',
         h1: 'Postgres JSON to CSV Converter',
@@ -220,6 +231,7 @@ export const converterPages: ConverterPageConfig[] = [
     },
     {
         slug: 'notion-json-to-excel',
+        platformName: 'Notion',
         title: 'Notion Database JSON to Excel Converter',
         description: 'Convert Notion API exports to Excel. Backup your Notion databases and visualize properties in spreadsheets.',
         h1: 'Notion JSON to Excel Converter',
