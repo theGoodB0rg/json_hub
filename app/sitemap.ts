@@ -20,6 +20,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.9,
     }))
 
+    const staticPages: MetadataRoute.Sitemap = [
+        {
+            url: 'https://jsonexport.com/alternatives/power-query',
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
+            url: 'https://jsonexport.com/alternatives/python-pandas',
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
+            url: 'https://jsonexport.com/privacy-security',
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        }
+    ]
+
     return [
         {
             url: 'https://jsonexport.com',
@@ -28,6 +49,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 1,
         },
         ...converterEntries,
+        ...staticPages,
         ...blogEntries,
     ]
 }
