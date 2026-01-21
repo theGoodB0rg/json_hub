@@ -129,7 +129,7 @@ describe('Column Rename Operations', () => {
             if (!(oldName in row)) return row;
             const newRow = { ...row };
             newRow[newName] = newRow[oldName];
-            delete newRow[oldName];
+            delete (newRow as any)[oldName];
             return newRow;
         });
 
