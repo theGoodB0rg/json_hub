@@ -9,10 +9,19 @@ interface Props {
 }
 
 export function RelatedTools({ currentSlug }: Props) {
-    // Show up to 6 other tools, randomized for better coverage
+    // Deterministic shuffle based on the current slug
+    // This prevents hydration mismatches by ensuring the server and client
+    // always generate the same list for a given page.
+    const seed = currentSlug.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
     const related = converterPages
         .filter(p => p.slug !== currentSlug)
-        .sort(() => Math.random() - 0.5) // Simple shuffle
+        .sort((a, b) => {
+            // Simple pseudo-random sort stable for the same seed
+            const hashA = (a.slug.length + seed) % 13;
+            const hashB = (b.slug.length + seed) % 13;
+            return hashA - hashB;
+        })
         .slice(0, 6);
 
     return (

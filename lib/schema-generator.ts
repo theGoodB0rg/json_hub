@@ -59,3 +59,24 @@ export function generateHowToSchema(pageConfig: ConverterPageConfig) {
         ]
     };
 }
+
+export function generateBreadcrumbSchema(items: { name: string; item: string }[]) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://jsonexport.com"
+            },
+            ...items.map((item, index) => ({
+                "@type": "ListItem",
+                "position": index + 2, // Start at 2 since Home is 1
+                "name": item.name,
+                "item": `https://jsonexport.com${item.item}`
+            }))
+        ]
+    };
+}
