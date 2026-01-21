@@ -55,7 +55,7 @@ export default async function Image({ params }: Props) {
 
     // Font
     const interSemiBold = await fetch(
-        new URL('https://github.com/google/fonts/raw/main/ofl/inter/static/Inter-SemiBold.ttf', import.meta.url)
+        'https://github.com/google/fonts/raw/main/ofl/inter/static/Inter-SemiBold.ttf'
     ).then((res) => res.arrayBuffer())
 
     return new ImageResponse(
