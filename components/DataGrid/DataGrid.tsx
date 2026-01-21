@@ -134,12 +134,22 @@ export function DataGrid() {
 
     const { rows } = table.getRowModel();
 
-    // Virtualizer instance
+    // Platform Detection Logic (Simple heuristic)
+    const detectedPlatform = useMemo(() => {
+        if (!flatData || flatData.length === 0) return null;
+        const keys = Object.keys(flatData[0]);
+        if (keys.some(k => k.includes('shopify') || k === 'order_number')) return 'shopify';
+        if (keys.some(k => k.includes('jira') || k === 'issue_key')) return 'jira';
+        if (keys.some(k => k.includes('mongo') || k === '_id')) return 'mongodb';
+        return null;
+    }, [flatData]);
+
+    // Virtualizer instance - Tuned for performance on large datasets
     const rowVirtualizer = useVirtualizer({
         count: rows.length,
         getScrollElement: () => tableContainerRef.current,
-        estimateSize: () => 40,
-        overscan: 5,
+        estimateSize: () => 35, // Tighter row height for Excel-like density
+        overscan: 20, // Increased overscan for smoother fast scrolling
     });
 
     // Handle Drag End for Columns - memoized to prevent re-renders
@@ -167,10 +177,22 @@ export function DataGrid() {
 
     if (flatData.length === 0) {
         return (
-            <Card className="h-full flex items-center justify-center p-8">
-                <div className="text-center text-muted-foreground">
-                    <p className="text-lg font-semibold mb-2">No data to display</p>
-                    <p className="text-sm">Parse JSON in the input pane to see the table preview</p>
+            <Card className="h-full flex flex-col items-center justify-center p-8 bg-muted/10 border-dashed border-2">
+                <div className="text-center space-y-4 max-w-sm">
+                    <div className="w-16 h-16 bg-muted rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-sm">
+                        <span className="text-3xl grayscale opacity-50">📊</span>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold tracking-tight mb-2">Ready for Data</h2>
+                        <p className="text-sm text-muted-foreground">
+                            Drag and drop your JSON files to view them in our high-performance grid.
+                        </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-4 pt-4 opacity-60">
+                        <span className="text-xs font-medium bg-secondary px-2 py-1 rounded">Shopify</span>
+                        <span className="text-xs font-medium bg-secondary px-2 py-1 rounded">Jira</span>
+                        <span className="text-xs font-medium bg-secondary px-2 py-1 rounded">MongoDB</span>
+                    </div>
                 </div>
             </Card>
         );
@@ -196,7 +218,20 @@ export function DataGrid() {
                 </div>
 
                 {/* Replaces old toolbar controls */}
-                <DataGridToolbar />
+                <div className="flex items-center gap-4">
+                    {detectedPlatform && (
+                        <div className="flex items-center gap-2 px-3 py-1 bg-muted/50 rounded-full border border-border/50 animate-in fade-in zoom-in duration-300">
+                            {/* You would ideally use a proper icon set here, using emoji for now as proof of concept */}
+                            <span className="text-sm">
+                                {detectedPlatform === 'shopify' ? '🛍️ Shopify' :
+                                    detectedPlatform === 'jira' ? '🔷 Jira' :
+                                        detectedPlatform === 'mongodb' ? '🍃 MongoDB' : '📄'}
+                            </span>
+                            <span className="text-xs font-medium text-muted-foreground">Detected</span>
+                        </div>
+                    )}
+                    <DataGridToolbar />
+                </div>
             </div>
 
             <div

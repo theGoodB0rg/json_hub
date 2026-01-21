@@ -57,7 +57,7 @@ export default function PrivacyPage() {
                 <section className="mb-16">
                     <h2 className="text-3xl font-bold mb-6 text-center">The Architecture of Privacy</h2>
                     <p className="text-lg text-muted-foreground mb-10 text-center max-w-2xl mx-auto">
-                        Most online converters are "store-and-forward". We are "local-first".
+                        Most online converters are &quot;store-and-forward&quot;. We are &quot;local-first&quot;.
                         Here is the technical difference that guarantees your security.
                     </p>
 
@@ -128,7 +128,7 @@ export default function PrivacyPage() {
                             <Database className="w-10 h-10 text-blue-500 mb-4" />
                             <h3 className="font-semibold text-lg mb-2">Unlimited File Size</h3>
                             <p className="text-muted-foreground text-sm">
-                                Since we don't pay for server storage, we don't cap your file size. Convert 500MB+ JSON files legally and for free.
+                                Since we don&apos;t pay for server storage, we don&apos;t cap your file size. Convert 500MB+ JSON files legally and for free.
                             </p>
                         </Card>
                         <Card className="p-6">
