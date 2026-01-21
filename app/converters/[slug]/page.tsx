@@ -8,6 +8,8 @@ import { IntroSection } from '@/components/converters/IntroSection';
 import { FeaturesGrid } from '@/components/converters/FeaturesGrid';
 import { FAQSection } from '@/components/converters/FAQSection';
 import { DemoPreview } from '@/components/converters/DemoPreview';
+import { RelatedTools } from '@/components/converters/RelatedTools';
+import { generateSoftwareApplicationSchema, generateHowToSchema } from '@/lib/schema-generator';
 
 interface Props {
     params: {
@@ -44,6 +46,9 @@ export default function ConverterPage({ params }: Props) {
         notFound();
     }
 
+    const softwareSchema = generateSoftwareApplicationSchema(pageConfig);
+    const howToSchema = generateHowToSchema(pageConfig);
+
     return (
         <>
             <ConverterApp
@@ -66,27 +71,20 @@ export default function ConverterPage({ params }: Props) {
 
                 <FAQSection pageConfig={pageConfig} />
 
-                {/* Schema.org for this specific tool */}
+                {/* Structured Data */}
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "SoftwareApplication",
-                            "name": pageConfig.title,
-                            "applicationCategory": "DeveloperApplication",
-                            "offers": {
-                                "@type": "Offer",
-                                "price": "0",
-                                "priceCurrency": "USD"
-                            },
-                            "description": pageConfig.description,
-                        })
+                        __html: JSON.stringify([softwareSchema, howToSchema])
                     }}
                 />
 
                 {/* FAQ Schema for rich snippets */}
+
                 <FAQSchema faqs={pageConfig.faqs} />
+
+                <RelatedTools currentSlug={pageConfig.slug} />
+
             </div>
         </>
     );
