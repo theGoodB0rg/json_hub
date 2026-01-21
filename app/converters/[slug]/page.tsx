@@ -10,7 +10,8 @@ import { FAQSection } from '@/components/converters/FAQSection';
 import { DemoPreview } from '@/components/converters/DemoPreview';
 import { RelatedTools } from '@/components/converters/RelatedTools';
 import { PlatformIcon } from '@/components/converters/PlatformIcon';
-import { generateSoftwareApplicationSchema, generateHowToSchema } from '@/lib/schema-generator';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { generateSoftwareApplicationSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema-generator';
 
 interface Props {
     params: {
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: pageConfig.title,
         description: pageConfig.description,
         alternates: {
-            canonical: `/converters/${pageConfig.slug}`,
+            canonical: `https://jsonexport.com/converters/${pageConfig.slug}`,
         }
     };
 }
@@ -49,9 +50,22 @@ export default function ConverterPage({ params }: Props) {
 
     const softwareSchema = generateSoftwareApplicationSchema(pageConfig);
     const howToSchema = generateHowToSchema(pageConfig);
+    const breadcrumbSchema = generateBreadcrumbSchema([
+        { name: "Converters", item: "/#converters" }, // Anchor to home converters section or could be a dedicated page
+        { name: `${pageConfig.platformName} to Excel`, item: `/converters/${pageConfig.slug}` }
+    ]);
+
+    const breadcrumbItems = [
+        { label: "Converters", href: "/#converters" },
+        { label: `${pageConfig.platformName} to Excel`, href: `/converters/${pageConfig.slug}`, active: true }
+    ];
 
     return (
         <>
+            <div className="container mx-auto px-4 max-w-5xl">
+                <Breadcrumbs items={breadcrumbItems} />
+            </div>
+
             <ConverterApp
                 heading={
                     <div className="flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
@@ -79,7 +93,7 @@ export default function ConverterPage({ params }: Props) {
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
-                        __html: JSON.stringify([softwareSchema, howToSchema])
+                        __html: JSON.stringify([softwareSchema, howToSchema, breadcrumbSchema])
                     }}
                 />
 

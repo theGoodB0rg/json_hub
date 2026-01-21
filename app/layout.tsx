@@ -15,7 +15,7 @@ const inter = Inter({
 export const metadata: Metadata = {
     metadataBase: new URL('https://jsonexport.com'),
     alternates: {
-        canonical: './',
+        canonical: 'https://jsonexport.com',
     },
     title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
     description: 'Convert JSON to Excel instantly. 100% private (no upload), handles files up to 100MB, free to use with no signup. Ideal for data analysts who need quick, secure conversions without coding.',
