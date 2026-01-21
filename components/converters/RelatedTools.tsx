@@ -2,6 +2,7 @@
 import { converterPages, ConverterPageConfig } from "@/lib/platform-data";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { PlatformIcon } from '@/components/converters/PlatformIcon';
 
 interface Props {
     currentSlug: string;
@@ -19,13 +20,16 @@ export function RelatedTools({ currentSlug }: Props) {
             <div className="grid md:grid-cols-3 gap-6">
                 {related.map((tool) => (
                     <Link key={tool.slug} href={`/converters/${tool.slug}`} className="block group">
-                        <Card className="p-4 h-full hover:border-primary/50 transition-colors">
-                            <h4 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                                {tool.platformName} to Excel
-                            </h4>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                                {tool.description}
-                            </p>
+                        <Card className="p-4 h-full hover:border-primary/50 transition-colors flex items-center gap-4">
+                            <PlatformIcon platform={tool.platformName} className="w-8 h-8 opacity-80 group-hover:opacity-100 transition-opacity" />
+                            <div>
+                                <h4 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                                    {tool.platformName} to Excel
+                                </h4>
+                                <p className="text-xs text-muted-foreground line-clamp-1">
+                                    {tool.description}
+                                </p>
+                            </div>
                         </Card>
                     </Link>
                 ))}
