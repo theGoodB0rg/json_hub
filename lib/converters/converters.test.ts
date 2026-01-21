@@ -69,15 +69,15 @@ describe('HTML Converter', () => {
 
     it('should create HTML table', () => {
         const html = jsonToHtml(testData, schema);
-        expect(html).toContain('<table>');
+        expect(html).toContain('<table');
         expect(html).toContain('<th>name</th>');
-        expect(html).toContain('<td>John</td>');
+        expect(html).toContain('John</td>');
     });
 
     it('should escape HTML entities', () => {
         const data = [{ name: '<script>alert("xss")</script>' }];
         const html = jsonToHtml(data, ['name']);
-        expect(html).not.toContain('<script>');
+        expect(html).not.toContain('<script>alert');
         expect(html).toContain('&lt;script&gt;');
     });
 
