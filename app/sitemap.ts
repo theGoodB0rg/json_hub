@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getSortedPostsData } from '@/lib/blog'
 
-import { converterPages } from '@/lib/converters'
+import { converterPages } from '@/lib/platform-data'
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const posts = getSortedPostsData()

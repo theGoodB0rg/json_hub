@@ -1,7 +1,7 @@
 
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { converterPages } from '@/lib/converters';
+import { converterPages } from '@/lib/platform-data';
 import { ConverterApp } from '@/components/ConverterApp';
 import { Card } from '@/components/ui/card';
 import { CheckCircle2, FileJson } from 'lucide-react';

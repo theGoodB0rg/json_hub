@@ -1,6 +1,6 @@
 import { ConverterApp } from "@/components/ConverterApp";
 import { ComparisonTable } from "@/components/ComparisonTable";
-import { converterPages } from "@/lib/converters";
+import { converterPages } from '@/lib/platform-data';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
