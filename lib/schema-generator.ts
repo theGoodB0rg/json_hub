@@ -11,8 +11,10 @@ export function generateSoftwareApplicationSchema(pageConfig: ConverterPageConfi
             "name": "JsonExport",
             "url": "https://jsonexport.com"
         },
-        "applicationCategory": "DeveloperApplication",
+        "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Any",
+        "inputFormat": "application/json",
+        "outputFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "offers": {
             "@type": "Offer",
             "price": "0",
@@ -25,7 +27,11 @@ export function generateSoftwareApplicationSchema(pageConfig: ConverterPageConfi
             "ratingValue": "4.8",
             "ratingCount": "1250"
         },
-        "featureList": pageConfig.content.features.join(", ")
+        "featureList": [
+            "100% Client-side Processing",
+            "Private & Secure",
+            ...pageConfig.content.features
+        ].join(", ")
     };
 }
 

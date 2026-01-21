@@ -9,9 +9,10 @@ interface Props {
 }
 
 export function RelatedTools({ currentSlug }: Props) {
-    // Show up to 6 other tools, excluding current
+    // Show up to 6 other tools, randomized for better coverage
     const related = converterPages
         .filter(p => p.slug !== currentSlug)
+        .sort(() => Math.random() - 0.5) // Simple shuffle
         .slice(0, 6);
 
     return (
