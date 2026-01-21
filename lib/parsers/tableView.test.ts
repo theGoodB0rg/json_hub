@@ -27,14 +27,14 @@ describe('expandToTableView', () => {
         expect(result.rows[0]).toMatchObject({
             sku: 'TSHIRT-001',
             name: 'Classic T-Shirt',
-            'size': 'S',
-            'color': 'Blue'
+            'variants.size': 'S',
+            'variants.color': 'Blue'
         });
         expect(result.rows[1]).toMatchObject({
             sku: 'TSHIRT-001',
             name: 'Classic T-Shirt',
-            'size': 'M',
-            'color': 'Red'
+            'variants.size': 'M',
+            'variants.color': 'Red'
         });
     });
 
@@ -77,21 +77,21 @@ describe('expandToTableView', () => {
         expect(result.rows).toHaveLength(3);
 
         expect(result.rows[0]).toMatchObject({
-            'products.sku': 'TSHIRT-001',
-            'products.variants.size': 'S',
-            'products.variants.stock': 10
+            'sku': 'TSHIRT-001',
+            'variants.size': 'S',
+            'variants.stock': 10
         });
 
         expect(result.rows[1]).toMatchObject({
-            'products.sku': 'TSHIRT-001',
-            'products.variants.size': 'M',
-            'products.variants.stock': 20
+            'sku': 'TSHIRT-001',
+            'variants.size': 'M',
+            'variants.stock': 20
         });
 
         expect(result.rows[2]).toMatchObject({
-            'products.sku': 'SHOE-002',
-            'products.variants.size': '9',
-            'products.variants.stock': 15
+            'sku': 'SHOE-002',
+            'variants.size': '9',
+            'variants.stock': 15
         });
     });
 
@@ -145,26 +145,27 @@ describe('expandToTableView', () => {
         expect(result.rows).toHaveLength(5);
 
         // Check first product's first variant
+        // Check first product's first variant
         expect(result.rows[0]).toMatchObject({
-            'products.sku': 'TSHIRT-001',
-            'products.name': 'Classic T-Shirt',
-            'products.price': 29.99,
-            'products.category': 'Apparel',
-            'products.tags': 'cotton, casual, bestseller',
-            'products.variants.size': 'S',
-            'products.variants.color': 'Blue',
-            'products.variants.stock': 15
+            'sku': 'TSHIRT-001',
+            'name': 'Classic T-Shirt',
+            'price': 29.99,
+            'category': 'Apparel',
+            'tags': 'cotton, casual, bestseller',
+            'variants.size': 'S',
+            'variants.color': 'Blue',
+            'variants.stock': 15
         });
 
         // Check second product's first variant
         expect(result.rows[3]).toMatchObject({
-            'products.sku': 'SHOE-002',
-            'products.name': 'Running Shoes',
-            'products.price': 89.99,
-            'products.tags': 'sports, running, comfort',
-            'products.variants.size': '9',
-            'products.variants.color': 'Black',
-            'products.variants.stock': 12
+            'sku': 'SHOE-002',
+            'name': 'Running Shoes',
+            'price': 89.99,
+            'tags': 'sports, running, comfort',
+            'variants.size': '9',
+            'variants.color': 'Black',
+            'variants.stock': 12
         });
     });
 
