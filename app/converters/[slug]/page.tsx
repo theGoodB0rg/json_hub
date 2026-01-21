@@ -9,6 +9,7 @@ import { FeaturesGrid } from '@/components/converters/FeaturesGrid';
 import { FAQSection } from '@/components/converters/FAQSection';
 import { DemoPreview } from '@/components/converters/DemoPreview';
 import { RelatedTools } from '@/components/converters/RelatedTools';
+import { PlatformIcon } from '@/components/converters/PlatformIcon';
 import { generateSoftwareApplicationSchema, generateHowToSchema } from '@/lib/schema-generator';
 
 interface Props {
@@ -53,9 +54,12 @@ export default function ConverterPage({ params }: Props) {
         <>
             <ConverterApp
                 heading={
-                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-5 duration-700">
-                        {pageConfig.h1}
-                    </h1>
+                    <div className="flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                        <PlatformIcon platform={pageConfig.platformName} className="w-16 h-16 md:w-20 md:h-20" />
+                        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground text-center">
+                            {pageConfig.h1}
+                        </h1>
+                    </div>
                 }
                 subheading={pageConfig.subheading}
             />
@@ -80,11 +84,9 @@ export default function ConverterPage({ params }: Props) {
                 />
 
                 {/* FAQ Schema for rich snippets */}
-
                 <FAQSchema faqs={pageConfig.faqs} />
 
                 <RelatedTools currentSlug={pageConfig.slug} />
-
             </div>
         </>
     );
