@@ -26,7 +26,7 @@ Dealing with messy API responses? Complex nested JSON from databases? Double-enc
 
 - Automatically detects and unescapes double/triple-encoded JSON
 - Flattens deeply nested structures into spreadsheet-friendly rows
-- Optimized for **API responses and small-medium files** (up to 1MB)
+- Optimized for **API responses and large files** (100MB+)
 - **100% client-side** - your data never leaves your browser
 
 ---
@@ -94,7 +94,7 @@ All processing happens in your browser. Zero network calls. No data upload.
 - Transforming **MongoDB exports** to spreadsheets
 - Parsing **double-encoded JSON strings** from legacy systems
 - Handling **deeply nested objects** from REST APIs
-- Processing **API responses and JSON exports** up to 1MB
+- Processing **API responses and large JSON exports** (100MB+)
 - **Database export analysis** and reporting
 - **JSON to Excel converter** with intelligent auto-unescape
 - **API response visualization** in table format
@@ -225,7 +225,7 @@ Connect your fork to Vercel for instant deployments with preview URLs.
 |---------|------------|-------------------|--------------|
 | Auto-Unescape | ✓ Automatic | ✗ Manual | ✗ Not possible |
 | Privacy | ✓ Client-side | ⚠️ Server upload | ✓ Local |
-| File Size | ✓ Up to 50MB | ✗ Usually 5MB | ✓ Unlimited |
+| File Size | ✓ 100MB+ (Streaming) | ✗ Usually 5MB | ✓ Unlimited |
 | Inline Editing | ✓ All views | ✗ No editing | ✓ Yes |
 | Undo/Redo | ✓ Full history | ✗ None | ⚠️ Limited |
 | Cost | ✓ Free | 💰 Often paid | ✓ Free |
