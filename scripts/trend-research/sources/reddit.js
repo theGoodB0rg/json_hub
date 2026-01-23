@@ -166,6 +166,25 @@ function calculateRelevanceScore(post) {
         if (combined.includes(kw)) score += 15;
     }
 
+    // Commercial intent keywords (ready to buy/hire/subscribe)
+    const intentKeywords = [
+        'best tool',
+        'recommendation',
+        'software',
+        'paid',
+        'subscription',
+        'enterprise',
+        'hiring',
+        'consultant',
+        'looking for',
+        'advice on buying',
+        'vs',
+        'comparison'
+    ];
+    for (const kw of intentKeywords) {
+        if (combined.includes(kw)) score += 20;
+    }
+
     // Engagement boost
     if (post.score > 50) score += 10;
     if (post.score > 100) score += 10;

@@ -7,12 +7,13 @@
  * Priority score weights
  */
 const WEIGHTS = {
-    searchVolume: 25,      // Estimated monthly searches
-    trendingScore: 20,     // How much interest is growing
-    keywordDifficulty: 20, // Inverse - easier = higher score
-    contentGap: 15,        // Not covered yet = bonus
+    searchVolume: 20,      // Estimated monthly searches
+    trendingScore: 15,     // How much interest is growing
+    keywordDifficulty: 15, // Inverse - easier = higher score
+    contentGap: 10,        // Not covered yet = bonus
     redditBuzz: 10,        // Community interest
-    platformValue: 10      // High-value platforms
+    platformValue: 10,     // High-value platforms
+    commercialIntent: 20   // High intent (buy/hire/convert)
 };
 
 /**
@@ -128,6 +129,29 @@ function scorePlatformValue(keyword) {
 }
 
 /**
+ * Score based on commercial intent
+ * Detects words that indicate a user is ready to Convert
+ */
+function scoreCommercialIntent(keyword) {
+    const lower = keyword.toLowerCase();
+    let score = 0;
+
+    // High Intent (Buy/Sign up)
+    const highIntent = ['best', 'top', 'review', 'vs', 'comparison', 'price', 'cost', 'pricing', 'buy', 'subscription', 'software', 'tool', 'platform', 'hiring', 'consultant'];
+    if (highIntent.some(w => lower.includes(w))) score += 10;
+
+    // Action Oriented
+    const actionIntent = ['convert', 'export', 'transform', 'parse', 'automate', 'integrate', 'analyze'];
+    if (actionIntent.some(w => lower.includes(w))) score += 5;
+
+    // Professional/Enterprise
+    const proIntent = ['enterprise', 'business', 'secure', 'api', 'bulk', 'large', 'big data'];
+    if (proIntent.some(w => lower.includes(w))) score += 5;
+
+    return Math.min(score, 20);
+}
+
+/**
  * Create an opportunity object from various data sources
  */
 function createOpportunity(data) {
@@ -153,9 +177,10 @@ function createOpportunity(data) {
         searchVolume: scoreSearchVolume(searchVolumeData.estimate),
         trending: scoreTrending(trendingScore, isBreakout),
         keywordDifficulty: scoreKeywordDifficulty(keyword),
-        contentGap: isContentGap ? 15 : 0,
+        contentGap: isContentGap ? WEIGHTS.contentGap : 0,
         redditBuzz: scoreRedditBuzz(redditRelevance, redditUpvotes, redditComments),
-        platformValue: scorePlatformValue(keyword)
+        platformValue: scorePlatformValue(keyword),
+        commercialIntent: scoreCommercialIntent(keyword)
     };
 
     // Total priority score
@@ -177,7 +202,9 @@ function createOpportunity(data) {
         titleSuggestion: title || generateTitle(keyword),
         priority,
         priorityScore,
+        priorityScore,
         scores,
+        commercialIntentScore: scores.commercialIntent,
         estimatedMonthlySearches: searchVolumeData.estimate,
         searchVolumeTier: searchVolumeData.tier,
         keywordDifficulty: keywordDifficultyLabel,
@@ -270,6 +297,10 @@ function generateWritingNotes(keyword) {
 
     if (lower.includes('api') || lower.includes('postman')) {
         notes.push('Target developers and QA engineers. Include code examples.');
+    }
+
+    if (scoreCommercialIntent(keyword) > 10) {
+        notes.push('This is a HIGH INTENT keyword. Focus on "Best X for Y" or comparison format. Clear CTA to use the tool.');
     }
 
     if (lower.includes('excel') && !lower.includes('python')) {
@@ -409,6 +440,7 @@ module.exports = {
     scoreKeywordDifficulty,
     scoreRedditBuzz,
     scorePlatformValue,
+    scoreCommercialIntent,
     generateTitle,
     generateOutline,
     WEIGHTS
