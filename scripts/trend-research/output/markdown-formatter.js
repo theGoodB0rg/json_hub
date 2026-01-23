@@ -64,6 +64,7 @@ function formatOpportunity(opp, index) {
     md += `| **Est. Monthly Searches** | ~${searches.toLocaleString()} (${tier}) |\n`;
     md += `| **Keyword Difficulty** | ${difficulty} |\n`;
     md += `| **Trending** | ${trending ? `Yes (+${trendingScore}%)` : 'No'} ${isBreakout ? '🚀 BREAKOUT' : ''} |\n`;
+    md += `| **Commercial Intent** | ${opp.commercialIntentScore > 0 ? `✅ High (${opp.commercialIntentScore})` : 'Low'} |\n`;
     md += `| **Content Gap** | ${isContentGap ? '✅ Not covered yet' : '⚠️ Similar content exists'} |\n`;
     md += `| **Source** | ${source.replace(/_/g, ' ')} |\n`;
     md += `\n`;

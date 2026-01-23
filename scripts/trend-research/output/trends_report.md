@@ -1,6 +1,6 @@
 # 📈 Weekly SEO Trend Report - Week 4, 2026
 
-**Generated:** Sunday, January 18, 2026 at 09:33 PM
+**Generated:** Friday, January 23, 2026 at 01:28 PM
 
 ---
 
@@ -8,10 +8,10 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Opportunities** | 61 |
+| **Total Opportunities** | 49 |
 | 🔴 High Priority | 0 |
-| 🟡 Medium Priority | 26 |
-| 🟢 Low Priority | 35 |
+| 🟡 Medium Priority | 17 |
+| 🟢 Low Priority | 32 |
 
 > **🏆 Top Opportunity This Week:**
 > 
@@ -34,6 +34,7 @@
 | **Est. Monthly Searches** | ~2,000 (medium) |
 | **Keyword Difficulty** | MEDIUM |
 | **Trending** | Yes (+80%) 🚀 BREAKOUT |
+| **Commercial Intent** | Low |
 | **Content Gap** | ✅ Not covered yet |
 | **Source** | google trends rising |
 
@@ -50,7 +51,33 @@
 
 ---
 
-### 2. How to Export json to excel (2026 Guide)
+### 2. How to How to convert json to excel (2026 Guide)
+
+| Property | Value |
+|----------|-------|
+| **Priority** | 🟡 MEDIUM (Score: 68/100) |
+| **Keyword** | `how to convert json to excel` |
+| **Est. Monthly Searches** | ~2,000 (medium) |
+| **Keyword Difficulty** | MEDIUM |
+| **Trending** | Yes (+80%) 🚀 BREAKOUT |
+| **Commercial Intent** | Low |
+| **Content Gap** | ✅ Not covered yet |
+| **Source** | google trends rising |
+
+**Suggested Outline:**
+1. Introduction: The problem
+2. Why this matters for data analysts
+3. Method comparison
+4. Step-by-step solution
+5. Tips and best practices
+6. FAQs
+7. Conclusion
+
+**Writing Notes:** Target non-technical users. Avoid jargon.
+
+---
+
+### 3. How to Export json to excel (2026 Guide)
 
 | Property | Value |
 |----------|-------|
@@ -59,6 +86,7 @@
 | **Est. Monthly Searches** | ~2,000 (medium) |
 | **Keyword Difficulty** | MEDIUM |
 | **Trending** | Yes (+80%) 🚀 BREAKOUT |
+| **Commercial Intent** | Low |
 | **Content Gap** | ✅ Not covered yet |
 | **Source** | google trends rising |
 
@@ -75,15 +103,16 @@
 
 ---
 
-### 3. How to Import json to excel (2026 Guide)
+### 4. How to Online json to excel converter (2026 Guide)
 
 | Property | Value |
 |----------|-------|
 | **Priority** | 🟡 MEDIUM (Score: 68/100) |
-| **Keyword** | `import json to excel` |
+| **Keyword** | `online json to excel converter` |
 | **Est. Monthly Searches** | ~2,000 (medium) |
 | **Keyword Difficulty** | MEDIUM |
 | **Trending** | Yes (+80%) 🚀 BREAKOUT |
+| **Commercial Intent** | Low |
 | **Content Gap** | ✅ Not covered yet |
 | **Source** | google trends rising |
 
@@ -100,15 +129,16 @@
 
 ---
 
-### 4. How to Gst json to excel (2026 Guide)
+### 5. How to Convert json to excel online (2026 Guide)
 
 | Property | Value |
 |----------|-------|
 | **Priority** | 🟡 MEDIUM (Score: 68/100) |
-| **Keyword** | `gst json to excel` |
+| **Keyword** | `convert json to excel online` |
 | **Est. Monthly Searches** | ~2,000 (medium) |
 | **Keyword Difficulty** | MEDIUM |
 | **Trending** | Yes (+80%) 🚀 BREAKOUT |
+| **Commercial Intent** | Low |
 | **Content Gap** | ✅ Not covered yet |
 | **Source** | google trends rising |
 
@@ -125,32 +155,7 @@
 
 ---
 
-### 5. How to Json to excel online converter (2026 Guide)
-
-| Property | Value |
-|----------|-------|
-| **Priority** | 🟡 MEDIUM (Score: 68/100) |
-| **Keyword** | `json to excel online converter` |
-| **Est. Monthly Searches** | ~2,000 (medium) |
-| **Keyword Difficulty** | MEDIUM |
-| **Trending** | Yes (+80%) 🚀 BREAKOUT |
-| **Content Gap** | ✅ Not covered yet |
-| **Source** | google trends rising |
-
-**Suggested Outline:**
-1. Introduction: The problem
-2. Why this matters for data analysts
-3. Method comparison
-4. Step-by-step solution
-5. Tips and best practices
-6. FAQs
-7. Conclusion
-
-**Writing Notes:** Target non-technical users. Avoid jargon.
-
----
-
-*... and 21 more medium priority opportunities. See JSON report for full list.*
+*... and 12 more medium priority opportunities. See JSON report for full list.*
 
 ## 🎯 Platform Coverage Gaps
 
@@ -158,9 +163,6 @@ These platforms are not yet covered on your blog but have SEO potential:
 
 | Platform | Priority | Reason |
 |----------|----------|--------|
-| **notion** | 🔴 HIGH | Very popular productivity tool, many users export data |
-| **airtable** | 🔴 HIGH | Database tool with JSON exports, growing user base |
-| **firebase** | 🔴 HIGH | Popular backend, complex JSON structures |
 | **supabase** | 🟡 MEDIUM | Growing Postgres alternative with JSON support |
 | **zapier** | 🟡 MEDIUM | Automation tool, JSON data between services |
 | **make** | 🟡 MEDIUM | Make.com (formerly Integromat), Zapier competitor |
@@ -168,15 +170,16 @@ These platforms are not yet covered on your blog but have SEO potential:
 | **amplitude** | 🟡 MEDIUM | Product analytics, JSON event data |
 | **segment** | 🟡 MEDIUM | CDP with JSON tracking data |
 | **jira** | 🟡 MEDIUM | Project management exports |
+| **quickbooks** | 🟡 MEDIUM | Finance data exports |
+| **zendesk** | 🟡 MEDIUM | Support tickets in JSON |
+| **intercom** | 🟡 MEDIUM | Customer messaging data |
 
 ## 💬 Reddit Discussions This Week
 
 *Real questions from data analysts and developers:*
 
-- **[How do you deal with constant interruptions (Slack, Jira questions, ad‑hoc calls) as a senior engineer?](https://reddit.com/r/webdev/comments/1qg44vp/how_do_you_deal_with_constant_interruptions_slack/)** - 30 upvotes, 34 comments
-- **[[Portfolio] I have the analysis and dashboard, but how do I structure the final "Deliverable" for recruiters?](https://reddit.com/r/dataanalysis/comments/1qg4se5/portfolio_i_have_the_analysis_and_dashboard_but/)** - 4 upvotes, 3 comments
+- **[[Portfolio] I have the analysis and dashboard, but how do I structure the final "Deliverable" for recruiters?](https://reddit.com/r/dataanalysis/comments/1qg4se5/portfolio_i_have_the_analysis_and_dashboard_but/)** - 13 upvotes, 5 comments
 - **[How do you usually analyze and visualize SQL query results for trend analysis (like revenue drops)?](https://reddit.com/r/dataanalysis/comments/1q2td33/how_do_you_usually_analyze_and_visualize_sql/)** - 16 upvotes, 30 comments
-- **[How do you usually clean messy CSV or Excel Files?](https://reddit.com/r/analytics/comments/1qg3a0a/how_do_you_usually_clean_messy_csv_or_excel_files/)** - 16 upvotes, 23 comments
 
 ## ❓ People Also Ask (FAQ Ideas)
 
@@ -198,19 +201,28 @@ These platforms are not yet covered on your blog but have SEO potential:
 
 ## 📚 Your Current Blog Coverage
 
-- **Total Articles:** 0
-- **Covered Platforms:** None
-- **Covered Use Cases:** None
+- **Total Articles:** 30
+- **Covered Platforms:** power query, python, airtable, postman, stripe, shopify, firebase, mongodb, google analytics, ga4, hubspot, salesforce, notion
+- **Covered Use Cases:** convert, export, debug, analyze, api response, large file, import, nested json, object object, flatten, automate, weekly report
 
 ## 🚀 Breakout Queries (Fast-Rising)
 
 *These queries are growing rapidly - first-mover advantage!*
 
 - `converter json to excel` (from: json to excel)
+- `json to excel online` (from: json to excel)
+- `how to convert json to excel` (from: json to excel)
 - `export json to excel` (from: json to excel)
 - `import json to excel` (from: json to excel)
-- `gst json to excel` (from: json to excel)
-- `json to excel online converter` (from: json to excel)
+
+## ⚠️ Data Collection Warnings
+
+Some data sources had issues:
+
+- google_trends: Rate Limited
+- google_trends: Rate Limited (Real Data Unavailable)
+- google_trends: Rate Limited
+- google_trends: Rate Limited
 
 ---
 

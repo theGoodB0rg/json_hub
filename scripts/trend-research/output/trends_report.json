@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-01-18T20:33:34.849Z",
+  "generated_at": "2026-01-23T12:28:51.477Z",
   "report_week": "2026-W04",
   "version": "1.0.0",
   "summary": {
-    "total_opportunities": 61,
+    "total_opportunities": 49,
     "high_priority": 0,
-    "medium_priority": 26,
-    "low_priority": 35,
+    "medium_priority": 17,
+    "low_priority": 32,
     "top_opportunity": {
       "keyword": "converter json to excel",
       "title": "How to Converter json to excel (2026 Guide)",
@@ -37,9 +37,44 @@
         "searchVolume": 18,
         "trending": 20,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Target non-technical users. Avoid jargon."
+    },
+    {
+      "priority": "MEDIUM",
+      "priority_score": 68,
+      "title_suggestion": "How to How to convert json to excel (2026 Guide)",
+      "primary_keyword": "how to convert json to excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "MEDIUM",
+      "trending": true,
+      "trending_score": 80,
+      "is_breakout": true,
+      "is_content_gap": true,
+      "source": "google_trends_rising",
+      "scores_breakdown": {
+        "searchVolume": 18,
+        "trending": 20,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -70,108 +105,10 @@
         "searchVolume": 18,
         "trending": 20,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Target non-technical users. Avoid jargon."
-    },
-    {
-      "priority": "MEDIUM",
-      "priority_score": 68,
-      "title_suggestion": "How to Import json to excel (2026 Guide)",
-      "primary_keyword": "import json to excel",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": true,
-      "trending_score": 80,
-      "is_breakout": true,
-      "is_content_gap": true,
-      "source": "google_trends_rising",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 20,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Target non-technical users. Avoid jargon."
-    },
-    {
-      "priority": "MEDIUM",
-      "priority_score": 68,
-      "title_suggestion": "How to Gst json to excel (2026 Guide)",
-      "primary_keyword": "gst json to excel",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": true,
-      "trending_score": 80,
-      "is_breakout": true,
-      "is_content_gap": true,
-      "source": "google_trends_rising",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 20,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Target non-technical users. Avoid jargon."
-    },
-    {
-      "priority": "MEDIUM",
-      "priority_score": 68,
-      "title_suggestion": "How to Json to excel online converter (2026 Guide)",
-      "primary_keyword": "json to excel online converter",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": true,
-      "trending_score": 80,
-      "is_breakout": true,
-      "is_content_gap": true,
-      "source": "google_trends_rising",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 20,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -202,9 +139,10 @@
         "searchVolume": 18,
         "trending": 20,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -221,8 +159,8 @@
     {
       "priority": "MEDIUM",
       "priority_score": 68,
-      "title_suggestion": "How to Convert json to csv (2026 Guide)",
-      "primary_keyword": "convert json to csv",
+      "title_suggestion": "How to Convert json to excel online (2026 Guide)",
+      "primary_keyword": "convert json to excel online",
       "estimated_monthly_searches": 2000,
       "search_volume_tier": "medium",
       "keyword_difficulty": "MEDIUM",
@@ -235,108 +173,10 @@
         "searchVolume": 18,
         "trending": 20,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "MEDIUM",
-      "priority_score": 68,
-      "title_suggestion": "How to From json to csv (2026 Guide)",
-      "primary_keyword": "from json to csv",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": true,
-      "trending_score": 80,
-      "is_breakout": true,
-      "is_content_gap": true,
-      "source": "google_trends_rising",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 20,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "MEDIUM",
-      "priority_score": 68,
-      "title_suggestion": "How to Json to csv converter (2026 Guide)",
-      "primary_keyword": "json to csv converter",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": true,
-      "trending_score": 80,
-      "is_breakout": true,
-      "is_content_gap": true,
-      "source": "google_trends_rising",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 20,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "MEDIUM",
-      "priority_score": 68,
-      "title_suggestion": "How to Json to csv excel (2026 Guide)",
-      "primary_keyword": "json to csv excel",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": true,
-      "trending_score": 80,
-      "is_breakout": true,
-      "is_content_gap": true,
-      "source": "google_trends_rising",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 20,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -349,39 +189,6 @@
         "Conclusion"
       ],
       "writing_notes": "Target non-technical users. Avoid jargon."
-    },
-    {
-      "priority": "MEDIUM",
-      "priority_score": 68,
-      "title_suggestion": "How to Json to csv javascript (2026 Guide)",
-      "primary_keyword": "json to csv javascript",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": true,
-      "trending_score": 80,
-      "is_breakout": true,
-      "is_content_gap": true,
-      "source": "google_trends_rising",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 20,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
     },
     {
       "priority": "MEDIUM",
@@ -400,9 +207,10 @@
         "searchVolume": 18,
         "trending": 20,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -418,9 +226,9 @@
     },
     {
       "priority": "MEDIUM",
-      "priority_score": 68,
-      "title_suggestion": "How to Json to csv js (2026 Guide)",
-      "primary_keyword": "json to csv js",
+      "priority_score": 63,
+      "title_suggestion": "How to Json to excel online (2026 Guide)",
+      "primary_keyword": "json to excel online",
       "estimated_monthly_searches": 2000,
       "search_volume_tier": "medium",
       "keyword_difficulty": "MEDIUM",
@@ -433,75 +241,10 @@
         "searchVolume": 18,
         "trending": 20,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "MEDIUM",
-      "priority_score": 68,
-      "title_suggestion": "How to Json to csv java (2026 Guide)",
-      "primary_keyword": "json to csv java",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": true,
-      "trending_score": 80,
-      "is_breakout": true,
-      "is_content_gap": true,
-      "source": "google_trends_rising",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 20,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "MEDIUM",
-      "priority_score": 65,
-      "title_suggestion": "How to Csv to excel (2026 Guide)",
-      "primary_keyword": "csv to excel",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "HIGH",
-      "trending": true,
-      "trending_score": 80,
-      "is_breakout": true,
-      "is_content_gap": true,
-      "source": "google_trends_rising",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 20,
-        "keywordDifficulty": 9,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -517,108 +260,207 @@
     },
     {
       "priority": "MEDIUM",
-      "priority_score": 64,
-      "title_suggestion": "Notion JSON Export to Excel: Complete Guide",
-      "primary_keyword": "notion json to excel",
-      "estimated_monthly_searches": 5000,
-      "search_volume_tier": "high",
-      "keyword_difficulty": "LOW",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
+      "priority_score": 63,
+      "title_suggestion": "How to Import json to excel (2026 Guide)",
+      "primary_keyword": "import json to excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "MEDIUM",
+      "trending": true,
+      "trending_score": 80,
+      "is_breakout": true,
       "is_content_gap": true,
-      "source": "content_gap_platform",
+      "source": "google_trends_rising",
       "scores_breakdown": {
-        "searchVolume": 22,
-        "trending": 0,
-        "keywordDifficulty": 17,
-        "contentGap": 15,
+        "searchVolume": 18,
+        "trending": 20,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 10
+        "platformValue": 3,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
-        "Introduction: Why export Notion data to Excel?",
-        "Notion's native export options (and their limitations)",
-        "Method 1: Direct CSV export (basic)",
-        "Method 2: API export + JSON conversion (recommended)",
-        "Step-by-step tutorial using JsonExport",
-        "Handling nested Notion data",
-        "Common issues and solutions",
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
         "FAQs",
         "Conclusion"
       ],
-      "writing_notes": "Very popular productivity tool, many users export data"
+      "writing_notes": "Target non-technical users. Avoid jargon."
     },
     {
       "priority": "MEDIUM",
-      "priority_score": 64,
-      "title_suggestion": "Airtable JSON Export to Excel: Complete Guide",
-      "primary_keyword": "airtable json to excel",
-      "estimated_monthly_searches": 5000,
-      "search_volume_tier": "high",
-      "keyword_difficulty": "LOW",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
+      "priority_score": 63,
+      "title_suggestion": "How to Gst json to excel (2026 Guide)",
+      "primary_keyword": "gst json to excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "MEDIUM",
+      "trending": true,
+      "trending_score": 80,
+      "is_breakout": true,
       "is_content_gap": true,
-      "source": "content_gap_platform",
+      "source": "google_trends_rising",
       "scores_breakdown": {
-        "searchVolume": 22,
-        "trending": 0,
-        "keywordDifficulty": 17,
-        "contentGap": 15,
+        "searchVolume": 18,
+        "trending": 20,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 10
+        "platformValue": 3,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
-        "Introduction: Why export Airtable data to Excel?",
-        "Airtable's native export options (and their limitations)",
-        "Method 1: Direct CSV export (basic)",
-        "Method 2: API export + JSON conversion (recommended)",
-        "Step-by-step tutorial using JsonExport",
-        "Handling nested Airtable data",
-        "Common issues and solutions",
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
         "FAQs",
         "Conclusion"
       ],
-      "writing_notes": "Database tool with JSON exports, growing user base"
+      "writing_notes": "Target non-technical users. Avoid jargon."
     },
     {
       "priority": "MEDIUM",
-      "priority_score": 61,
-      "title_suggestion": "Firebase JSON Export to Excel: Complete Guide",
-      "primary_keyword": "firebase json to excel",
-      "estimated_monthly_searches": 5000,
-      "search_volume_tier": "high",
-      "keyword_difficulty": "LOW",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
+      "priority_score": 63,
+      "title_suggestion": "How to Json to csv python (2026 Guide)",
+      "primary_keyword": "json to csv python",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "MEDIUM",
+      "trending": true,
+      "trending_score": 80,
+      "is_breakout": true,
       "is_content_gap": true,
-      "source": "content_gap_platform",
+      "source": "google_trends_rising",
       "scores_breakdown": {
-        "searchVolume": 22,
-        "trending": 0,
-        "keywordDifficulty": 17,
-        "contentGap": 15,
+        "searchVolume": 18,
+        "trending": 20,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 7
+        "platformValue": 3,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
-        "Introduction: Why export Firebase data to Excel?",
-        "Firebase's native export options (and their limitations)",
-        "Method 1: Direct CSV export (basic)",
-        "Method 2: API export + JSON conversion (recommended)",
-        "Step-by-step tutorial using JsonExport",
-        "Handling nested Firebase data",
-        "Common issues and solutions",
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
         "FAQs",
         "Conclusion"
       ],
-      "writing_notes": "Popular backend, complex JSON structures"
+      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
+    },
+    {
+      "priority": "MEDIUM",
+      "priority_score": 63,
+      "title_suggestion": "How to Json to csv excel (2026 Guide)",
+      "primary_keyword": "json to csv excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "MEDIUM",
+      "trending": true,
+      "trending_score": 80,
+      "is_breakout": true,
+      "is_content_gap": true,
+      "source": "google_trends_rising",
+      "scores_breakdown": {
+        "searchVolume": 18,
+        "trending": 20,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Target non-technical users. Avoid jargon."
+    },
+    {
+      "priority": "MEDIUM",
+      "priority_score": 63,
+      "title_suggestion": "How to Json to csv js (2026 Guide)",
+      "primary_keyword": "json to csv js",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "MEDIUM",
+      "trending": true,
+      "trending_score": 80,
+      "is_breakout": true,
+      "is_content_gap": true,
+      "source": "google_trends_rising",
+      "scores_breakdown": {
+        "searchVolume": 18,
+        "trending": 20,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
+    },
+    {
+      "priority": "MEDIUM",
+      "priority_score": 63,
+      "title_suggestion": "How to Json to csv java (2026 Guide)",
+      "primary_keyword": "json to csv java",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "MEDIUM",
+      "trending": true,
+      "trending_score": 80,
+      "is_breakout": true,
+      "is_content_gap": true,
+      "source": "google_trends_rising",
+      "scores_breakdown": {
+        "searchVolume": 18,
+        "trending": 20,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
     },
     {
       "priority": "MEDIUM",
@@ -637,9 +479,10 @@
         "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 17,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 7
+        "platformValue": 7,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -655,7 +498,7 @@
     },
     {
       "priority": "MEDIUM",
-      "priority_score": 57,
+      "priority_score": 52,
       "title_suggestion": "Jira JSON Export to Excel: Complete Guide",
       "primary_keyword": "jira json to excel",
       "estimated_monthly_searches": 2000,
@@ -670,9 +513,10 @@
         "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 17,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 7
+        "platformValue": 7,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -688,7 +532,7 @@
     },
     {
       "priority": "MEDIUM",
-      "priority_score": 57,
+      "priority_score": 52,
       "title_suggestion": "Quickbooks JSON Export to Excel: Complete Guide",
       "primary_keyword": "quickbooks json to excel",
       "estimated_monthly_searches": 2000,
@@ -703,9 +547,10 @@
         "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 17,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 7
+        "platformValue": 7,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -721,7 +566,7 @@
     },
     {
       "priority": "MEDIUM",
-      "priority_score": 57,
+      "priority_score": 52,
       "title_suggestion": "Zendesk JSON Export to Excel: Complete Guide",
       "primary_keyword": "zendesk json to excel",
       "estimated_monthly_searches": 2000,
@@ -736,9 +581,10 @@
         "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 17,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 7
+        "platformValue": 7,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -753,8 +599,8 @@
       "writing_notes": "Support tickets in JSON"
     },
     {
-      "priority": "MEDIUM",
-      "priority_score": 50,
+      "priority": "LOW",
+      "priority_score": 45,
       "title_suggestion": "Intercom JSON Export to Excel: Complete Guide",
       "primary_keyword": "intercom json to excel",
       "estimated_monthly_searches": 2000,
@@ -769,9 +615,10 @@
         "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 5
+        "platformValue": 5,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -786,8 +633,8 @@
       "writing_notes": "Customer messaging data"
     },
     {
-      "priority": "MEDIUM",
-      "priority_score": 50,
+      "priority": "LOW",
+      "priority_score": 45,
       "title_suggestion": "Mailchimp JSON Export to Excel: Complete Guide",
       "primary_keyword": "mailchimp json to excel",
       "estimated_monthly_searches": 2000,
@@ -802,9 +649,10 @@
         "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 5
+        "platformValue": 5,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -819,8 +667,8 @@
       "writing_notes": "Email campaign data"
     },
     {
-      "priority": "MEDIUM",
-      "priority_score": 50,
+      "priority": "LOW",
+      "priority_score": 45,
       "title_suggestion": "Contentful JSON Export to Excel: Complete Guide",
       "primary_keyword": "contentful json to excel",
       "estimated_monthly_searches": 2000,
@@ -835,9 +683,10 @@
         "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 5
+        "platformValue": 5,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -852,8 +701,8 @@
       "writing_notes": "Headless CMS JSON content"
     },
     {
-      "priority": "MEDIUM",
-      "priority_score": 50,
+      "priority": "LOW",
+      "priority_score": 45,
       "title_suggestion": "Webflow JSON Export to Excel: Complete Guide",
       "primary_keyword": "webflow json to excel",
       "estimated_monthly_searches": 2000,
@@ -868,9 +717,10 @@
         "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 5
+        "platformValue": 5,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -883,303 +733,6 @@
         "Conclusion"
       ],
       "writing_notes": "Website CMS exports"
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 49,
-      "title_suggestion": "How do you deal with constant interruptions (Slack, Jira questions, ad‑hoc calls) as a senior engineer?",
-      "primary_keyword": "How do you deal with constant interruptions (Slack, Jira que",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "LOW",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "reddit",
-      "scores_breakdown": {
-        "searchVolume": 5,
-        "trending": 0,
-        "keywordDifficulty": 17,
-        "contentGap": 15,
-        "redditBuzz": 5,
-        "platformValue": 7
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 48,
-      "title_suggestion": "Supabase JSON Export to Excel: Complete Guide",
-      "primary_keyword": "supabase json to excel",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "content_gap_platform",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Growing Postgres alternative with JSON support"
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 48,
-      "title_suggestion": "Make JSON Export to Excel: Complete Guide",
-      "primary_keyword": "make json to excel",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "content_gap_platform",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Make.com (formerly Integromat), Zapier competitor"
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 48,
-      "title_suggestion": "Mixpanel JSON Export to Excel: Complete Guide",
-      "primary_keyword": "mixpanel json to excel",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "content_gap_platform",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Analytics tool with JSON exports"
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 48,
-      "title_suggestion": "Amplitude JSON Export to Excel: Complete Guide",
-      "primary_keyword": "amplitude json to excel",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "content_gap_platform",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Product analytics, JSON event data"
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 48,
-      "title_suggestion": "Segment JSON Export to Excel: Complete Guide",
-      "primary_keyword": "segment json to excel",
-      "estimated_monthly_searches": 2000,
-      "search_volume_tier": "medium",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "content_gap_platform",
-      "scores_breakdown": {
-        "searchVolume": 18,
-        "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "CDP with JSON tracking data"
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 46,
-      "title_suggestion": "Twilio JSON Export to Excel: Complete Guide",
-      "primary_keyword": "twilio json to excel",
-      "estimated_monthly_searches": 800,
-      "search_volume_tier": "low",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "content_gap_platform",
-      "scores_breakdown": {
-        "searchVolume": 14,
-        "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 5
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Communication API logs in JSON"
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 46,
-      "title_suggestion": "Github JSON Export to Excel: Complete Guide",
-      "primary_keyword": "github json to excel",
-      "estimated_monthly_searches": 800,
-      "search_volume_tier": "low",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "content_gap_platform",
-      "scores_breakdown": {
-        "searchVolume": 14,
-        "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 5
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "GitHub API responses are JSON"
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 46,
-      "title_suggestion": "Sendgrid JSON Export to Excel: Complete Guide",
-      "primary_keyword": "sendgrid json to excel",
-      "estimated_monthly_searches": 800,
-      "search_volume_tier": "low",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "content_gap_platform",
-      "scores_breakdown": {
-        "searchVolume": 14,
-        "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 5
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Email API logs"
     },
     {
       "priority": "LOW",
@@ -1198,9 +751,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 14,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 10
+        "platformValue": 10,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1225,7 +779,7 @@
       "search_volume_tier": "very_low",
       "keyword_difficulty": "MEDIUM",
       "trending": false,
-      "trending_score": 0,
+      "trending_score": -100,
       "is_breakout": false,
       "is_content_gap": true,
       "source": "google_trends",
@@ -1233,9 +787,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 14,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 10
+        "platformValue": 10,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1268,9 +823,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 14,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 10
+        "platformValue": 10,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1303,9 +859,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 14,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 10
+        "platformValue": 10,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1323,116 +880,11 @@
     },
     {
       "priority": "LOW",
-      "priority_score": 44,
-      "title_suggestion": "Shopify JSON Export to Excel: Complete Guide (2026)",
-      "primary_keyword": "shopify json data",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": -100,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "google_trends",
-      "scores_breakdown": {
-        "searchVolume": 5,
-        "trending": 0,
-        "keywordDifficulty": 14,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 10
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: Why export Shopify data to Excel?",
-        "Shopify's native export options (and their limitations)",
-        "Method 1: Direct CSV export (basic)",
-        "Method 2: API export + JSON conversion (recommended)",
-        "Step-by-step tutorial using JsonExport",
-        "Handling nested Shopify data",
-        "Common issues and solutions",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 44,
-      "title_suggestion": "Airtable JSON Export to Excel: Complete Guide (2026)",
-      "primary_keyword": "airtable export json",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "google_trends",
-      "scores_breakdown": {
-        "searchVolume": 5,
-        "trending": 0,
-        "keywordDifficulty": 14,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 10
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: Why export Airtable data to Excel?",
-        "Airtable's native export options (and their limitations)",
-        "Method 1: Direct CSV export (basic)",
-        "Method 2: API export + JSON conversion (recommended)",
-        "Step-by-step tutorial using JsonExport",
-        "Handling nested Airtable data",
-        "Common issues and solutions",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 44,
-      "title_suggestion": "Notion JSON Export to Excel: Complete Guide (2026)",
-      "primary_keyword": "notion database export",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": -100,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "google_trends",
-      "scores_breakdown": {
-        "searchVolume": 5,
-        "trending": 0,
-        "keywordDifficulty": 14,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 10
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: Why export Notion data to Excel?",
-        "Notion's native export options (and their limitations)",
-        "Method 1: Direct CSV export (basic)",
-        "Method 2: API export + JSON conversion (recommended)",
-        "Step-by-step tutorial using JsonExport",
-        "Handling nested Notion data",
-        "Common issues and solutions",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 44,
-      "title_suggestion": "Asana JSON Export to Excel: Complete Guide",
-      "primary_keyword": "asana json to excel",
-      "estimated_monthly_searches": 800,
-      "search_volume_tier": "low",
+      "priority_score": 43,
+      "title_suggestion": "Supabase JSON Export to Excel: Complete Guide",
+      "primary_keyword": "supabase json to excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
       "keyword_difficulty": "MEDIUM",
       "trending": false,
       "trending_score": 0,
@@ -1440,12 +892,13 @@
       "is_content_gap": true,
       "source": "content_gap_platform",
       "scores_breakdown": {
-        "searchVolume": 14,
+        "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1457,15 +910,15 @@
         "FAQs",
         "Conclusion"
       ],
-      "writing_notes": "Task management exports"
+      "writing_notes": "Growing Postgres alternative with JSON support"
     },
     {
       "priority": "LOW",
-      "priority_score": 44,
-      "title_suggestion": "Xero JSON Export to Excel: Complete Guide",
-      "primary_keyword": "xero json to excel",
-      "estimated_monthly_searches": 800,
-      "search_volume_tier": "low",
+      "priority_score": 43,
+      "title_suggestion": "Make JSON Export to Excel: Complete Guide",
+      "primary_keyword": "make json to excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
       "keyword_difficulty": "MEDIUM",
       "trending": false,
       "trending_score": 0,
@@ -1473,12 +926,13 @@
       "is_content_gap": true,
       "source": "content_gap_platform",
       "scores_breakdown": {
-        "searchVolume": 14,
+        "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1490,15 +944,15 @@
         "FAQs",
         "Conclusion"
       ],
-      "writing_notes": "Accounting API data"
+      "writing_notes": "Make.com (formerly Integromat), Zapier competitor"
     },
     {
       "priority": "LOW",
-      "priority_score": 44,
-      "title_suggestion": "Sanity JSON Export to Excel: Complete Guide",
-      "primary_keyword": "sanity json to excel",
-      "estimated_monthly_searches": 800,
-      "search_volume_tier": "low",
+      "priority_score": 43,
+      "title_suggestion": "Mixpanel JSON Export to Excel: Complete Guide",
+      "primary_keyword": "mixpanel json to excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
       "keyword_difficulty": "MEDIUM",
       "trending": false,
       "trending_score": 0,
@@ -1506,12 +960,13 @@
       "is_content_gap": true,
       "source": "content_gap_platform",
       "scores_breakdown": {
-        "searchVolume": 14,
+        "searchVolume": 18,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1523,7 +978,75 @@
         "FAQs",
         "Conclusion"
       ],
-      "writing_notes": "CMS JSON exports"
+      "writing_notes": "Analytics tool with JSON exports"
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 43,
+      "title_suggestion": "Amplitude JSON Export to Excel: Complete Guide",
+      "primary_keyword": "amplitude json to excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "MEDIUM",
+      "trending": false,
+      "trending_score": 0,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "content_gap_platform",
+      "scores_breakdown": {
+        "searchVolume": 18,
+        "trending": 0,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Product analytics, JSON event data"
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 43,
+      "title_suggestion": "Segment JSON Export to Excel: Complete Guide",
+      "primary_keyword": "segment json to excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "MEDIUM",
+      "trending": false,
+      "trending_score": 0,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "content_gap_platform",
+      "scores_breakdown": {
+        "searchVolume": 18,
+        "trending": 0,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "CDP with JSON tracking data"
     },
     {
       "priority": "LOW",
@@ -1542,9 +1065,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 14,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 7
+        "platformValue": 7,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1561,8 +1085,150 @@
     {
       "priority": "LOW",
       "priority_score": 41,
-      "title_suggestion": "Firebase JSON Export to Excel: Complete Guide (2026)",
-      "primary_keyword": "firebase json export",
+      "title_suggestion": "Twilio JSON Export to Excel: Complete Guide",
+      "primary_keyword": "twilio json to excel",
+      "estimated_monthly_searches": 800,
+      "search_volume_tier": "low",
+      "keyword_difficulty": "MEDIUM",
+      "trending": false,
+      "trending_score": 0,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "content_gap_platform",
+      "scores_breakdown": {
+        "searchVolume": 14,
+        "trending": 0,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 5,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Communication API logs in JSON"
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 41,
+      "title_suggestion": "Github JSON Export to Excel: Complete Guide",
+      "primary_keyword": "github json to excel",
+      "estimated_monthly_searches": 800,
+      "search_volume_tier": "low",
+      "keyword_difficulty": "MEDIUM",
+      "trending": false,
+      "trending_score": 0,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "content_gap_platform",
+      "scores_breakdown": {
+        "searchVolume": 14,
+        "trending": 0,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 5,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "GitHub API responses are JSON"
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 41,
+      "title_suggestion": "Sendgrid JSON Export to Excel: Complete Guide",
+      "primary_keyword": "sendgrid json to excel",
+      "estimated_monthly_searches": 800,
+      "search_volume_tier": "low",
+      "keyword_difficulty": "MEDIUM",
+      "trending": false,
+      "trending_score": 0,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "content_gap_platform",
+      "scores_breakdown": {
+        "searchVolume": 14,
+        "trending": 0,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 5,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Email API logs"
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 40,
+      "title_suggestion": "How to Json to excel (2026 Guide)",
+      "primary_keyword": "json to excel",
+      "estimated_monthly_searches": 2000,
+      "search_volume_tier": "medium",
+      "keyword_difficulty": "HIGH",
+      "trending": false,
+      "trending_score": -4,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "google_trends",
+      "scores_breakdown": {
+        "searchVolume": 18,
+        "trending": 0,
+        "keywordDifficulty": 9,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
+      },
+      "related_questions": [
+        "How do I json to excel?",
+        "What is the best way to json to excel?",
+        "Can I json to excel without coding?",
+        "Is there a free tool to json to excel?",
+        "How to json to excel for free?"
+      ],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Target non-technical users. Avoid jargon."
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 39,
+      "title_suggestion": "Shopify JSON Export to Excel: Complete Guide (2026)",
+      "primary_keyword": "shopify json data",
       "estimated_monthly_searches": 200,
       "search_volume_tier": "very_low",
       "keyword_difficulty": "MEDIUM",
@@ -1575,18 +1241,19 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 14,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 7
+        "platformValue": 10,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
-        "Introduction: Why export Firebase data to Excel?",
-        "Firebase's native export options (and their limitations)",
+        "Introduction: Why export Shopify data to Excel?",
+        "Shopify's native export options (and their limitations)",
         "Method 1: Direct CSV export (basic)",
         "Method 2: API export + JSON conversion (recommended)",
         "Step-by-step tutorial using JsonExport",
-        "Handling nested Firebase data",
+        "Handling nested Shopify data",
         "Common issues and solutions",
         "FAQs",
         "Conclusion"
@@ -1595,24 +1262,25 @@
     },
     {
       "priority": "LOW",
-      "priority_score": 38,
-      "title_suggestion": "Zapier JSON Export to Excel: Complete Guide (2026)",
-      "primary_keyword": "zapier json",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
+      "priority_score": 39,
+      "title_suggestion": "Asana JSON Export to Excel: Complete Guide",
+      "primary_keyword": "asana json to excel",
+      "estimated_monthly_searches": 800,
+      "search_volume_tier": "low",
       "keyword_difficulty": "MEDIUM",
       "trending": false,
-      "trending_score": -100,
+      "trending_score": 0,
       "is_breakout": false,
       "is_content_gap": true,
-      "source": "google_trends",
+      "source": "content_gap_platform",
       "scores_breakdown": {
-        "searchVolume": 5,
+        "searchVolume": 14,
         "trending": 0,
-        "keywordDifficulty": 11,
-        "contentGap": 15,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 7
+        "platformValue": 3,
+        "commercialIntent": 0
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1624,11 +1292,79 @@
         "FAQs",
         "Conclusion"
       ],
-      "writing_notes": "Target developers and QA engineers. Include code examples."
+      "writing_notes": "Task management exports"
     },
     {
       "priority": "LOW",
-      "priority_score": 36,
+      "priority_score": 39,
+      "title_suggestion": "Xero JSON Export to Excel: Complete Guide",
+      "primary_keyword": "xero json to excel",
+      "estimated_monthly_searches": 800,
+      "search_volume_tier": "low",
+      "keyword_difficulty": "MEDIUM",
+      "trending": false,
+      "trending_score": 0,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "content_gap_platform",
+      "scores_breakdown": {
+        "searchVolume": 14,
+        "trending": 0,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Accounting API data"
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 39,
+      "title_suggestion": "Sanity JSON Export to Excel: Complete Guide",
+      "primary_keyword": "sanity json to excel",
+      "estimated_monthly_searches": 800,
+      "search_volume_tier": "low",
+      "keyword_difficulty": "MEDIUM",
+      "trending": false,
+      "trending_score": 0,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "content_gap_platform",
+      "scores_breakdown": {
+        "searchVolume": 14,
+        "trending": 0,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "CMS JSON exports"
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 37,
       "title_suggestion": "How do you usually analyze and visualize SQL query results for trend analysis (like revenue drops)?",
       "primary_keyword": "How do you usually analyze and visualize SQL query results f",
       "estimated_monthly_searches": 200,
@@ -1643,9 +1379,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 4,
-        "platformValue": 0
+        "contentGap": 10,
+        "redditBuzz": 5,
+        "platformValue": 0,
+        "commercialIntent": 5
       },
       "related_questions": [],
       "suggested_outline": [
@@ -1662,25 +1399,32 @@
     {
       "priority": "LOW",
       "priority_score": 36,
-      "title_suggestion": "How do you usually clean messy CSV or Excel Files?",
-      "primary_keyword": "How do you usually clean messy CSV or Excel Files",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "MEDIUM",
+      "title_suggestion": "How to Json to csv (2026 Guide)",
+      "primary_keyword": "json to csv",
+      "estimated_monthly_searches": 800,
+      "search_volume_tier": "low",
+      "keyword_difficulty": "HIGH",
       "trending": false,
-      "trending_score": 0,
+      "trending_score": -34,
       "is_breakout": false,
       "is_content_gap": true,
-      "source": "reddit",
+      "source": "google_trends",
       "scores_breakdown": {
-        "searchVolume": 5,
+        "searchVolume": 14,
         "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 1,
-        "platformValue": 3
+        "keywordDifficulty": 9,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
       },
-      "related_questions": [],
+      "related_questions": [
+        "How do I json to excel?",
+        "What is the best way to json to excel?",
+        "Can I json to excel without coding?",
+        "Is there a free tool to json to excel?",
+        "How to json to excel for free?"
+      ],
       "suggested_outline": [
         "Introduction: The problem",
         "Why this matters for data analysts",
@@ -1690,7 +1434,7 @@
         "FAQs",
         "Conclusion"
       ],
-      "writing_notes": "Target non-technical users. Avoid jargon."
+      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
     },
     {
       "priority": "LOW",
@@ -1701,7 +1445,7 @@
       "search_volume_tier": "very_low",
       "keyword_difficulty": "MEDIUM",
       "trending": false,
-      "trending_score": -100,
+      "trending_score": 0,
       "is_breakout": false,
       "is_content_gap": true,
       "source": "google_trends",
@@ -1709,9 +1453,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [
         "How do I convert json to csv?",
@@ -1748,9 +1493,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 12,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [
         "How do I api response to excel?",
@@ -1772,156 +1518,6 @@
     },
     {
       "priority": "LOW",
-      "priority_score": 34,
-      "title_suggestion": "[Portfolio] I have the analysis and dashboard, but how do I structure the final \"Deliverable\" for recruiters?",
-      "primary_keyword": "[Portfolio] I have the analysis and dashboard, but how do I ",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "MEDIUM",
-      "trending": false,
-      "trending_score": 0,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "reddit",
-      "scores_breakdown": {
-        "searchVolume": 5,
-        "trending": 0,
-        "keywordDifficulty": 12,
-        "contentGap": 15,
-        "redditBuzz": 2,
-        "platformValue": 0
-      },
-      "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 32,
-      "title_suggestion": "How to Json to excel (2026 Guide)",
-      "primary_keyword": "json to excel",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "HIGH",
-      "trending": false,
-      "trending_score": -66,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "google_trends",
-      "scores_breakdown": {
-        "searchVolume": 5,
-        "trending": 0,
-        "keywordDifficulty": 9,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [
-        "How do I json to excel?",
-        "What is the best way to json to excel?",
-        "Can I json to excel without coding?",
-        "Is there a free tool to json to excel?",
-        "How to json to excel for free?"
-      ],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Target non-technical users. Avoid jargon."
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 32,
-      "title_suggestion": "How to Json to csv (2026 Guide)",
-      "primary_keyword": "json to csv",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "HIGH",
-      "trending": false,
-      "trending_score": -70,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "google_trends",
-      "scores_breakdown": {
-        "searchVolume": 5,
-        "trending": 0,
-        "keywordDifficulty": 9,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [
-        "How do I json to excel?",
-        "What is the best way to json to excel?",
-        "Can I json to excel without coding?",
-        "Is there a free tool to json to excel?",
-        "How to json to excel for free?"
-      ],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 32,
-      "title_suggestion": "How to Flatten nested json (2026 Guide)",
-      "primary_keyword": "flatten nested json",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "HIGH",
-      "trending": false,
-      "trending_score": -100,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "google_trends",
-      "scores_breakdown": {
-        "searchVolume": 5,
-        "trending": 0,
-        "keywordDifficulty": 9,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [
-        "How do I flatten nested json?",
-        "What is the best way to flatten nested json?",
-        "Can I flatten nested json without coding?",
-        "Is there a free tool to flatten nested json?",
-        "How to flatten nested json for free?"
-      ],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "LOW",
       "priority_score": 32,
       "title_suggestion": "How to Json parser excel (2026 Guide)",
       "primary_keyword": "json parser excel",
@@ -1937,9 +1533,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 9,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [
         "How do I json to excel?",
@@ -1968,7 +1565,7 @@
       "search_volume_tier": "very_low",
       "keyword_difficulty": "HIGH",
       "trending": false,
-      "trending_score": -89,
+      "trending_score": -75,
       "is_breakout": false,
       "is_content_gap": true,
       "source": "google_trends",
@@ -1976,50 +1573,12 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 9,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [],
-      "suggested_outline": [
-        "Introduction: The problem",
-        "Why this matters for data analysts",
-        "Method comparison",
-        "Step-by-step solution",
-        "Tips and best practices",
-        "FAQs",
-        "Conclusion"
-      ],
-      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
-    },
-    {
-      "priority": "LOW",
-      "priority_score": 32,
-      "title_suggestion": "How to Json data analysis (2026 Guide)",
-      "primary_keyword": "json data analysis",
-      "estimated_monthly_searches": 200,
-      "search_volume_tier": "very_low",
-      "keyword_difficulty": "HIGH",
-      "trending": false,
-      "trending_score": -78,
-      "is_breakout": false,
-      "is_content_gap": true,
-      "source": "google_trends",
-      "scores_breakdown": {
-        "searchVolume": 5,
-        "trending": 0,
-        "keywordDifficulty": 9,
-        "contentGap": 15,
-        "redditBuzz": 0,
-        "platformValue": 3
-      },
-      "related_questions": [
-        "How do I json to excel?",
-        "What is the best way to json to excel?",
-        "Can I json to excel without coding?",
-        "Is there a free tool to json to excel?",
-        "How to json to excel for free?"
-      ],
       "suggested_outline": [
         "Introduction: The problem",
         "Why this matters for data analysts",
@@ -2040,7 +1599,7 @@
       "search_volume_tier": "very_low",
       "keyword_difficulty": "HIGH",
       "trending": false,
-      "trending_score": -87,
+      "trending_score": -69,
       "is_breakout": false,
       "is_content_gap": true,
       "source": "google_trends",
@@ -2048,9 +1607,10 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 9,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 5
       },
       "related_questions": [
         "How do I api response to excel?",
@@ -2072,14 +1632,48 @@
     },
     {
       "priority": "LOW",
-      "priority_score": 32,
-      "title_suggestion": "How to Power query json (2026 Guide)",
-      "primary_keyword": "power query json",
+      "priority_score": 30,
+      "title_suggestion": "[Portfolio] I have the analysis and dashboard, but how do I structure the final \"Deliverable\" for recruiters?",
+      "primary_keyword": "[Portfolio] I have the analysis and dashboard, but how do I ",
+      "estimated_monthly_searches": 200,
+      "search_volume_tier": "very_low",
+      "keyword_difficulty": "MEDIUM",
+      "trending": false,
+      "trending_score": 0,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "reddit",
+      "scores_breakdown": {
+        "searchVolume": 5,
+        "trending": 0,
+        "keywordDifficulty": 12,
+        "contentGap": 10,
+        "redditBuzz": 3,
+        "platformValue": 0,
+        "commercialIntent": 0
+      },
+      "related_questions": [],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 27,
+      "title_suggestion": "How to Flatten nested json (2026 Guide)",
+      "primary_keyword": "flatten nested json",
       "estimated_monthly_searches": 200,
       "search_volume_tier": "very_low",
       "keyword_difficulty": "HIGH",
       "trending": false,
-      "trending_score": -34,
+      "trending_score": -100,
       "is_breakout": false,
       "is_content_gap": true,
       "source": "google_trends",
@@ -2087,11 +1681,58 @@
         "searchVolume": 5,
         "trending": 0,
         "keywordDifficulty": 9,
-        "contentGap": 15,
+        "contentGap": 10,
         "redditBuzz": 0,
-        "platformValue": 3
+        "platformValue": 3,
+        "commercialIntent": 0
       },
-      "related_questions": [],
+      "related_questions": [
+        "How do I flatten nested json?",
+        "What is the best way to flatten nested json?",
+        "Can I flatten nested json without coding?",
+        "Is there a free tool to flatten nested json?",
+        "How to flatten nested json for free?"
+      ],
+      "suggested_outline": [
+        "Introduction: The problem",
+        "Why this matters for data analysts",
+        "Method comparison",
+        "Step-by-step solution",
+        "Tips and best practices",
+        "FAQs",
+        "Conclusion"
+      ],
+      "writing_notes": "Write in conversational, technical-but-accessible tone. Include practical examples and screenshots."
+    },
+    {
+      "priority": "LOW",
+      "priority_score": 27,
+      "title_suggestion": "How to Json data analysis (2026 Guide)",
+      "primary_keyword": "json data analysis",
+      "estimated_monthly_searches": 200,
+      "search_volume_tier": "very_low",
+      "keyword_difficulty": "HIGH",
+      "trending": false,
+      "trending_score": -56,
+      "is_breakout": false,
+      "is_content_gap": true,
+      "source": "google_trends",
+      "scores_breakdown": {
+        "searchVolume": 5,
+        "trending": 0,
+        "keywordDifficulty": 9,
+        "contentGap": 10,
+        "redditBuzz": 0,
+        "platformValue": 3,
+        "commercialIntent": 0
+      },
+      "related_questions": [
+        "How do I json to excel?",
+        "What is the best way to json to excel?",
+        "Can I json to excel without coding?",
+        "Is there a free tool to json to excel?",
+        "How to json to excel for free?"
+      ],
       "suggested_outline": [
         "Introduction: The problem",
         "Why this matters for data analysts",
@@ -2105,33 +1746,160 @@
     }
   ],
   "your_blog_coverage": {
-    "total_articles": 0,
-    "covered_platforms": [],
-    "covered_use_cases": [],
-    "existing_articles": []
+    "total_articles": 30,
+    "covered_platforms": [
+      "power query",
+      "python",
+      "airtable",
+      "postman",
+      "stripe",
+      "shopify",
+      "firebase",
+      "mongodb",
+      "google analytics",
+      "ga4",
+      "hubspot",
+      "salesforce",
+      "notion"
+    ],
+    "covered_use_cases": [
+      "convert",
+      "export",
+      "debug",
+      "analyze",
+      "api response",
+      "large file",
+      "import",
+      "nested json",
+      "object object",
+      "flatten",
+      "automate",
+      "weekly report"
+    ],
+    "existing_articles": [
+      {
+        "title": "5 Ways to Convert JSON to Excel (Ranked by Ease of Use)",
+        "slug": "5-ways-convert-json-to-excel-ranked"
+      },
+      {
+        "title": "Airtable Export to Excel: Keep Your Linked Records Intact",
+        "slug": "airtable-export-excel-complete-guide"
+      },
+      {
+        "title": "JSON API Response Debugging: From Postman to Excel Analysis",
+        "slug": "api-response-debugging-postman-excel"
+      },
+      {
+        "title": "API Testing to Excel: Consultants Workflow for Client Deliverables",
+        "slug": "api-testing-json-excel-consultant-workflow"
+      },
+      {
+        "title": "How to Auto-Unescape Double-Encoded JSON (The Easy Way)",
+        "slug": "auto-unescape-double-encoded-json"
+      },
+      {
+        "title": "Best JSON to Excel Tool for Large Files (10MB+) - 2026 Comparison",
+        "slug": "best-tool-large-json-files-excel"
+      },
+      {
+        "title": "Convert Stripe & Shopify API JSON to CSV for Financial Reporting",
+        "slug": "convert-stripe-shopify-json-to-csv"
+      },
+      {
+        "title": "The Data Analysts JSON Toolkit: Essential Skills and Resources",
+        "slug": "data-analyst-json-toolkit-essential-guide"
+      },
+      {
+        "title": "DevOps Log Analysis: JSON Logs to Excel for Incident Investigation",
+        "slug": "devops-log-analysis-json-excel-monitoring"
+      },
+      {
+        "title": "Enterprise Data Export: Security & Compliance Guide for JSON Conversion",
+        "slug": "enterprise-data-export-security-compliance"
+      },
+      {
+        "title": "Firebase JSON Export to Excel: Firestore and Realtime Database Guide",
+        "slug": "firebase-json-export-to-excel"
+      },
+      {
+        "title": "How to Fix [object Object] in Excel When Importing JSON (2026 Guide)",
+        "slug": "fix-object-object-excel-json"
+      },
+      {
+        "title": "20+ Free JSON Datasets for Testing (Shopify, Jira, Stripe, & More)",
+        "slug": "free-json-datasets-for-testing"
+      },
+      {
+        "title": "Google Analytics 4 Export to Excel: Get Past the 5,000 Row Limit",
+        "slug": "google-analytics-4-export-excel-guide"
+      },
+      {
+        "title": "The Hidden Data Trap: Why Your Native CSV Export Is Lying to You",
+        "slug": "hidden-data-trap-native-csv-export"
+      },
+      {
+        "title": "How to Convert JSON to CSV: A Complete Guide for Developers",
+        "slug": "how-to-convert-json-to-csv"
+      },
+      {
+        "title": "How to Flatten Nested JSON for Power BI & Excel (Without Python)",
+        "slug": "how-to-flatten-nested-json-without-python"
+      },
+      {
+        "title": "How to Open Large JSON Files in Excel (Honest Guide)",
+        "slug": "how-to-open-large-json-in-excel"
+      },
+      {
+        "title": "HubSpot Export to Excel: Get All Contact and Deal Data",
+        "slug": "hubspot-export-excel-complete-guide"
+      },
+      {
+        "title": "JSON Data Analysis in Excel: Complete Guide for Data Analysts (2026)",
+        "slug": "json-data-analysis-excel-guide"
+      },
+      {
+        "title": "Best JSON to Excel Tools in 2026: Complete Comparison",
+        "slug": "json-excel-tools-comparison-2026"
+      },
+      {
+        "title": "JSON to Excel for Weekly Reports: Complete Automation Guide (2026)",
+        "slug": "json-to-excel-weekly-reports-automation"
+      },
+      {
+        "title": "JsonExport vs Power Query: When to Use Each for JSON to Excel",
+        "slug": "jsonexport-vs-power-query-when-to-use-each"
+      },
+      {
+        "title": "MongoDB JSON Export to Excel: Complete Guide (2026)",
+        "slug": "mongodb-json-export-to-excel"
+      },
+      {
+        "title": "Notion Export to Excel: Get All Your Database Data Out",
+        "slug": "notion-export-excel-complete-guide"
+      },
+      {
+        "title": "How to Flatten Nested JSON for Excel (Without Expand Record Hell)",
+        "slug": "power-query-alternative-json-to-excel"
+      },
+      {
+        "title": "JSON to CSV/Excel: The Privacy-First Guide to Safe Data Conversion",
+        "slug": "privacy-guide-secure-json-conversion"
+      },
+      {
+        "title": "Export Salesforce Data to Excel: Get All Fields Without Data Loader",
+        "slug": "salesforce-to-excel-complete-guide"
+      },
+      {
+        "title": "Stripe Webhook Data to Excel: Analyze Payments, Refunds & Subscriptions",
+        "slug": "stripe-webhook-data-excel-reporting"
+      },
+      {
+        "title": "Why You Shouldnt Upload Client Data to Online JSON Converters",
+        "slug": "why-you-should-not-upload-json-online"
+      }
+    ]
   },
   "platform_gaps": [
-    {
-      "platform": "notion",
-      "priority": "HIGH",
-      "reason": "Very popular productivity tool, many users export data",
-      "suggested_title": "Notion JSON Export to Excel: Complete Guide",
-      "suggested_keyword": "notion json to excel"
-    },
-    {
-      "platform": "airtable",
-      "priority": "HIGH",
-      "reason": "Database tool with JSON exports, growing user base",
-      "suggested_title": "Airtable JSON Export to Excel: Complete Guide",
-      "suggested_keyword": "airtable json to excel"
-    },
-    {
-      "platform": "firebase",
-      "priority": "HIGH",
-      "reason": "Popular backend, complex JSON structures",
-      "suggested_title": "Firebase JSON Export to Excel: Complete Guide",
-      "suggested_keyword": "firebase json to excel"
-    },
     {
       "platform": "supabase",
       "priority": "MEDIUM",
@@ -2330,20 +2098,12 @@
   ],
   "reddit_trending": [
     {
-      "title": "How do you deal with constant interruptions (Slack, Jira questions, ad‑hoc calls) as a senior engineer?",
-      "subreddit": "webdev/comments/1qg44vp/how_do_you_deal_with_constant_interruptions_slack/",
-      "url": "https://reddit.com/r/webdev/comments/1qg44vp/how_do_you_deal_with_constant_interruptions_slack/",
-      "upvotes": 30,
-      "comments": 34,
-      "relevance_score": 40
-    },
-    {
       "title": "[Portfolio] I have the analysis and dashboard, but how do I structure the final \"Deliverable\" for recruiters?",
       "subreddit": "dataanalysis/comments/1qg4se5/portfolio_i_have_the_analysis_and_dashboard_but/",
       "url": "https://reddit.com/r/dataanalysis/comments/1qg4se5/portfolio_i_have_the_analysis_and_dashboard_but/",
-      "upvotes": 4,
-      "comments": 3,
-      "relevance_score": 35
+      "upvotes": 13,
+      "comments": 5,
+      "relevance_score": 55
     },
     {
       "title": "How do you usually analyze and visualize SQL query results for trend analysis (like revenue drops)?",
@@ -2351,15 +2111,7 @@
       "url": "https://reddit.com/r/dataanalysis/comments/1q2td33/how_do_you_usually_analyze_and_visualize_sql/",
       "upvotes": 16,
       "comments": 30,
-      "relevance_score": 30
-    },
-    {
-      "title": "How do you usually clean messy CSV or Excel Files?",
-      "subreddit": "analytics/comments/1qg3a0a/how_do_you_usually_clean_messy_csv_or_excel_files/",
-      "url": "https://reddit.com/r/analytics/comments/1qg3a0a/how_do_you_usually_clean_messy_csv_or_excel_files/",
-      "upvotes": 16,
-      "comments": 23,
-      "relevance_score": 25
+      "relevance_score": 50
     }
   ],
   "people_also_ask": {
@@ -2410,6 +2162,14 @@
       },
       {
         "sourceKeyword": "json to excel",
+        "query": "json to excel online"
+      },
+      {
+        "sourceKeyword": "json to excel",
+        "query": "how to convert json to excel"
+      },
+      {
+        "sourceKeyword": "json to excel",
         "query": "export json to excel"
       },
       {
@@ -2418,27 +2178,19 @@
       },
       {
         "sourceKeyword": "json to excel",
+        "query": "online json to excel converter"
+      },
+      {
+        "sourceKeyword": "json to excel",
         "query": "gst json to excel"
       },
       {
         "sourceKeyword": "json to excel",
-        "query": "json to excel online converter"
-      },
-      {
-        "sourceKeyword": "json to excel",
-        "query": "online json to excel converter"
+        "query": "convert json to excel online"
       },
       {
         "sourceKeyword": "json to csv",
-        "query": "convert json to csv"
-      },
-      {
-        "sourceKeyword": "json to csv",
-        "query": "from json to csv"
-      },
-      {
-        "sourceKeyword": "json to csv",
-        "query": "json to csv converter"
+        "query": "json to csv python"
       },
       {
         "sourceKeyword": "json to csv",
@@ -2446,26 +2198,51 @@
       }
     ]
   },
-  "errors": [],
+  "errors": [
+    {
+      "source": "google_trends",
+      "keyword": "json data analysis",
+      "type": "relatedQueries",
+      "error": "Rate Limited"
+    },
+    {
+      "source": "google_trends",
+      "keyword": "postman export data",
+      "type": "interest",
+      "error": "Rate Limited (Real Data Unavailable)"
+    },
+    {
+      "source": "google_trends",
+      "keyword": "hubspot export excel",
+      "type": "relatedQueries",
+      "error": "Rate Limited"
+    },
+    {
+      "source": "google_trends",
+      "keyword": "shopify json data",
+      "type": "relatedQueries",
+      "error": "Rate Limited"
+    }
+  ],
   "metadata": {
     "script_version": "1.0.0",
-    "run_duration_seconds": 261.5,
-    "startTime": "2026-01-18T20:29:13.491Z",
+    "run_duration_seconds": 911.4,
+    "startTime": "2026-01-23T12:13:40.071Z",
     "sources": {
       "googleTrends": {
         "success": true,
-        "duration": 125
+        "duration": 796
       },
       "reddit": {
         "success": true,
-        "duration": 102.1
+        "duration": 81.7
       },
       "paa": {
         "success": true,
-        "duration": 34.2
+        "duration": 33.4
       }
     },
-    "duration": 261.5,
-    "endTime": "2026-01-18T20:33:34.847Z"
+    "duration": 911.4,
+    "endTime": "2026-01-23T12:28:51.476Z"
   }
 }
