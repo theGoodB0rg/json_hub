@@ -40,39 +40,36 @@ export function TableViewGrid({ data, basePath = '' }: TableViewGridProps) {
     }
 
     const totalHeight = rowVirtualizer.getTotalSize();
+    const HEADER_HEIGHT = 40; // Height of header row
 
     return (
         <div
             ref={containerRef}
             className="overflow-auto custom-scrollbar h-full w-full border border-border rounded-md bg-background"
         >
+            {/* Header Row - Sticky */}
+            <div
+                className="sticky top-0 z-10 flex bg-muted border-b border-border"
+                style={{ minWidth: `${filteredColumns.length * 150}px` }}
+            >
+                {filteredColumns.map((col, idx) => (
+                    <div
+                        key={idx}
+                        className="min-w-[150px] w-[150px] flex-shrink-0 px-3 py-2 text-left font-semibold text-sm border-r border-border last:border-r-0 overflow-hidden text-ellipsis whitespace-nowrap"
+                    >
+                        {col.name}
+                    </div>
+                ))}
+            </div>
+
+            {/* Virtual rows container */}
             <div
                 style={{
                     height: `${totalHeight}px`,
-                    width: '100%',
+                    minWidth: `${filteredColumns.length * 150}px`,
                     position: 'relative',
                 }}
             >
-                {/* Header Row - Sticky */}
-                <div
-                    className="sticky top-0 z-10 flex bg-muted border-b border-border"
-                    style={{
-                        width: '100%',
-                        position: 'sticky',
-                        top: 0
-                    }}
-                >
-                    {filteredColumns.map((col, idx) => (
-                        <div
-                            key={idx}
-                            className="flex-1 min-w-[150px] px-3 py-2 text-left font-semibold text-sm border-r border-border last:border-r-0 overflow-hidden text-ellipsis whitespace-nowrap"
-                        >
-                            {col.name}
-                        </div>
-                    ))}
-                </div>
-
-                {/* Virtual rows */}
                 {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                     const row = tableStructure.rows[virtualRow.index];
                     const rowIdx = virtualRow.index;
@@ -80,22 +77,14 @@ export function TableViewGrid({ data, basePath = '' }: TableViewGridProps) {
                         ? `${basePath}.${rowIdx}`
                         : `${rowIdx}`;
 
-                    // Adjust translateY to account for header height (assuming ~37px for header)
-                    // Actually, if header is *inside* the scroll container, we don't need to offset,
-                    // BUT because we're using absolute positioning relative to the container,
-                    // we need to make sure the header doesn't overlap the first rows if they start at 0.
-                    // The "sticky" header is part of the flow if using native tables, but with absolute divs...
-                    // Better approach: Separate container for Header and Body?
-                    // Or: Just offset the start position by header height?
-
-                    // Let's try separate Header outside the virtual container for simplicity.
                     return (
                         <div
                             key={rowIdx}
-                            className="absolute top-0 left-0 w-full flex hover:bg-muted/50 transition-colors border-b border-border/50"
+                            className="absolute top-0 left-0 flex hover:bg-muted/50 transition-colors border-b border-border/50"
                             style={{
                                 height: `${virtualRow.size}px`,
                                 transform: `translateY(${virtualRow.start}px)`,
+                                minWidth: `${filteredColumns.length * 150}px`,
                             }}
                         >
                             {filteredColumns.map((col: any, colIdx: number) => {
@@ -105,7 +94,7 @@ export function TableViewGrid({ data, basePath = '' }: TableViewGridProps) {
                                 return (
                                     <div
                                         key={colIdx}
-                                        className="flex-1 min-w-[150px] px-3 py-2 text-sm border-r border-border/50 last:border-r-0 overflow-hidden flex items-center"
+                                        className="min-w-[150px] w-[150px] flex-shrink-0 px-3 py-2 text-sm border-r border-border/50 last:border-r-0 overflow-hidden flex items-center"
                                     >
                                         <div className="w-full truncate">
                                             {renderCell(cellData, col.type, cellPath, updateData)}
@@ -123,10 +112,36 @@ export function TableViewGrid({ data, basePath = '' }: TableViewGridProps) {
 
 function analyzeStructure(data: any) {
     if (!data) return null;
-    const items = Array.isArray(data) ? data : [data];
+
+    // Unwrap wrapper patterns:
+    // 1. { products: [...] } - object with single key containing array
+    // 2. [{ products: [...] }] - array with single element that is a wrapper object
+    let effectiveData = data;
+
+    // Case 1: Direct wrapper object { products: [...] }
+    if (!Array.isArray(data) && typeof data === 'object' && data !== null) {
+        const keys = Object.keys(data);
+        if (keys.length === 1 && Array.isArray(data[keys[0]])) {
+            effectiveData = data[keys[0]];
+        }
+    }
+    // Case 2: Array with single wrapper object [{ products: [...] }]
+    else if (Array.isArray(data) && data.length === 1) {
+        const firstElement = data[0];
+        if (typeof firstElement === 'object' && firstElement !== null && !Array.isArray(firstElement)) {
+            const keys = Object.keys(firstElement);
+            if (keys.length === 1 && Array.isArray(firstElement[keys[0]])) {
+                effectiveData = firstElement[keys[0]];
+            }
+        }
+    }
+
+    const items = Array.isArray(effectiveData) ? effectiveData : [effectiveData];
     if (items.length === 0) return null;
 
     const firstItem = items[0];
+    if (!firstItem || typeof firstItem !== 'object') return null;
+
     const columns: Array<{ name: string; type: 'primitive' | 'array' | 'object' }> = [];
 
     for (const [key, value] of Object.entries(firstItem)) {
