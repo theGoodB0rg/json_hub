@@ -20,6 +20,38 @@ export interface ConverterPageConfig {
 // Top 10 High-Value Platforms for "Drip Feed" Launch
 export const converterPages: ConverterPageConfig[] = [
     {
+        slug: 'salesforce-json-to-excel',
+        platformName: 'Salesforce',
+        title: 'Convert Salesforce JSON to Excel - 100% Secure & Private',
+        description: 'Securely convert Salesforce Data Exports and API responses to Excel. 100% client-side processing (GDPR safe) for sensitive customer data. Handles nested attributes automatically.',
+        h1: 'Salesforce JSON to Excel Converter',
+        subheading: 'Export Accounts, Opportunities, and Reports to Excel without cloud uploads.',
+        tldr: "To convert Salesforce data to Excel securely, paste your JSON export (from Workbench, Data Loader, or API) below. We automatically flatten the `records` array and nested `attributes` metadata into a clean table, processing everything locally in your browser to ensure no PII leaves your device.",
+        content: {
+            intro: 'Salesforce data exports often come in complex JSON formats, especially when using the REST API or tools like Workbench. Traditional online converters require you to upload this sensitive customer data to their servers—a massive security risk. JsonExport solves this by processing your Salesforce data 100% in your browser.',
+            features: [
+                'Smart Flattening for `attributes` and nested objects',
+                '100% Client-Side Processing (GDPR/Compliance Safe)',
+                'Handles large 50MB+ Data Exports',
+                'Perfect for cleaning Data Loader exports'
+            ]
+        },
+        faqs: [
+            {
+                question: "Is it safe to paste Salesforce customer lists here?",
+                answer: "Yes, absolutely. Unlike other converters, we do NOT upload your file to any server. All processing happens locally in your browser's memory. You can even disconnect your internet after loading the page and it will still work."
+            },
+            {
+                question: "How do I handle the 'attributes' field in Salesforce JSON?",
+                answer: "Our Smart Flattener automatically detects the standard Salesforce `attributes` object (containing `type` and `url`) and handles it intelligently, so you can focus on the actual record data like Name, Email, and Revenue."
+            },
+            {
+                question: "Can I convert nested sub-queries?",
+                answer: "Yes. If your SOQL query included sub-queries (e.g., Contacts within Accounts), our tool will flatten these relationships so you can view them in a single spreadsheet view."
+            }
+        ]
+    },
+    {
         slug: 'stripe-json-to-excel',
         platformName: 'Stripe',
         title: 'Convert Stripe JSON to Excel (XLSX) - Free & Private',
