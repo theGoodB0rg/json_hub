@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Hunt Copy-Paste Kit</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --border-color: #334155;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            margin: 0;
+            padding: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .asset-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s;
+        }
+        .asset-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+        }
+        .label {
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .content-area {
+            position: relative;
+        }
+        textarea {
+            width: 100%;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #e2e8f0;
+            padding: 1rem;
+            padding-right: 4rem; /* Space for button */
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            min-height: 60px;
+            box-sizing: border-box;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .copy-btn:hover {
+            background-color: #2563eb;
+        }
+        .copy-btn.copied {
+            background-color: var(--success-color);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Product Hunt Launch Kit</h1>
+
+    <div class="asset-card">
+        <label class="label">Name</label>
+        <div class="content-area">
+            <textarea id="name" readonly>JsonExport</textarea>
+            <button class="copy-btn" onclick="copyToClipboard('name', this)">Copy</button>
+        </div>
+    </div>
+
+    <div class="asset-card">
+        <label class="label">Tagline</label>
+        <div class="content-area">
+            <textarea id="tagline" readonly>Convert huge JSON files to Excel instantly. 100% Client-side.</textarea>
+            <button class="copy-btn" onclick="copyToClipboard('tagline', this)">Copy</button>
+        </div>
+    </div>
+
+    <div class="asset-card">
+        <label class="label">Short Description (Social)</label>
+        <div class="content-area">
+            <textarea id="short-desc" readonly>The privacy-first JSON to Excel converter. Handles nested objects, local processing for large files (100MB+), and smart flattening. Free & Open Source.</textarea>
+            <button class="copy-btn" onclick="copyToClipboard('short-desc', this)">Copy</button>
+        </div>
+    </div>
+
+    <div class="asset-card">
+        <label class="label">Product Description</label>
+        <div class="content-area">
+            <textarea id="prod-desc" rows="15" readonly>**Stop sending your sensitive data to random servers.**
+
+JsonExport is the professional-grade JSON to Excel/CSV converter that runs entirely in your browser.
+
+Most online converters are slow, insecure, and break when you feed them nested data. We built JsonExport to handle the real-world messiness of data analysis:
+
+🔒 **Privacy First**: Your data never leaves your device. Perfect for sensitive logs, customer data, and financial reports.
+
+🚀 **Unlimited Power**: Thanks to streaming technology, we handle 100MB+ files that crash other tools.
+
+🧠 **Smart Flattening**: We automatically detect nested objects and "flatten" them into clean columns (e.g., `user.address.city`), so you never see `[object Object]` in Excel again.
+
+✨ **Developer Friendly**: Includes a full VS Code-like editor (Monaco) and a powerful data grid to preview and edit your data before exporting.
+
+Free, Open Source, and efficient.</textarea>
+            <button class="copy-btn" onclick="copyToClipboard('prod-desc', this)">Copy</button>
+        </div>
+    </div>
+
+    <div class="asset-card">
+        <label class="label">Maker's Comment (First Comment)</label>
+        <div class="content-area">
+            <textarea id="maker-comment" rows="20" readonly>Hi Product Hunt! 👋
+
+I’m John, the maker of JsonExport.
+
+I built this tool because I was frustrated with the state of existing JSON converters.
+
+As a developer/analyst, I often had to convert massive JSON dumps (logs, API responses) to Excel for non-technical team members. The existing options were terrible:
+*   **Security Nightmares**: "Upload your file to our server" (Nope, can't do that with customer data).
+*   **The `[object Object]` Problem**: Nested JSON would just break, leaving me to write custom Python scripts every time.
+*   **Size Limits**: "File too large" errors on anything over 10MB.
+
+**JsonExport is the answer to those frustrations.**
+
+It runs 100% locally in your browser using Web Workers and streaming parsers. This means:
+1.  **Zero Privacy Risk**: We literally cannot see your data.
+2.  **Blazing Speed**: No network upload time.
+3.  **Smart Parsing**: It auto-detects deeply nested structures and flattens them intelligently.
+
+We focused heavily on the UX—giving you a real Data Grid to preview and edit your data before you export, and a full Monaco editor for pasting code.
+
+It’s completely **Free and Open Source**.
+
+I’d love to hear your feedback! Try breaking it with your messiest, largest JSON files and let me know how it handles them. 🐛 (or 🚀?)
+
+Happy converting!</textarea>
+            <button class="copy-btn" onclick="copyToClipboard('maker-comment', this)">Copy</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        Generated by Antigravity using your Product Hunt Plan. Good luck! 🚀
+    </div>
+
+    <script>
+        function copyToClipboard(elementId, btn) {
+            const textarea = document.getElementById(elementId);
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // For mobile devices
+            
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                // Fallback for older browsers
+                document.execCommand('copy');
+                btn.innerText = 'Copied!';
+                setTimeout(() => btn.innerText = 'Copy', 2000);
+            });
+        }
+    </script>
+</body>
+</html>

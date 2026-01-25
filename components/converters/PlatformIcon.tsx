@@ -72,6 +72,12 @@ export function PlatformIcon({ platform, className }: Props) {
                     <path d="M10.5803 13.27C9.8603 12.02 9.0103 9.37 9.0103 7.23C9.0103 6.08 9.1803 5.14 9.4403 4.35C8.9303 5.43 5.0003 8.94 5.0003 13.91C5.0003 16.12 5.9603 18.05 7.0003 19.28C7.5603 17.8 8.5503 15.06 10.5103 13.27H10.5803Z" fill="#13AA52" />
                 </svg>
             );
+        case 'salesforce':
+            return (
+                <svg className={baseClass} viewBox="0 0 24 24" fill="#00A1E0" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.132 20.177 10.244 17.819 10.034C17.494 6.464 14.532 3.5 11 3.5C7.171 3.5 3.991 6.302 3.559 10.036C1.52 10.457 0 12.274 0 14.5C0 16.9853 2.01472 19 4.5 19H17.5Z" />
+                </svg>
+            );
         case 'postgresql':
             return (
                 <svg className={baseClass} viewBox="0 0 24 24" fill="#336791" xmlns="http://www.w3.org/2000/svg">

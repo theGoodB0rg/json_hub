@@ -14,7 +14,9 @@ export const metadata: Metadata = {
 export default function Home() {
     return (
         <>
-            <ConverterApp />
+            <ConverterApp
+                subheading="Stop struggling with massive JSON files from Salesforce, Stripe, or APIs. Visualize, flatten, and clean your data instantly—100% locally."
+            />
 
             {/* Comparison Table Section */}
             <section className="container mx-auto px-4 py-12 border-t border-border/40">
