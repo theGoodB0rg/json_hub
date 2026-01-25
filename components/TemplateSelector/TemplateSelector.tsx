@@ -15,7 +15,7 @@ import {
 import { useAppStore } from '@/lib/store/store';
 import { JSON_TEMPLATES } from '@/lib/templates/jsonTemplates';
 
-export function TemplateSelector() {
+export function TemplateSelector({ platform }: { platform?: string }) {
     const { setRawInput, parseInput } = useAppStore();
 
     const handleSelectTemplate = (templateData: string) => {
@@ -28,7 +28,8 @@ export function TemplateSelector() {
         api: 'API Responses',
         ecommerce: 'E-commerce',
         analytics: 'Analytics',
-        general: 'General'
+        general: 'General',
+        salesforce: 'Salesforce (CRM)'
     };
 
     const groupedTemplates = JSON_TEMPLATES.reduce((acc, template) => {
@@ -58,28 +59,36 @@ export function TemplateSelector() {
             <DropdownMenuContent align="start" className="w-64">
                 <DropdownMenuLabel>Sample JSON Templates</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.entries(groupedTemplates).map(([category, templates]) => (
-                    <div key={category}>
-                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                            {categories[category as keyof typeof categories]}
+                {Object.entries(groupedTemplates)
+                    .sort(([catA], [catB]) => {
+                        // Prioritize platform specific category
+                        if (platform && catA === platform) return -1;
+                        if (platform && catB === platform) return 1;
+                        // Default order
+                        return 0;
+                    })
+                    .map(([category, templates]) => (
+                        <div key={category}>
+                            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                                {categories[category as keyof typeof categories]}
+                            </div>
+                            {templates.map((template) => (
+                                <DropdownMenuItem
+                                    key={template.id}
+                                    onClick={() => handleSelectTemplate(template.data)}
+                                    className="cursor-pointer"
+                                >
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="font-medium">{template.name}</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {template.description}
+                                        </span>
+                                    </div>
+                                </DropdownMenuItem>
+                            ))}
+                            <DropdownMenuSeparator />
                         </div>
-                        {templates.map((template) => (
-                            <DropdownMenuItem
-                                key={template.id}
-                                onClick={() => handleSelectTemplate(template.data)}
-                                className="cursor-pointer"
-                            >
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="font-medium">{template.name}</span>
-                                    <span className="text-xs text-muted-foreground">
-                                        {template.description}
-                                    </span>
-                                </div>
-                            </DropdownMenuItem>
-                        ))}
-                        <DropdownMenuSeparator />
-                    </div>
-                ))}
+                    ))}
             </DropdownMenuContent>
         </DropdownMenu>
     );

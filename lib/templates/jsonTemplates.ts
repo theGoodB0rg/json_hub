@@ -2,7 +2,7 @@ export interface JSONTemplate {
     id: string;
     name: string;
     description: string;
-    category: 'api' | 'ecommerce' | 'analytics' | 'general';
+    category: 'api' | 'ecommerce' | 'analytics' | 'general' | 'salesforce';
     data: string;
 }
 
@@ -177,6 +177,73 @@ export const JSON_TEMPLATES: JSONTemplate[] = [
                     "encrypted": true
                 }
             }
+        }, null, 2)
+    },
+    {
+        id: 'salesforce-account-export',
+        name: 'Salesforce Account Export',
+        description: 'Typical SFDC REST API response with nested attributes',
+        category: 'salesforce',
+        data: JSON.stringify({
+            "totalSize": 4,
+            "done": true,
+            "records": [
+                {
+                    "attributes": {
+                        "type": "Account",
+                        "url": "/services/data/v58.0/sobjects/Account/0015g00000XyZ1AAV"
+                    },
+                    "Id": "0015g00000XyZ1AAV",
+                    "Name": "Edge Communications",
+                    "Type": "Customer - Direct",
+                    "BillingAddress": {
+                        "city": "Austin",
+                        "country": "USA",
+                        "postalCode": "78701",
+                        "state": "TX",
+                        "street": "123 Main St"
+                    },
+                    "Phone": "(512) 757-6000",
+                    "Contacts": {
+                        "done": true,
+                        "totalSize": 2,
+                        "records": [
+                            {
+                                "attributes": { "type": "Contact", "url": "/..." },
+                                "Id": "0035g00000XyZ1BAV",
+                                "FirstName": "Sean",
+                                "LastName": "Forbes",
+                                "Email": "sean@edge.com"
+                            },
+                            {
+                                "attributes": { "type": "Contact", "url": "/..." },
+                                "Id": "0035g00000XyZ1CAV",
+                                "FirstName": "Rose",
+                                "LastName": "Gonzalez",
+                                "Email": "rose@edge.com"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "attributes": {
+                        "type": "Account",
+                        "url": "/services/data/v58.0/sobjects/Account/0015g00000XyZ2AAV"
+                    },
+                    "Id": "0015g00000XyZ2AAV",
+                    "Name": "Burlington Textiles Corp of America",
+                    "Type": "Customer - Channel",
+                    "BillingAddress": {
+                        "city": "Burlington",
+                        "country": "USA",
+                        "postalCode": "27215",
+                        "state": "NC",
+                        "street": "456 Textile Way"
+                    },
+                    "Phone": "(336) 222-7000",
+                    "Contacts": null
+                }
+            ]
         }, null, 2)
     }
 ];
