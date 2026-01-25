@@ -69,4 +69,41 @@ describe('smartUnwrap', () => {
         const result = smartUnwrap(input);
         expect(result.isUnwrapped).toBe(false);
     });
+
+    // NEW: Tests for single-element array unwrapping (Salesforce-style envelopes)
+    it('should unwrap single-element arrays containing wrapper objects', () => {
+        // Salesforce-style envelope wrapped in array (as smartParse does)
+        const input = [{
+            totalSize: 4,
+            done: true,
+            records: [{ Id: '001', Name: 'Test' }, { Id: '002', Name: 'Test2' }]
+        }];
+        const result = smartUnwrap(input);
+        expect(result.isUnwrapped).toBe(true);
+        expect(result.data).toEqual([{ Id: '001', Name: 'Test' }, { Id: '002', Name: 'Test2' }]);
+        expect(result.wrapperInfo?.totalSize).toBe(4);
+        expect(result.wrapperInfo?.done).toBe(true);
+    });
+
+    it('should handle deeply nested wrappers in single-element arrays', () => {
+        const input = [{ data: [{ id: 1 }, { id: 2 }] }];
+        const result = smartUnwrap(input);
+        expect(result.isUnwrapped).toBe(true);
+        expect(result.data).toEqual([{ id: 1 }, { id: 2 }]);
+    });
+
+    it('should NOT unwrap single-element arrays with non-wrapper objects', () => {
+        // A single data object (not a wrapper) - should pass through
+        const input = [{ id: 1, name: 'Test', email: 'test@example.com' }];
+        const result = smartUnwrap(input);
+        expect(result.isUnwrapped).toBe(false);
+        expect(result.data).toBe(input);
+    });
+
+    it('should handle multi-element arrays normally', () => {
+        const input = [{ id: 1 }, { id: 2 }];
+        const result = smartUnwrap(input);
+        expect(result.isUnwrapped).toBe(false);
+        expect(result.data).toBe(input);
+    });
 });

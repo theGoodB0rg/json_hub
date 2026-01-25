@@ -64,16 +64,12 @@ export function validateAndParse(
             };
         }
 
-        // Success - return parsed data
-        // If the result is a single object (and not null), wrap it in an array
-        // This prevents the app from crashing when users paste a single object
-        const finalData = (parsed && typeof parsed === 'object' && !Array.isArray(parsed))
-            ? [parsed]
-            : parsed;
-
+        // Success - return parsed data as-is
+        // Note: Previously we wrapped single objects in arrays here, but this caused issues
+        // with Table View. Now smartUnwrap handles all wrapper detection consistently.
         return {
             success: true,
-            data: finalData,
+            data: parsed,
         };
     } catch (error) {
         const errors: ParseError[] = [];
