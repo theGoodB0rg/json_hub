@@ -38,6 +38,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { DraggableHeader } from './DraggableHeader';
 import { EditableCell } from './EditableCell';
 import { DataGridToolbar } from './DataGridToolbar';
+import { PlatformIcon } from '@/components/converters/PlatformIcon';
 
 // Row Component for Sortable Rows
 const DraggableRow = ({ row, children }: { row: any, children: React.ReactNode }) => {
@@ -62,7 +63,7 @@ const DraggableRow = ({ row, children }: { row: any, children: React.ReactNode }
 };
 
 
-export function DataGrid() {
+export function DataGrid({ platform }: { platform?: string }) {
     const {
         flatData,
         schema,
@@ -176,6 +177,32 @@ export function DataGrid() {
     // Or we use `DragOverlay`.
 
     if (flatData.length === 0) {
+        if (platform) {
+            // Capitalize first letter for display
+            const displayName = platform.charAt(0).toUpperCase() + platform.slice(1);
+
+            return (
+                <Card className="h-full flex flex-col items-center justify-center p-8 bg-muted/10 border-dashed border-2 border-primary/20 bg-primary/5 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
+                    <div className="text-center space-y-4 max-w-sm relative z-10">
+                        <div className="w-20 h-20 bg-background rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-xl border border-border">
+                            <PlatformIcon platform={platform} className="w-12 h-12" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold tracking-tight mb-3">Ready for {displayName}</h2>
+                            <p className="text-base text-muted-foreground leading-relaxed">
+                                Paste your &quot;{displayName} Export&quot; JSON or API response to instantly view and clean it.
+                            </p>
+                        </div>
+                        <div className="flex items-center justify-center gap-2 pt-4">
+                            <span className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/20">100% Private</span>
+                            <span className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/20">Smart Flatten</span>
+                        </div>
+                    </div>
+                </Card>
+            );
+        }
+
         return (
             <Card className="h-full flex flex-col items-center justify-center p-8 bg-muted/10 border-dashed border-2">
                 <div className="text-center space-y-4 max-w-sm">
@@ -188,11 +215,14 @@ export function DataGrid() {
                             Drag and drop your JSON files to view them in our high-performance grid.
                         </p>
                     </div>
-                    <div className="flex items-center justify-center gap-4 pt-4 opacity-60">
-                        <span className="text-xs font-medium bg-secondary px-2 py-1 rounded">Shopify</span>
-                        <span className="text-xs font-medium bg-secondary px-2 py-1 rounded">Jira</span>
-                        <span className="text-xs font-medium bg-secondary px-2 py-1 rounded">MongoDB</span>
-                    </div>
+                    {/* Only show these if NOT on a specific platform page */}
+                    {!platform && (
+                        <div className="flex items-center justify-center gap-4 pt-4 opacity-60">
+                            <span className="text-xs font-medium bg-secondary px-2 py-1 rounded">Shopify</span>
+                            <span className="text-xs font-medium bg-secondary px-2 py-1 rounded">Jira</span>
+                            <span className="text-xs font-medium bg-secondary px-2 py-1 rounded">MongoDB</span>
+                        </div>
+                    )}
                 </div>
             </Card>
         );

@@ -18,7 +18,7 @@ const RECOMMENDED_MAX_SIZE = 10 * 1024 * 1024; // 10MB - works instantly
 const WARNING_SIZE = 50 * 1024 * 1024; // 50MB - tested, works smoothly
 const HARD_MAX_SIZE = 100 * 1024 * 1024; // 100MB - show upsell (device-dependent above this)
 
-export function JsonEditor() {
+export function JsonEditor({ platform }: { platform?: string }) {
     const {
         rawInput,
         setRawInput,
@@ -174,7 +174,7 @@ export function JsonEditor() {
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-sm font-semibold text-muted-foreground hidden sm:block">JSON Input</h2>
                     <div className="flex gap-2 w-full sm:w-auto justify-end">
-                        <TemplateSelector />
+                        <TemplateSelector platform={platform} />
                         <input
                             ref={fileInputRef}
                             type="file"

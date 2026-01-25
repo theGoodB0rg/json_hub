@@ -76,6 +76,7 @@ export default function ConverterPage({ params }: Props) {
                     </div>
                 }
                 subheading={pageConfig.subheading}
+                platform={pageConfig.platformName.toLowerCase()}
             />
 
             {/* Content for SEO ranking */}
