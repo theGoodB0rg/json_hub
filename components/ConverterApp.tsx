@@ -32,9 +32,10 @@ import { SecurityBadges } from "@/components/SecurityBadges";
 interface ConverterAppProps {
     heading?: React.ReactNode;
     subheading?: string;
+    platform?: string;
 }
 
-export function ConverterApp({ heading, subheading }: ConverterAppProps) {
+export function ConverterApp({ heading, subheading, platform }: ConverterAppProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
     const { setRawInput, parseInput, initWorker } = useAppStore();
 
@@ -156,7 +157,7 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
                                                     <span className="text-[10px] text-muted-foreground">Auto-detects format</span>
                                                 </div>
                                                 <div className="flex-1 overflow-hidden relative group">
-                                                    <JsonEditor />
+                                                    <JsonEditor platform={platform} />
                                                 </div>
                                             </div>
                                         </ResizablePanel>
@@ -173,7 +174,7 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 overflow-hidden p-4">
-                                                    <DataGrid />
+                                                    <DataGrid platform={platform} />
                                                 </div>
                                                 <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
                                                     <ExportMenu />
@@ -198,13 +199,13 @@ export function ConverterApp({ heading, subheading }: ConverterAppProps) {
 
                                         <TabsContent value="input" className="flex-1 mt-0 h-full flex flex-col overflow-hidden data-[state=inactive]:hidden">
                                             <div className="flex-1 overflow-hidden relative border-b border-border/40 h-full">
-                                                <JsonEditor />
+                                                <JsonEditor platform={platform} />
                                             </div>
                                         </TabsContent>
 
                                         <TabsContent value="preview" className="flex-1 mt-0 h-full flex flex-col overflow-hidden data-[state=inactive]:hidden">
                                             <div className="flex-1 overflow-hidden p-2 h-full">
-                                                <DataGrid />
+                                                <DataGrid platform={platform} />
                                             </div>
                                             <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
                                                 <ExportMenu />
