@@ -7,8 +7,8 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(result.success).toBe(true);
-            expect(result.data).toEqual([{ name: 'John', age: 30 }]);
+            // Note: We no longer wrap single objects in arrays
+            expect(result.data).toEqual({ name: 'John', age: 30 });
             expect(result.errors).toBeUndefined();
         });
 
@@ -26,7 +26,7 @@ describe('smartParse', () => {
             const result = validateAndParse(doubleEncoded);
 
             expect(result.success).toBe(true);
-            expect(result.data).toEqual([original]);
+            expect(result.data).toEqual(original);
         });
 
         it('should auto-unescape triple-encoded JSON', () => {
@@ -37,7 +37,7 @@ describe('smartParse', () => {
             const result = validateAndParse(tripleEncoded);
 
             expect(result.success).toBe(true);
-            expect(result.data).toEqual([original]);
+            expect(result.data).toEqual(original);
         });
 
         it('should handle empty input', () => {
@@ -81,8 +81,7 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(result.success).toBe(true);
-            expect(result.data).toEqual([deepObject]);
+            expect(result.data).toEqual(deepObject);
         });
 
         it('should handle large objects', () => {
@@ -94,8 +93,7 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(result.success).toBe(true);
-            expect(Object.keys(result.data[0]).length).toBe(10000);
+            expect(Object.keys(result.data).length).toBe(10000);
         });
 
         it('should prevent infinite recursion with max depth limit', () => {
@@ -123,11 +121,10 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(result.success).toBe(true);
-            expect(result.data[0]).toHaveProperty('string', 'text');
-            expect(result.data[0]).toHaveProperty('number', 42);
-            expect(result.data[0]).toHaveProperty('boolean', true);
-            expect(result.data[0]).toHaveProperty('null', null);
+            expect(result.data).toHaveProperty('string', 'text');
+            expect(result.data).toHaveProperty('number', 42);
+            expect(result.data).toHaveProperty('boolean', true);
+            expect(result.data).toHaveProperty('null', null);
         });
 
         it('should handle special characters in strings', () => {
@@ -140,19 +137,17 @@ describe('smartParse', () => {
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(result.success).toBe(true);
-            expect(result.data[0].quote).toBe('He said "Hello"');
-            expect(result.data[0].newline).toBe('Line 1\nLine 2');
+            expect(result.data.quote).toBe('He said "Hello"');
+            expect(result.data.newline).toBe('Line 1\nLine 2');
         });
 
-        it('should handle single object input by wrapping in array', () => {
+        it('should return single object as-is (no longer wraps in array)', () => {
             const input = '{"name": "Single Object"}';
             const result = validateAndParse(input);
 
             expect(result.success).toBe(true);
-            expect(Array.isArray(result.data)).toBe(true);
-            expect(result.data).toHaveLength(1);
-            expect(result.data[0]).toEqual({ name: 'Single Object' });
+            // Note: smartUnwrap now handles wrapper detection consistently
+            expect(result.data).toEqual({ name: 'Single Object' });
         });
     });
 
