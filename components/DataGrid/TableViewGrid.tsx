@@ -4,6 +4,7 @@ import { useMemo, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { InlineEdit } from './InlineEdit';
 import { useAppStore } from '@/lib/store/store';
+import { smartUnwrap } from '@/lib/parsers/unwrapper';
 
 const ROW_HEIGHT = 40;
 
@@ -15,7 +16,12 @@ interface TableViewGridProps {
 export function TableViewGrid({ data, basePath = '' }: TableViewGridProps) {
     const { updateData, excludedColumns } = useAppStore();
     const containerRef = useRef<HTMLDivElement>(null);
-    const tableStructure = useMemo(() => analyzeStructure(data), [data]);
+
+    // Smart Unwrap: Ensure we display the core records, not the envelope (e.g. Salesforce totalSize)
+    const tableStructure = useMemo(() => {
+        const { data: unwrappedData } = smartUnwrap(data);
+        return analyzeStructure(unwrappedData);
+    }, [data]);
 
     // Filter out excluded columns
     const filteredColumns = useMemo(() => {
