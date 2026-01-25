@@ -24,7 +24,20 @@ const COMMON_DATA_KEYS = new Set([
 ]);
 
 export function smartUnwrap(data: any): UnwrapResult {
-    // If it's already an array, nothing to do
+    // Handle single-element arrays containing wrapper objects
+    // This handles cases where data is wrapped like [{ records: [...] }]
+    if (Array.isArray(data) && data.length === 1) {
+        const singleElement = data[0];
+        if (singleElement && typeof singleElement === 'object' && !Array.isArray(singleElement)) {
+            // Recursively try to unwrap the single element
+            const innerResult = smartUnwrap(singleElement);
+            if (innerResult.isUnwrapped) {
+                return innerResult;
+            }
+        }
+    }
+
+    // If it's already an array (multi-element or couldn't unwrap single), nothing more to do
     if (Array.isArray(data)) {
         return { data, isUnwrapped: false };
     }
@@ -87,9 +100,6 @@ export function smartUnwrap(data: any): UnwrapResult {
                 }
             }
         });
-
-        // Add a virtual column for the wrapper info if needed? 
-        // For now, just return the array. The user will see the array rows.
 
         return {
             data: unwrappedData,
