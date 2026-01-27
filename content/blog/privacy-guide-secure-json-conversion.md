@@ -53,7 +53,7 @@ Because we don't need the internet to process your data, you can be 100% certain
 | :--- | :--- | :--- |
 | **Data Location** | Uploaded to Remote Server | **Stays on Device** |
 | **Works Offline?** | No | **Yes (Try it!)** |
-| **Max File Size** | 5-10MB (Server limits) | **Up to 1MB (optimal)** |
+| **Max File Size** | 5-10MB (Server limits) | **Up to 100MB** |
 | **GDPR Compliant** | Difficult to verify | **Native Compliance** |
 
 ## Conclusion

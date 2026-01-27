@@ -252,7 +252,7 @@ Unlike uploading to random online converters, your Stripe data stays private.
 
 ## When You Need More
 
-JsonExport handles files up to ~1MB smoothly (that's roughly 500-1000 webhook events with full payloads).
+JsonExport handles files up to 100MB smoothly (that's roughly 50,000-100,000 webhook events with full payloads).
 
 **For larger datasets:**
 - **Stripe Sigma** - SQL queries directly on Stripe data ($10/month)

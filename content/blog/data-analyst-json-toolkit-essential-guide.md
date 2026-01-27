@@ -198,8 +198,8 @@ For visual exploration:
 
 **Steps:**
 1. Check file size (determines tool choice)
-2. Under 1MB: JsonExport
-3. Over 1MB: Python or split file
+2. Under 50MB: JsonExport (in-browser)
+3. Over 100MB: Python or split file
 4. Flatten nested documents
 5. Analyze in Excel or BI tool
 
@@ -360,7 +360,7 @@ That `data` field is a string containing JSON, not actual JSON.
 |-----------|------|
 | Quick one-time conversion | JsonExport |
 | Repeating weekly report | Power Query |
-| File over 10MB | Python |
+| File over 100MB | Python |
 | Sensitive data | JsonExport (client-side) |
 | Complex transformations | Python |
 | View structure quickly | JSON Viewer extension |

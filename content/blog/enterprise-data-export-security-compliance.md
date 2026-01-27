@@ -199,7 +199,7 @@ This is verifiable via browser Developer Tools (Network tab).
 Client-side processing is ideal for:
 - One-time exports
 - Ad-hoc data analysis
-- Files under 1MB
+- Files under 100MB
 - Situations where speed > automation
 
 For production data pipelines, consider:
@@ -207,7 +207,7 @@ For production data pipelines, consider:
 | Need | Solution |
 |------|----------|
 | Scheduled daily exports | Fivetran, Airbyte, or custom ETL |
-| Files > 1MB | Python scripts, Spark |
+| Files > 100MB | Python scripts, Spark |
 | Multi-source joins | Data warehouse (Snowflake, BigQuery) |
 | Real-time streaming | Kafka, AWS Kinesis |
 

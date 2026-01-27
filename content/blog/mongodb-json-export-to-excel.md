@@ -203,7 +203,7 @@ This gives you a **perfectly flat CSV**, but requires MongoDB query knowledge.
 | Compass CSV | ❌ Breaks | ❌ Breaks | 100MB max | Easy |
 | mongoexport CSV | ❌ No nesting | ❌ No arrays | Unlimited | Medium |
 | Aggregation + export | ✅ Manual | ✅ Manual | Unlimited | Hard |
-| **JsonExport** | ✅ Auto | ✅ Auto | 1MB (optimal) | Easy |
+| **JsonExport** | ✅ Auto | ✅ Auto | 50MB+ (in-browser) | Easy |
 
 ## Real-World Use Case: E-Commerce Analytics
 

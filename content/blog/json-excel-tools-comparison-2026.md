@@ -17,7 +17,8 @@ Before the deep dive, here's the TL;DR:
 |---------------|-----------|
 | One-time conversion, any file | **JsonExport** (free, instant) |
 | Recurring reports from URL | **Power Query** (built into Excel) |
-| Large files (10MB+) | **Python + Pandas** |
+| Large files (10MB-100MB) | **JsonExport** (Streaming) |
+| Massive files (100MB+) | **Python + Pandas** |
 | Need desktop app for compliance | **VS Code + extensions** |
 | Already in Google ecosystem | **Google Sheets IMPORTJSON** |
 
@@ -34,7 +35,7 @@ Now let's break down each option.
 | Pros | Cons |
 |------|------|
 | Free, no signup | No automation/scheduling |
-| Handles nested JSON automatically | Browser-based (file size to ~1MB) |
+| Handles nested JSON automatically | Browser memory limits (>100MB) |
 | Privacy-first (client-side) | No URL import |
 | Instant preview | |
 
@@ -294,7 +295,7 @@ write_xlsx(data, "output.xlsx")
 
 | Tool | Price | Nested JSON | Large Files | Privacy | Learning Curve |
 |------|-------|-------------|-------------|---------|----------------|
-| **JsonExport** | Free | Auto | To ~1MB | Excellent | None |
+| **JsonExport** | Free | Auto | To ~100MB | Excellent | None |
 | **Power Query** | Excel license | Manual | Good | Excellent | Medium |
 | **Python** | Free | Manual | Excellent | Excellent | High |
 | **ConvertCSV** | Free | Manual | Medium | Poor | None |
@@ -312,9 +313,8 @@ write_xlsx(data, "output.xlsx")
 - Daily → Python/Node.js automation
 
 **2. How big are your files?**
-- Under 1MB → Any browser tool works
-- 1-10MB → Power Query or Python
-- Over 10MB → Python is your best bet
+- Under 100MB → JsonExport (Browser Streaming)
+- Over 100MB → Python is your best bet
 
 **3. How nested is your JSON?**
 - Flat (simple array of objects) → Anything works

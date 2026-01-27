@@ -156,7 +156,7 @@ Each conversion is independent. If you need the same transformation every week, 
 
 **2. File Size Limits**
 
-Runs in browser memory. Files over ~1MB may cause slowdowns. For very large JSON (10MB+), Power Query or Python is better.
+Runs in browser memory. Verified for files up to 100MB. For massive JSON (100MB+), Python is required.
 
 **3. No Data Source Connections**
 
@@ -176,7 +176,7 @@ What you see is what you get. For complex filtering, pivoting, or calculations, 
 | **Refreshable** | No | Yes |
 | **URL/API Connection** | No | Yes |
 | **Multi-Source Joins** | No | Yes |
-| **File Size** | Up to ~1MB | Limited by RAM |
+| **File Size** | Up to ~100MB | Limited by RAM |
 | **Offline** | After page loads | Always |
 | **Cost** | Free | Included with Excel |
 | **Privacy** | Client-side | Local processing |
