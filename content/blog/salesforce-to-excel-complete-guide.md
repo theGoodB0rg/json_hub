@@ -3,6 +3,13 @@ title: "Export Salesforce Data to Excel: Get All Fields Without Data Loader"
 date: "2026-01-16"
 description: "Complete guide to exporting Salesforce reports, contacts, and opportunities to Excel with all fields and relationships intact. No SOQL required."
 keywords: ["salesforce to excel", "export salesforce data", "salesforce reports excel", "salesforce data loader alternative", "salesforce export all fields"]
+faqs:
+  - question: "How do I export more than 2,000 rows from Salesforce to Excel?"
+    answer: "The standard Salesforce report export is limited to 2,000 rows. To export more, you have two options: 1) Use the 'Data Export' service in Setup to get a full CSV dump (only available weekly or monthly), or 2) Use a third-party tool like Data Loader. For a quick fix without installing software, try filtering your report by date ranges (e.g., 'Created Date = This Quarter') to break the data into smaller chunks."
+  - question: "Why does my Salesforce export show IDs instead of names?"
+    answer: "Salesforce exports raw data, so lookup fields like 'OwnerId' or 'AccountId' export as 15-character ID strings. To get actual names, create a custom Report Type that joins the related object and includes the 'Name' field."
+  - question: "Can I automate Salesforce to Excel exports?"
+    answer: "Yes, but not easily with native tools. You can 'Subscribe' to a report to get it emailed, but it usually arrives as an HTML table. For true automation, use the Salesforce API or a connector tool."
 ---
 
 Your manager needs a pipeline report by end of day. You click "Export" in Salesforce, download the file, and... half your columns are missing. The deal amounts show as "$0" even though you know they're populated. Contact information is just "[object Object]".
@@ -317,3 +324,19 @@ No SOQL. No Data Loader permissions drama. No monthly SaaS fees.
 **Related Guides:**
 - [HubSpot to Excel Complete Guide](/blog/hubspot-complete-export-guide)
 - [CRM Data Analysis Best Practices](/blog/json-data-analysis-excel-guide)
+
+## Frequently Asked Questions
+
+### How do I export more than 2,000 rows from Salesforce to Excel?
+The standard Salesforce report export is limited to 2,000 rows. To export more, you have two options:
+1. Use the "Data Export" service in Setup to get a full CSV dump (only available weekly or monthly).
+2. Use a third-party tool like Data Loader.
+3. For a quick fix without installing software, try filtering your report by date ranges (e.g., "Created Date = This Quarter") to break the data into smaller chunks.
+
+### Why does my Salesforce export show IDs instead of names?
+Salesforce exports raw data, so lookup fields like `OwnerId` or `AccountId` export as 15-character ID strings (e.g., `0015f00000J7abc`). To get the actual names, you usually need to create a custom Report Type that joins the related object and includes the "Name" field. Alternatively, tools like JsonExport can sometimes resolve these references if the data is included in the nested JSON structure.
+
+### Can I automate Salesforce to Excel exports?
+Yes, but not easily with native tools. You can "Subscribe" to a report to get it emailed, but it usually arrives as an HTML table or image, not a clean Excel file. For true automation, you typically need to use the Salesforce API, a Python script, or a connector tool like Zapier or Coupler.io.
+
+
