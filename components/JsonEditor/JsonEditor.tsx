@@ -196,7 +196,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Upload File (recommended &lt;1MB)</p>
+                                <p>Upload File</p>
                             </TooltipContent>
                         </Tooltip>
 

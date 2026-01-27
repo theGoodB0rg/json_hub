@@ -79,7 +79,7 @@ Need to stress-test your parser? We have generated standardized files of various
 | **50 MB** | ~50k records | [Download 50MB](/test-data/test-50mb.json) |
 | **500 MB** | ~500k records | [Download 500MB](/test-data/test-500mb.json) |
 
-**Note:** Most online converters crash with files over 10MB. [JsonExport](https://jsonexport.com) handles files up to 500MB+ primarily because it runs 100% in your browser—no server upload required.
+**Note:** Most online converters crash with files over 10MB. [JsonExport](https://jsonexport.com) handles files up to 100MB+ primarily because it runs 100% in your browser—no server upload required.
 
 ---
 

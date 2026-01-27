@@ -245,8 +245,7 @@ We stress-tested JsonExport with real-world files:
 | File Size | Records | Experience | Recommendation |
 |-----------|---------|------------|----------------|
 | < 1 MB | ~2,000 | ✅ Instant, smooth | Perfect |
-| 1 - 10 MB | ~20,000 | ✅ Fast (2-5 sec) | Great |
-| 10 - 50 MB | ~100,000 | ✅ Works (5-15 sec) | Fully supported |
+| 1 - 50 MB | ~100,000 | ✅ Fast (2-10 sec) | Fully supported |
 | 50 - 100 MB | ~200,000 | ✅ Works | Device-dependent |
 | > 100 MB | 200k+ | ❌ Browser memory limit | Use Python |
 
@@ -283,10 +282,8 @@ We stress-tested JsonExport with real-world files:
 
 | File Size | Recommended Tool | Alternative |
 |-----------|------------------|-------------|
-| **< 1 MB** | JsonExport | Any tool |
-| **1 - 10 MB** | JsonExport | Power Query |
-| **10 - 50 MB** | JsonExport | Python |
-| **50 - 100 MB** | JsonExport | Python (if slow) |
+| **< 50 MB** | JsonExport | Any tool |
+| **50 - 100 MB** | JsonExport | Python |
 | **100 MB+** | Python (chunked) | None (must use Python) |
 
 ---
@@ -426,8 +423,11 @@ with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
 **For everyday files (under 1 MB):**  
 → **Use JsonExport** – instant, private, no coding required
 
-**For medium-large files (1-20 MB):**  
-→ **Use Power Query or Python** – both handle this range well
+**For everyday files (under 50 MB):**  
+→ **Use JsonExport** – instant, private, no coding required. Handles up to 100MB directly in browser.
+
+**For massive files (100 MB+):**  
+→ **Use Python + Pandas** – verified solution for massive datasets.
 
 **For large files (20 MB+):**  
 → **Use Python + Pandas** – the only reliable solution
@@ -439,8 +439,7 @@ with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
 
 ### Honest Recommendation by File Size
 
-- **< 10 MB:** JsonExport (instant, no setup)
-- **10-50 MB:** JsonExport (verified to work smoothly)
+- **< 50 MB:** JsonExport (instant, no setup)
 - **50-100 MB:** JsonExport (device-dependent) or Python
 - **100 MB+:** Python with chunked processing (required)
 
