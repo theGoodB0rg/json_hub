@@ -44,3 +44,7 @@ SEO_IMPLEMENTATION_PLAN.md
 /playwright-report/
 /playwright/.cache/
 test-data/
+
+# Performance Data
+*.zip
+performance_data/
