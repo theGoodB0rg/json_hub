@@ -317,5 +317,101 @@ export const converterPages: ConverterPageConfig[] = [
                 answer: "If you export your workspace as JSON/Markdown, you can take the JSON files and convert them one by one to Excel using this tool."
             }
         ]
+    },
+    {
+        slug: 'salesforce-contacts-to-excel',
+        platformName: 'Salesforce',
+        title: 'Export Salesforce Contacts to Excel (Clean & Formatted)',
+        description: 'Convert Salesforce Contact exports/JSON to Excel. Automatically resolves Account Names and Owner IDs.',
+        h1: 'Salesforce Contacts to Excel',
+        subheading: 'Clean your Salesforce contact lists without complex Data Loader operations.',
+        tldr: "Exporting Contacts often results in messy data with IDs instead of names. Paste your Salesforce JSON export here to instantly get a clean Excel sheet with resolved Account Names and Owner details.",
+        content: {
+            intro: 'Salesforce contact exports are notorious for being messy. You get disparate IDs, nested address fields, and unusable metadata. This tool cleans it all instantly.',
+            features: [
+                'Resolves `Account.Name` automatically',
+                'Formats Addresses into separate columns',
+                'Handles multi-select Interest tags',
+                '100% Private - Your contact list never leaves your browser'
+            ]
+        },
+        faqs: [
+            {
+                question: "Is it safe for GDPR/CCPA?",
+                answer: "Yes. We process data 100% client-side. No contact data is ever uploaded to our servers, ensuring full compliance."
+            }
+        ]
+    },
+    {
+        slug: 'salesforce-opportunities-to-excel',
+        platformName: 'Salesforce',
+        title: 'Export Salesforce Opportunities to Excel Pipeline Report',
+        description: 'Convert Salesforce Opportunity JSON to Excel. Analyze your pipeline, probability, and stages in a clean spreadsheet.',
+        h1: 'Salesforce Opportunities to Excel',
+        subheading: 'Visualize your sales pipeline by converting raw Opportunity data to Excel.',
+        tldr: "Turn raw Salesforce Opportunity JSON into a ready-to-use Pipeline Report. We flatten the data so you can pivot by Stage, Owner, and Close Date immediately.",
+        content: {
+            intro: 'Pipeline analysis requires clean data. Native Salesforce exports often hide valuable signals in nested objects (like Probability or Stage history). We bring them to the surface.',
+            features: [
+                'Expands `Stage` and `Probability` data',
+                'Resolves `Account` relationships',
+                'Formats Currency fields correctly',
+                'Great for QBR preparation'
+            ]
+        },
+        faqs: [
+            {
+                question: "Does this export custom fields?",
+                answer: "Yes. All custom fields (ending in `__c`) are automatically detected and included as their own columns."
+            }
+        ]
+    },
+    {
+        slug: 'salesforce-reports-to-excel',
+        platformName: 'Salesforce',
+        title: 'Convert Salesforce Reports JSON to Excel',
+        description: 'Fix broken Salesforce Report exports. Flatten nested JSON and analytics data into standard Excel tables.',
+        h1: 'Salesforce Reports to Excel',
+        subheading: 'Recover usable data from complex Salesforce Report API responses.',
+        tldr: "If you're using the Salesforce Analytics API, you get complex JSON responses. This tool flattens that hierarchical report data into a simple flat table.",
+        content: {
+            intro: 'The Salesforce Analytics API is powerful but returns deeply nested "fact maps" that are impossible to read. We decode them into standard rows and columns.',
+            features: [
+                'Decodes "fact maps" and aggregates',
+                'Preserves grouping levels',
+                'Converts summary formulas to values',
+                'No coding required'
+            ]
+        },
+        faqs: [
+            {
+                question: "Can I export Matrix reports?",
+                answer: "Yes, we flatten the matrix structure into a tabular list so you can re-pivot it in Excel exactly how you want."
+            }
+        ]
+    },
+    {
+        slug: 'asana-json-to-excel',
+        platformName: 'Asana',
+        title: 'Asana JSON to Excel Converter - Tasks & Projects',
+        description: 'Convert Asana project exports to Excel. Analyze task dependencies, due dates, and assignees.',
+        h1: 'Asana JSON to Excel Converter',
+        subheading: 'Turn Asana project data into flexible Excel reports.',
+        tldr: "Export your Asana project as JSON and paste it here. We'll convert your tasks, subtasks, and custom fields into a structured Excel timeline.",
+        content: {
+            intro: 'Asana is great for management, but Excel is king for reporting. Bridge the gap by converting your Asana JSON exports into clean spreadsheets.',
+            features: [
+                'Handles Subtasks automatically',
+                'Extracts Assignee names from user objects',
+                'Formats "Due On" dates for Excel',
+                'Preserves custom field values'
+            ]
+        },
+        faqs: [
+            {
+                question: "Does this handle subtasks?",
+                answer: "Yes. Subtasks are included with a reference to their parent task, allowing you to filter or group them easily in Excel."
+            }
+        ]
     }
 ];
