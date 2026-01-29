@@ -15,7 +15,15 @@ export default function Home() {
     return (
         <>
             <ConverterApp
-                subheading="Stop struggling with massive JSON files from Salesforce, Stripe, or APIs. Visualize, flatten, and clean your data instantly—100% locally."
+                heading={
+                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-5 duration-700">
+                        Convert JSON to Excel <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">
+                            Without Uploading Data.
+                        </span>
+                    </h1>
+                }
+                subheading="The privacy-first converter for data analysts. Process 100MB+ files from Salesforce, Stripe, or APIs directly in your browser. Zero latency. Zero data risk."
             />
 
             {/* Comparison Table Section */}
