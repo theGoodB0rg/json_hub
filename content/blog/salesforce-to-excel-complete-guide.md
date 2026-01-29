@@ -325,6 +325,11 @@ No SOQL. No Data Loader permissions drama. No monthly SaaS fees.
 - [HubSpot to Excel Complete Guide](/blog/hubspot-complete-export-guide)
 - [CRM Data Analysis Best Practices](/blog/json-data-analysis-excel-guide)
 
+**Tools:**
+- [Salesforce Contacts to Excel](/converters/salesforce-contacts-to-excel)
+- [Salesforce Opportunities to Excel](/converters/salesforce-opportunities-to-excel)
+
+
 ## Frequently Asked Questions
 
 ### How do I export more than 2,000 rows from Salesforce to Excel?
