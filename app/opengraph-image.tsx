@@ -1,26 +1,12 @@
 import { ImageResponse } from 'next/og';
-import { getPlatformIcon, ICONS, OG_SIZE } from '@/lib/og-utils';
-import { converterPages } from '@/lib/platform-data';
+import { ICONS, OG_SIZE } from '@/lib/og-utils';
 
 export const runtime = 'edge';
+export const alt = 'JsonExport - Free JSON to Excel Converter';
 export const size = OG_SIZE;
 export const contentType = 'image/png';
 
-interface Props {
-    params: {
-        slug: string;
-    };
-}
-
-export default async function Image({ params }: Props) {
-    // Find the converter data based on the slug
-    const converter = converterPages.find(p => p.slug === params.slug);
-    const platformName = converter?.platformName || 'JSON';
-    const title = converter?.h1 || 'JSON to Excel Converter';
-
-    // Get the specific platform icon for the left side
-    const leftIcon = getPlatformIcon(platformName);
-
+export default async function Image() {
     return new ImageResponse(
         (
             <div
@@ -31,28 +17,26 @@ export default async function Image({ params }: Props) {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#F8FAFC',
+                    backgroundColor: '#F8FAFC', // Slate-50 (Very light gray)
                     backgroundImage: 'radial-gradient(circle at 25px 25px, #e2e8f0 2%, transparent 0%), radial-gradient(circle at 75px 75px, #e2e8f0 2%, transparent 0%)',
                     backgroundSize: '100px 100px',
                     fontFamily: 'sans-serif',
                 }}
             >
-                {/* Flow Diagram */}
+                {/* Main Content Container */}
                 <div
                     style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '60px',
-                        marginBottom: '50px',
+                        marginBottom: '60px',
                     }}
                 >
-                    {/* Source Platform */}
+                    {/* Source: JSON */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-                        {leftIcon}
-                        <div style={{ fontSize: 32, fontWeight: 700, color: '#334155' }}>
-                            {platformName}
-                        </div>
+                        {ICONS.generic_json}
+                        <div style={{ fontSize: 32, fontWeight: 700, color: '#334155' }}>JSON Data</div>
                     </div>
 
                     {/* Arrow */}
@@ -60,36 +44,35 @@ export default async function Image({ params }: Props) {
                         {ICONS.arrow}
                     </div>
 
-                    {/* Target Excel */}
+                    {/* Target: Excel */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
                         {ICONS.excel}
-                        <div style={{ fontSize: 32, fontWeight: 700, color: '#107C41' }}>Excel</div>
+                        <div style={{ fontSize: 32, fontWeight: 700, color: '#107C41' }}>Excel / CSV</div>
                     </div>
                 </div>
 
-                {/* Title */}
+                {/* Typography */}
                 <h1
                     style={{
-                        fontSize: 72,
+                        fontSize: 80,
                         fontWeight: 900,
-                        color: '#0f172a',
-                        margin: '0 0 20px 0',
+                        color: '#0f172a', // Slate-900
+                        margin: 0,
                         letterSpacing: '-0.03em',
                         textAlign: 'center',
                         lineHeight: 1.1,
-                        maxWidth: '90%',
                     }}
                 >
-                    {title}
+                    JsonExport
                 </h1>
 
-                {/* Trust Badge */}
                 <div
                     style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '12px',
-                        padding: '10px 24px',
+                        marginTop: '20px',
+                        padding: '12px 24px',
                         background: '#fff',
                         borderRadius: '50px',
                         border: '1px solid #cbd5e1',
@@ -97,14 +80,9 @@ export default async function Image({ params }: Props) {
                     }}
                 >
                     {ICONS.shield}
-                    <span style={{ fontSize: 24, color: '#475569', fontWeight: 600 }}>
-                        No Code. 100% Private.
+                    <span style={{ fontSize: 28, color: '#475569', fontWeight: 600 }}>
+                        No Code. 100% Private. Instant.
                     </span>
-                </div>
-
-                {/* Brand Footer */}
-                <div style={{ position: 'absolute', bottom: 40, fontSize: 20, color: '#94a3b8', fontWeight: 500 }}>
-                    jsonexport.com
                 </div>
             </div>
         ),
