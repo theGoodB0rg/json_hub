@@ -6,9 +6,11 @@ export const size = OG_SIZE;
 export const contentType = 'image/png';
 
 export async function generateStaticParams() {
-    return converterPages.map((page) => ({
+    const params = converterPages.map((page) => ({
         slug: page.slug,
     }));
+    console.log('Generating Static Params for OG Image:', params);
+    return params;
 }
 
 interface Props {
@@ -19,7 +21,13 @@ interface Props {
 
 export default async function Image({ params }: Props) {
     // Font
-    const fontData = await fetch(new URL('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/files/inter-latin-700-normal.woff', import.meta.url)).then((res) => res.arrayBuffer());
+    let fontData: ArrayBuffer | null = null;
+    try {
+        const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/files/inter-latin-700-normal.woff';
+        fontData = await fetch(fontUrl).then((res) => res.arrayBuffer());
+    } catch (e) {
+        console.error('Font fetch failed:', e);
+    }
 
     // Find the converter data based on the slug
     const converter = converterPages.find(p => p.slug === params.slug);
@@ -118,14 +126,14 @@ export default async function Image({ params }: Props) {
         ),
         {
             ...size,
-            fonts: [
+            fonts: fontData ? [
                 {
                     name: 'Inter',
                     data: fontData,
                     style: 'normal',
                     weight: 700,
                 },
-            ],
+            ] : [],
         }
     );
 }
