@@ -2,9 +2,14 @@ import { ImageResponse } from 'next/og';
 import { getPlatformIcon, ICONS, OG_SIZE } from '@/lib/og-utils';
 import { converterPages } from '@/lib/platform-data';
 
-export const runtime = 'edge';
 export const size = OG_SIZE;
 export const contentType = 'image/png';
+
+export async function generateStaticParams() {
+    return converterPages.map((page) => ({
+        slug: page.slug,
+    }));
+}
 
 interface Props {
     params: {
@@ -13,6 +18,9 @@ interface Props {
 }
 
 export default async function Image({ params }: Props) {
+    // Font
+    const fontData = await fetch(new URL('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/files/inter-latin-700-normal.woff', import.meta.url)).then((res) => res.arrayBuffer());
+
     // Find the converter data based on the slug
     const converter = converterPages.find(p => p.slug === params.slug);
     const platformName = converter?.platformName || 'JSON';
@@ -110,6 +118,14 @@ export default async function Image({ params }: Props) {
         ),
         {
             ...size,
+            fonts: [
+                {
+                    name: 'Inter',
+                    data: fontData,
+                    style: 'normal',
+                    weight: 700,
+                },
+            ],
         }
     );
 }
