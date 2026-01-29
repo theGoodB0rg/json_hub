@@ -77,11 +77,11 @@ export const ICONS = {
     ),
     generic_json: (
         <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="3" width="18" height="18" rx="2" stroke="#333" strokeWidth="2" />
-            <path d="M7 8L17 8" stroke="#333" strokeWidth="2" strokeLinecap="round" />
-            <path d="M7 12L17 12" stroke="#333" strokeWidth="2" strokeLinecap="round" />
-            <path d="M7 16L13 16" stroke="#333" strokeWidth="2" strokeLinecap="round" />
-            <text x="50%" y="50%" textAnchor="middle" dy=".3em" fontSize="10" fill="#333" fontWeight="bold">JSON</text>
+            <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M14 2V8H20" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M16 13H8" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M16 17H8" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M10 9H8" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     )
 };
