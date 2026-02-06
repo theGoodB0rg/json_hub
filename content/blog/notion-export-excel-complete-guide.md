@@ -21,6 +21,14 @@ The problem? **Notion's built-in CSV export breaks your data.**
 
 Here is the complete guide to exporting your Notion data to Excel *properly*, with all relationships intact.
 
+> [!IMPORTANT]
+> **The Fast Track (Skip the Guide)**
+> If you just want to convert your data *right now* without reading a tutorial, use our free secure tool.
+>
+> [**🚀 Open Notion to Excel Converter**](/converters/notion-json-to-excel)
+> *(Runs 100% in your browser. No signup required.)*
+
+
 ## The Quick Answer (How to fix broken exports)
 
 If your CSV export looks like a mess of IDs and formulas, follow these steps to get a clean table:
