@@ -150,28 +150,32 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'trello-json-to-csv',
         platformName: 'Trello',
-        title: 'Trello JSON to CSV - Card & Board Export',
-        description: 'Export Trello Boards and Cards to CSV. Backup your specialized Trello workflows to a universal format.',
-        h1: 'Trello JSON to CSV Converter',
-        subheading: 'Backup and analyze your Trello Boards in standard CSV format.',
-        tldr: "Quickly convert Trello JSON to CSV by appending '.json' to your board URL, copying the data, and pasting it here. We link Cards to Lists and Labels suitable for import into other tools.",
+        title: 'Trello JSON to CSV/Excel Converter - Import & Backup Tool',
+        description: 'Convert Trello JSON exports to CSV/Excel for importing into other tools. Backup Boards, archive Cards, and migrate data securely locally.',
+        h1: 'Trello JSON to CSV/Excel Converter',
+        subheading: 'Prepare your Trello data for import into other systems or archive it for safekeeping.',
+        tldr: "Need to import Trello data into another tool or Excel? Simply add '.json' to your Board URL, copy the code, and paste it here. We generate a clean CSV perfect for importing into Jira, Monday.com, or Excel.",
         content: {
-            intro: 'Trello offers a JSON export for every board. This tool lets you turn that backup into a readable CSV database of all your cards, lists, and members.',
+            intro: 'Trello offers a JSON export for every board, but most tools cannot import it directly. This converter transforms your Trello JSON into a compatible CSV format ready for migration or analysis.',
             features: [
-                'Connects Cards to their Lists',
-                'Extracts labels into readable text',
-                'Backup your project history locally',
-                'Analyze card aging and activity'
+                'Format ready for Import (Jira/Monday/Asana)',
+                'Connects Cards to Lists automatically',
+                'Extracts Labels and Members',
+                '100% Private local processing'
             ]
         },
         faqs: [
             {
-                question: "How do I get JSON from Trello?",
-                answer: "Add '.json' to the end of any Trello Board URL (e.g., trello.com/b/boardID.json) to instantly get the raw data, then paste it here."
+                question: "How do I import Trello JSON into Excel?",
+                answer: "You cannot import Trello JSON directly into Excel without conversion. Use this tool to first convert the JSON to CSV, which Excel can open immediately."
             },
             {
-                question: "Can I see which list a card belongs to?",
-                answer: "Yes. Trello stores lists separately, but our tool automatically looks up the 'idList' for each card and resolves it to a readable List Name in your CSV."
+                question: "How do I get the JSON for my Board?",
+                answer: "Go to your Trello Board, add `.json` to the end of the URL in your browser address bar, and press Enter. Copy the text that appears."
+            },
+            {
+                question: "Can I use this for migration/backup?",
+                answer: "Yes. This tool is designed to create a clean, flat database of your cards, making it ideal for migrating to a new project management tool or creating a hard-copy backup."
             }
         ]
     },
