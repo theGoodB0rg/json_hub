@@ -148,6 +148,34 @@ export const converterPages: ConverterPageConfig[] = [
         ]
     },
     {
+        slug: 'nested-arrays-to-excel',
+        platformName: 'Generic JSON',
+        title: 'Flatten Nested Arrays JSON to Excel - Free & Private',
+        description: 'Fix `[object Object]` and nested array exports. Convert deeply nested JSON into clean Excel rows instantly.',
+        h1: 'Nested Arrays JSON to Excel Repair Tool',
+        subheading: 'Nested arrays breaking your export? Flatten them into clean Excel rows instantly.',
+        tldr: "Paste complex JSON with nested arrays and objects into the converter. We flatten it into analysis-ready rows and columns locally in your browser, so no data is uploaded.",
+        content: {
+            intro: 'Many JSON exports break in spreadsheets because arrays and nested objects cannot be represented in a single cell. This tool flattens deep structures into usable Excel rows while preserving important parent fields.',
+            features: [
+                'Fixes `[object Object]` and nested array columns',
+                'Automatically unwinds array-of-object structures into rows',
+                'Keeps parent-child context for reporting',
+                '100% client-side processing for privacy'
+            ]
+        },
+        faqs: [
+            {
+                question: "Can this handle mixed nested arrays and objects?",
+                answer: "Yes. The parser flattens nested object paths and intelligently expands array structures so they become usable in Excel."
+            },
+            {
+                question: "Will my data be uploaded?",
+                answer: "No. Conversion happens in your browser, and your JSON never leaves your device."
+            }
+        ]
+    },
+    {
         slug: 'jira-json-to-excel',
         platformName: 'Jira',
         title: 'Jira JSON to Excel Converter - Issues & Sprints',

@@ -20,7 +20,7 @@ out
 *.tsbuildinfo
 
 # Testing and local data
-test-data/
+/test-data/
 performance_data/
 
 # AI workflows
