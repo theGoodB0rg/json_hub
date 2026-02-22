@@ -1,6 +1,6 @@
-
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { converterPages } from '@/lib/platform-data';
 import { ConverterApp } from '@/components/ConverterApp';
 import { FAQSchema } from '@/components/FAQSchema';
@@ -100,6 +100,22 @@ export default function ConverterPage({ params }: Props) {
 
                 {/* FAQ Schema for rich snippets */}
                 <FAQSchema faqs={pageConfig.faqs} />
+
+                {/* Contextual SEO Internal Link */}
+                {pageConfig.slug.includes('shopify') && (
+                    <div className="my-12 p-6 md:p-8 bg-gradient-to-r from-primary/10 to-transparent border border-primary/20 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div>
+                            <h3 className="text-xl font-bold">Recommended Operational Guide</h3>
+                            <p className="text-muted-foreground mt-1 max-w-xl">Why Shopify Line Items Break in Excel exports, and the fastest way to flatten them for reporting.</p>
+                        </div>
+                        <Link
+                            href="/blog/shopify-line-items-excel-export-fix"
+                            className="bg-primary text-primary-foreground px-6 py-2.5 rounded-md font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+                        >
+                            Read Guide &rarr;
+                        </Link>
+                    </div>
+                )}
 
                 <RelatedTools currentSlug={pageConfig.slug} />
             </div>
