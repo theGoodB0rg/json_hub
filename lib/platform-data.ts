@@ -20,19 +20,47 @@ export interface ConverterPageConfig {
 // Top 10 High-Value Platforms for "Drip Feed" Launch
 export const converterPages: ConverterPageConfig[] = [
     {
+        slug: 'hubspot-json-to-excel',
+        platformName: 'HubSpot',
+        title: 'Fix HubSpot Nested JSON to Excel - Free & Private',
+        description: 'HubSpot export showing nested [object Object]? Securely convert HubSpot JSON to flat Excel instantly. 100% client-side privacy.',
+        h1: 'HubSpot JSON Export Repair Tool',
+        subheading: 'HubSpot nested JSON unreadable in Excel? Fix it instantly without cloud uploads.',
+        tldr: "To fix nested HubSpot data in Excel, paste your JSON export below. We automatically flatten the deeply nested objects into a clean table, processing everything locally in your browser so your CRM data stays private.",
+        content: {
+            intro: 'HubSpot data exports often contain complex, deeply nested JSON properties. Traditional online converters just output `[object Object]` for these fields. JsonExport solves this by thoroughly flattening your HubSpot data 100% in your browser.',
+            features: [
+                'Fixes `[object Object]` columns instantly',
+                'Smart Flattening for complex nested properties',
+                '100% Client-Side Processing (GDPR/Compliance Safe)',
+                'Perfect for analyzing HubSpot API dumps'
+            ]
+        },
+        faqs: [
+            {
+                question: "Is it safe to paste HubSpot customer lists here?",
+                answer: "Yes, absolutely. Unlike other converters, we do NOT upload your file to any server. All processing happens locally in your browser's memory."
+            },
+            {
+                question: "How does it handle nested properties?",
+                answer: "Our Smart Flattener automatically detects and flattens nested objects so that data like `properties.company_name` becomes a dedicated Excel column rather than a broken cell."
+            }
+        ]
+    },
+    {
         slug: 'salesforce-json-to-excel',
         platformName: 'Salesforce',
-        title: 'Convert Salesforce JSON to Excel - 100% Secure & Private',
-        description: 'Securely convert Salesforce Data Exports and API responses to Excel. 100% client-side processing (GDPR safe) for sensitive customer data. Handles nested attributes automatically.',
-        h1: 'Salesforce JSON to Excel Converter',
-        subheading: 'Export Accounts, Opportunities, and Reports to Excel without cloud uploads.',
-        tldr: "To convert Salesforce data to Excel securely, paste your JSON export (from Workbench, Data Loader, or API) below. We automatically flatten the `records` array and nested `attributes` metadata into a clean table, processing everything locally in your browser to ensure no PII leaves your device.",
+        title: 'Fix Broken Salesforce JSON Exports to Excel - 100% Secure',
+        description: 'Salesforce export showing `[object Object]`? Securely convert Data Exports and API responses to clean Excel. 100% client-side processing.',
+        h1: 'Salesforce JSON Export Repair Tool',
+        subheading: 'Salesforce export showing `[object Object]` columns? Fix it instantly without cloud uploads.',
+        tldr: "To fix broken Salesforce data in Excel, paste your JSON export (from Workbench, Data Loader, or API) below. We automatically flatten the `records` array and nested `attributes` metadata into a clean table, processing everything locally in your browser to ensure no PII leaves your device.",
         content: {
-            intro: 'Salesforce data exports often come in complex JSON formats, especially when using the REST API or tools like Workbench. Traditional online converters require you to upload this sensitive customer data to their servers—a massive security risk. JsonExport solves this by processing your Salesforce data 100% in your browser.',
+            intro: 'Salesforce data exports often come in complex JSON formats, especially when using the REST API or tools like Workbench. The result is often an Excel file full of useless `[object Object]` columns. JsonExport solves this by processing and flattening your Salesforce data 100% in your browser.',
             features: [
+                'Fixes `[object Object]` columns instantly',
                 'Smart Flattening for `attributes` and nested objects',
                 '100% Client-Side Processing (GDPR/Compliance Safe)',
-                'Handles large 50MB+ Data Exports',
                 'Perfect for cleaning Data Loader exports'
             ]
         },
@@ -54,15 +82,15 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'stripe-json-to-excel',
         platformName: 'Stripe',
-        title: 'Convert Stripe JSON to Excel (XLSX) - Free & Private',
-        description: 'Instantly convert Stripe API responses (Charges, Invoices, Customers) to Excel. Flatten nested metadata and line items automatically.',
-        h1: 'Stripe JSON to Excel Converter',
-        subheading: 'Turn raw Stripe API logs into clean, readable financial reports.',
-        tldr: "To convert Stripe JSON to Excel, simply copy the full JSON response from your Stripe Developer Dashboard logs and paste it into the converter below. The tool automatically flattens nested metadata and line items into separate columns.",
+        title: 'Convert Stripe JSON to Excel - Fix Nested Metadata',
+        description: 'Instantly convert Stripe API responses (Charges, Invoices, Customers) to Excel. Fix nested metadata columns and line items automatically.',
+        h1: 'Stripe Metadata & JSON Export Repair Tool',
+        subheading: 'Stripe metadata columns unreadable in Excel? Flatten them instantly.',
+        tldr: "To fix Stripe JSON in Excel, simply copy the full JSON response from your Stripe Developer Dashboard logs and paste it into the converter below. The tool automatically flattens nested metadata and line items into separate, usable columns.",
         content: {
-            intro: 'Stripe API data is powerful but difficult to read in its raw JSON format. Nested objects like `metadata`, `shipping`, and `payment_method_details` make it hard to analyze in spreadsheets.',
+            intro: 'Stripe API data is powerful but difficult to read in its raw JSON format. Nested objects like `metadata`, `shipping`, and `payment_method_details` often become `[object Object]` in spreadsheets, making them impossible to analyze.',
             features: [
-                'Expands nested `metadata` fields into columns',
+                'Fixes unreadable `metadata` fields into clear columns',
                 'Handles Stripe timestamp conversion automatically',
                 'Perfect for reconciling Invoices and Charges',
                 '100% Client-side privacy - no data sent to our servers'
@@ -256,15 +284,15 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'mongodb-bson-json-to-excel',
         platformName: 'MongoDB',
-        title: 'MongoDB Export JSON to Excel Converter',
-        description: 'Convert MongoDB exports (JSON/BSON) to Excel. Flattens deep objects and arrays for easier analysis.',
-        h1: 'MongoDB JSON to Excel Converter',
-        subheading: 'Visualize your NoSQL database in a standard Excel spreadsheet.',
+        title: 'Fix Nested MongoDB JSON/BSON Exports to Excel',
+        description: 'Convert nested MongoDB exports (JSON/BSON) to Excel. Flattens deep objects and arrays for easier analysis.',
+        h1: 'MongoDB Nested Document Repair Tool',
+        subheading: 'MongoDB nested documents showing as `[object Object]`? Flatten them instantly.',
         content: {
-            intro: 'MongoDB gives you flexibility, but business teams need Excel. Bridge the gap by converting your Mongo exports into flat, pivot-ready spreadsheets.',
+            intro: 'MongoDB gives you flexibility, but business teams need Excel. When converting Mongo exports, nested documents often break standard converters. We bridge the gap by correctly transforming your nested Mongo exports into flat, pivot-ready spreadsheets.',
             features: [
+                'Fixes nested objects showing as `[object Object]`',
                 'Handles MongoDB Extended JSON ($oid, $date)',
-                'Flattens deeply nested documents',
                 'Great for ad-hoc business reporting',
                 'No database connection required'
             ]

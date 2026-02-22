@@ -1,0 +1,197 @@
+
+> json-hub@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Experiments (use with caution):
+    ┬╖ optimizeCss
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/85) ...
+
+Error occurred prerendering page "/converters/hubspot-json-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/salesforce-json-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/stripe-json-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/trello-json-to-csv/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/youtube-analytics-json-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/jira-json-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/shopify-json-to-csv/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/slack-json-to-csv/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/discord-json-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/mongodb-bson-json-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/postgresql-json-to-csv/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/notion-json-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/salesforce-contacts-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/salesforce-opportunities-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+Time 9.0337
+
+Error occurred prerendering page "/converters/salesforce-reports-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+
+Error occurred prerendering page "/converters/asana-json-to-excel/opengraph-image". Read more: https://nextjs.org/docs/messages/prerender-error
+
+TypeError: Invalid URL
+    at new URL (node:internal/url:828:25)
+    at fileURLToPath (node:internal/url:1609:12)
+    at file:///C:/Users/HP/Desktop/Personal%20Websites/json_hub/node_modules/next/dist/compiled/@vercel/og/index.node.js:18988:32
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async Object.start (C:\Users\HP\Desktop\Personal Websites\json_hub\.next\server\app\converters\[slug]\opengraph-image\route.js:1:9570)
+Time 30.2539
+   Generating static pages (21/85) 
+   Generating static pages (42/85) 
+   Generating static pages (63/85) 
+ Γ£ô Generating static pages (85/85)
+
+> Export encountered errors on following paths:
+	/converters/[slug]/opengraph-image/route: /converters/asana-json-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/discord-json-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/hubspot-json-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/jira-json-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/mongodb-bson-json-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/notion-json-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/postgresql-json-to-csv/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/salesforce-contacts-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/salesforce-json-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/salesforce-opportunities-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/salesforce-reports-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/shopify-json-to-csv/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/slack-json-to-csv/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/stripe-json-to-excel/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/trello-json-to-csv/opengraph-image
+	/converters/[slug]/opengraph-image/route: /converters/youtube-analytics-json-to-excel/opengraph-image
