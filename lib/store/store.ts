@@ -5,6 +5,7 @@ import { validateAndParse } from '@/lib/parsers/smartParse';
 import { flattenJSON } from '@/lib/parsers/flattener';
 import { smartUnwrap } from '@/lib/parsers/unwrapper';
 import type { AppState, ParseError, ExportFormat } from '@/types/store.types';
+import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 
 const initialState = {
     // Input State
@@ -70,11 +71,16 @@ export const useAppStore = create<AppState>()(
                             const { type, payload } = event.data;
 
                             if (type === 'PARSE_SUCCESS') {
+                                const currentRawInput = get().rawInput;
                                 set({
                                     parsedData: payload,
                                     isParsed: true,
                                     parseErrors: [],
                                     isLoading: false,
+                                });
+                                trackConversionEvent('parse_success', {
+                                    source: 'worker',
+                                    inputBytes: currentRawInput.length,
                                 });
                                 get().flattenData();
                             } else if (type === 'PARSE_ERROR') {
@@ -86,6 +92,10 @@ export const useAppStore = create<AppState>()(
                                     schema: [],
                                     columnOrder: [],
                                     isLoading: false,
+                                });
+                                trackConversionEvent('parse_error', {
+                                    source: 'worker',
+                                    message: payload?.[0]?.message ?? 'Parse error',
                                 });
                             } else if (type === 'FLATTEN_SUCCESS') {
                                 set({
@@ -99,6 +109,10 @@ export const useAppStore = create<AppState>()(
                                 set({
                                     isLoading: false,
                                     parseErrors: payload
+                                });
+                                trackConversionEvent('parse_error', {
+                                    source: 'worker',
+                                    message: payload?.[0]?.message ?? 'Worker error',
                                 });
                             }
                         };
@@ -126,6 +140,10 @@ export const useAppStore = create<AppState>()(
                                 const result = validateAndParse(rawInput);
                                 if (result.success) {
                                     set({ parsedData: result.data, isParsed: true, parseErrors: [], isLoading: false });
+                                    trackConversionEvent('parse_success', {
+                                        source: 'main-thread',
+                                        inputBytes: rawInput.length,
+                                    });
                                     get().flattenData();
                                 } else {
                                     set({
@@ -137,9 +155,17 @@ export const useAppStore = create<AppState>()(
                                         columnOrder: [],
                                         isLoading: false
                                     });
+                                    trackConversionEvent('parse_error', {
+                                        source: 'main-thread',
+                                        message: result.errors?.[0]?.message ?? 'Parse error',
+                                    });
                                 }
                             } catch (e) {
                                 set({ isLoading: false, parseErrors: [{ message: String(e) }] });
+                                trackConversionEvent('parse_error', {
+                                    source: 'main-thread',
+                                    message: String(e),
+                                });
                             }
                         }
                     },
@@ -169,11 +195,20 @@ export const useAppStore = create<AppState>()(
                                         isLoading: false,
                                         streamingProgress: null
                                     });
+                                    trackConversionEvent('parse_success', {
+                                        source: 'streaming-worker',
+                                        rowCount: payload.rows?.length ?? 0,
+                                        schemaCount: payload.schema?.length ?? 0,
+                                    });
                                 } else if (type === 'PARSE_ERROR') {
                                     set({
                                         isLoading: false,
                                         streamingProgress: null,
                                         parseErrors: payload
+                                    });
+                                    trackConversionEvent('parse_error', {
+                                        source: 'streaming-worker',
+                                        message: payload?.[0]?.message ?? 'Streaming parse error',
                                     });
                                 }
                             };
@@ -202,6 +237,10 @@ export const useAppStore = create<AppState>()(
                                     isLoading: false,
                                     streamingProgress: null,
                                     parseErrors: [{ message: `File read error: ${error}` }]
+                                });
+                                trackConversionEvent('parse_error', {
+                                    source: 'streaming-reader',
+                                    message: String(error),
                                 });
                             }
                         };
@@ -485,8 +524,19 @@ export const useAppStore = create<AppState>()(
                                 console.error('Failed to save to history:', e);
                             }
 
+                            trackConversionEvent('export_success', {
+                                format,
+                                structure: exportSettings.structure,
+                                rowCount: rows.length,
+                                schemaCount: effectiveSchema.length,
+                            });
                             set({ isLoading: false, downloadProgress: 100 });
                         } catch (error) {
+                            trackConversionEvent('export_error', {
+                                format,
+                                structure: exportSettings.structure,
+                                message: error instanceof Error ? error.message : 'Unknown error',
+                            });
                             set({
                                 isLoading: false,
                                 downloadProgress: 0,

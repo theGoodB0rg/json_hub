@@ -39,11 +39,18 @@ export function JsonEditor({ platform }: { platform?: string }) {
     const [pendingFile, setPendingFile] = useState<File | null>(null);
     const [isDiagnosing, setIsDiagnosing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const skipNextAutoParseRef = useRef(false);
 
     // Auto-parse with debounce
     useEffect(() => {
-        // Don't auto-parse if input is large or if diagnostic theater is active
-        if (rawInput.length > RECOMMENDED_MAX_SIZE || isDiagnosing) return;
+        // Don't auto-parse if input is large.
+        if (rawInput.length > RECOMMENDED_MAX_SIZE) return;
+
+        // File uploads can trigger a direct parse to reduce time-to-first-result.
+        if (skipNextAutoParseRef.current) {
+            skipNextAutoParseRef.current = false;
+            return;
+        }
 
         const timer = setTimeout(() => {
             if (rawInput.trim()) {
@@ -52,7 +59,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
         }, 800);
 
         return () => clearTimeout(timer);
-    }, [rawInput, parseInput, isDiagnosing]);
+    }, [rawInput, parseInput]);
 
     const handleEditorChange = useCallback((value: string) => {
         setRawInput(value);
@@ -63,12 +70,12 @@ export function JsonEditor({ platform }: { platform?: string }) {
         setSourceFilename(null);
         setFileSize(0);
         setIsDiagnosing(false);
+        skipNextAutoParseRef.current = false;
     }, [setRawInput, setSourceFilename]);
 
     const handleDiagnosisComplete = useCallback(() => {
         setIsDiagnosing(false);
-        parseInput();
-    }, [parseInput]);
+    }, []);
 
     const processFile = useCallback((file: File, bypassWarning: boolean = false) => {
         setFileSize(file.size);
@@ -105,13 +112,15 @@ export function JsonEditor({ platform }: { platform?: string }) {
             const content = e.target?.result as string;
             setRawInput(content);
 
-            // Auto-parse if reasonable size (Start diagnostic theater)
+            // Show diagnostic overlay and parse immediately in the background.
             if (file.size <= WARNING_SIZE) {
                 setIsDiagnosing(true);
+                skipNextAutoParseRef.current = true;
+                parseInput();
             }
         };
         reader.readAsText(file);
-    }, [setRawInput, setSourceFilename, parseInputStreaming]);
+    }, [setRawInput, setSourceFilename, parseInput, parseInputStreaming]);
 
     const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -190,6 +199,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                             onChange={handleFileUpload}
                             className="hidden"
                             id="file-upload"
+                            data-testid="json-file-input"
                         />
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -302,7 +312,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                             parseErrors={parseErrors}
                             isLargeFile={false} // Handled by LargeFileViewer now
                             fileSize={fileSize}
-                            readOnly={isLoading || isDiagnosing}
+                            readOnly={isLoading}
                         />
                     )}
 
@@ -352,7 +362,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                 )}
 
                 {isParsed && (
-                    <div className="mt-4 p-3 bg-green-500/10 border border-green-500 rounded-md">
+                    <div className="mt-4 p-3 bg-green-500/10 border border-green-500 rounded-md" data-testid="parse-success-banner">
                         <p className="text-sm font-semibold text-green-700 dark:text-green-400">
                             ✓ JSON parsed and flattened successfully
                         </p>

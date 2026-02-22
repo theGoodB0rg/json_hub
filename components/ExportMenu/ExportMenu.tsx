@@ -98,7 +98,12 @@ export function ExportMenu() {
                 ))}
             </div>
 
-            <Button onClick={handleExportClick} className="w-full font-bold shadow-lg shadow-primary/20 relative group overflow-hidden" size="lg">
+            <Button
+                onClick={handleExportClick}
+                className="w-full font-bold shadow-lg shadow-primary/20 relative group overflow-hidden"
+                size="lg"
+                data-testid="export-download-button"
+            >
                 <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                 Download {formats.find((f) => f.value === selectedFormat)?.label}
             </Button>
