@@ -145,7 +145,7 @@ export const dummyDatasets: DummyDataset[] = [
         platform: 'Shopify',
         title: 'Mock Shopify Order JSON with Line Items',
         description: 'A sample Shopify order JSON payload containing deeply nested line_items, tax_lines, and discount_applications.',
-        converterSlug: 'shopify-json-to-excel',
+        converterSlug: 'shopify-json-to-csv',
         data: {
             "orders": [
                 {

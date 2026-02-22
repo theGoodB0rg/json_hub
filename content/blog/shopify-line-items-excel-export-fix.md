@@ -26,7 +26,7 @@ We built [JsonExport](https://jsonexport.com) specifically so operations teams n
 
 ### How to use it:
 1. **Export your data:** Get your raw Shopify Orders JSON export.
-2. **Drop it in:** Navigate to our specialized [Shopify JSON to Excel Converter](https://jsonexport.com/converters/shopify-json-to-excel).
+2. **Drop it in:** Navigate to our specialized [Shopify JSON to Excel Converter](https://jsonexport.com/converters/shopify-json-to-csv).
 3. **Instant Diagnosis:** The tool analyzes your file entirely in your browser window (no data is uploaded to our servers, keeping your customer PII perfectly safe).
 4. **Download your perfect Excel file:** The tool will automatically explode the `line_items` array so that each product has its own row, while duplicating the parent order data (like the Customer Email and Total Price) alongside it.
 
