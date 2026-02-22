@@ -1,15 +1,16 @@
 import { ConverterApp } from "@/components/ConverterApp";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { converterPages } from '@/lib/platform-data';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES, converterPath } from '@/lib/routes';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
     title: 'JsonExport | CRM & API JSON Export Repair Tool',
     description: 'Fix broken Salesforce, Stripe, and HubSpot JSON exports. Convert nested JSON to clean Excel instantly. 100% private (no upload), handles files up to 100MB.',
-    alternates: {
-        canonical: 'https://jsonexport.com',
-    }
-};
+    canonicalPath: ROUTES.home,
+});
 
 export default function Home() {
     return (
@@ -40,16 +41,16 @@ export default function Home() {
                 <h2 className="text-2xl font-bold mb-6">Popular Conversions</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {converterPages.map((page) => (
-                        <a
+                        <Link
                             key={page.slug}
-                            href={`/converters/${page.slug}`}
+                            href={converterPath(page.slug)}
                             className="group block p-4 rounded-lg border border-border/40 bg-card hover:border-primary/50 hover:bg-muted/30 transition-all"
                         >
                             <h3 className="font-semibold text-primary group-hover:underline mb-2">{page.h1}</h3>
                             <p className="text-sm text-muted-foreground line-clamp-2">
                                 {page.description}
                             </p>
-                        </a>
+                        </Link>
                     ))}
                 </div>
             </section>

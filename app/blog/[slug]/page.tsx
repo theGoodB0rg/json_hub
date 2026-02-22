@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Metadata } from 'next';
 import { FAQSchema } from '@/components/FAQSchema';
+import { buildArticleMetadata } from '@/lib/seo';
+import { ROUTES, blogPostPath } from '@/lib/routes';
 
 interface Props {
     params: {
@@ -25,25 +27,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         return {};
     }
 
-    return {
+    return buildArticleMetadata({
         title: `${postData.title} - JsonExport`,
         description: postData.description,
-        openGraph: {
-            title: postData.title,
-            description: postData.description,
-            type: 'article',
-            publishedTime: postData.date,
-            url: `https://jsonexport.com/blog/${params.slug}`,
-        },
-        twitter: {
-            card: 'summary_large_image',
-            title: postData.title,
-            description: postData.description,
-        },
-        alternates: {
-            canonical: `/blog/${params.slug}`,
-        }
-    };
+        publishedTime: postData.date,
+        canonicalPath: blogPostPath(params.slug),
+    });
 }
 
 
@@ -64,7 +53,7 @@ export default async function Post({ params }: Props) {
             <article className="container mx-auto px-4 py-12 max-w-3xl">
                 <div className="mb-8">
                     <Button variant="ghost" asChild className="mb-4 pl-0 hover:pl-0 hover:bg-transparent text-muted-foreground hover:text-foreground">
-                        <Link href="/blog" className="flex items-center gap-2">
+                        <Link href={ROUTES.blog} className="flex items-center gap-2">
                             <ChevronLeft className="h-4 w-4" />
                             Back to Blog
                         </Link>

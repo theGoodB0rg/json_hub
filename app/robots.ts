@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+import { ROUTES, toAbsoluteUrl } from '@/lib/routes'
 
 export default function robots(): MetadataRoute.Robots {
     return {
@@ -6,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             userAgent: '*',
             allow: '/',
         },
-        sitemap: 'https://jsonexport.com/sitemap.xml',
+        sitemap: toAbsoluteUrl(ROUTES.sitemap),
     }
 }

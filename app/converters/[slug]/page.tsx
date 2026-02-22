@@ -12,6 +12,8 @@ import { RelatedTools } from '@/components/converters/RelatedTools';
 import { PlatformIcon } from '@/components/converters/PlatformIcon';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { generateSoftwareApplicationSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema-generator';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES, converterPath } from '@/lib/routes';
 
 interface Props {
     params: {
@@ -32,13 +34,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         return {};
     }
 
-    return {
+    return buildPageMetadata({
         title: pageConfig.title,
         description: pageConfig.description,
-        alternates: {
-            canonical: `https://jsonexport.com/converters/${pageConfig.slug}`,
-        }
-    };
+        canonicalPath: converterPath(pageConfig.slug),
+    });
 }
 
 export default function ConverterPage({ params }: Props) {
@@ -52,12 +52,12 @@ export default function ConverterPage({ params }: Props) {
     const howToSchema = generateHowToSchema(pageConfig);
     const breadcrumbSchema = generateBreadcrumbSchema([
         { name: "Converters", item: "/#converters" }, // Anchor to home converters section or could be a dedicated page
-        { name: `${pageConfig.platformName} to Excel`, item: `/converters/${pageConfig.slug}` }
+        { name: `${pageConfig.platformName} to Excel`, item: converterPath(pageConfig.slug) }
     ]);
 
     const breadcrumbItems = [
         { label: "Converters", href: "/#converters" },
-        { label: `${pageConfig.platformName} to Excel`, href: `/converters/${pageConfig.slug}`, active: true }
+        { label: `${pageConfig.platformName} to Excel`, href: converterPath(pageConfig.slug), active: true }
     ];
 
     return (
@@ -109,7 +109,7 @@ export default function ConverterPage({ params }: Props) {
                             <p className="text-muted-foreground mt-1 max-w-xl">Why Shopify Line Items Break in Excel exports, and the fastest way to flatten them for reporting.</p>
                         </div>
                         <Link
-                            href="/blog/shopify-line-items-excel-export-fix"
+                            href={ROUTES.shopifyGuide}
                             className="bg-primary text-primary-foreground px-6 py-2.5 rounded-md font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
                         >
                             Read Guide &rarr;

@@ -3,14 +3,16 @@ import { ConverterApp } from '@/components/ConverterApp';
 import { Card } from '@/components/ui/card';
 import { Check, X, Terminal, MousePointer, Clock, FileText, Users } from 'lucide-react';
 import { FAQSchema } from '@/components/FAQSchema';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES } from '@/lib/routes';
 
 export const metadata: Metadata = {
-    title: 'Convert JSON to Excel Without Python (Zero Coding Required) - JsonExport',
-    description: 'No Python? No problem. Convert JSON to Excel instantly without writing code. JsonExport handles nested JSON, large files, and complex structures - all in your browser.',
+    ...buildPageMetadata({
+        title: 'Convert JSON to Excel Without Python (Zero Coding Required) - JsonExport',
+        description: 'No Python? No problem. Convert JSON to Excel instantly without writing code. JsonExport handles nested JSON, large files, and complex structures - all in your browser.',
+        canonicalPath: ROUTES.alternativesPythonPandas,
+    }),
     keywords: ['json to excel without python', 'json to excel no code', 'json to excel without coding', 'python alternative json excel', 'no-code json converter'],
-    alternates: {
-        canonical: '/alternatives/python-pandas',
-    }
 };
 
 const faqs = [

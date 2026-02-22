@@ -1,13 +1,13 @@
 import { ConverterApp } from "@/components/ConverterApp";
 import { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES } from '@/lib/routes';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
     title: 'JSON to CSV for Data Analysts | Clean & Flatten Nested Data',
     description: 'Convert nested JSON to CSV instantly. Handles large files, arrays, and complex data structures. Free, secure, and client-side.',
-    alternates: {
-        canonical: 'https://jsonexport.com/json-to-csv',
-    }
-};
+    canonicalPath: ROUTES.jsonToCsv,
+});
 
 export default function JsonToCsvPage() {
     return (

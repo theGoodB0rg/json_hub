@@ -1,5 +1,6 @@
 
 import { ConverterPageConfig } from "./platform-data";
+import { SITE_ORIGIN, toAbsoluteUrl } from '@/lib/routes';
 
 export function generateSoftwareApplicationSchema(pageConfig: ConverterPageConfig) {
     return {
@@ -9,7 +10,7 @@ export function generateSoftwareApplicationSchema(pageConfig: ConverterPageConfi
         "operator": {
             "@type": "Organization",
             "name": "JsonExport",
-            "url": "https://jsonexport.com"
+            "url": SITE_ORIGIN
         },
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Any",
@@ -69,13 +70,13 @@ export function generateBreadcrumbSchema(items: { name: string; item: string }[]
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://jsonexport.com"
+                "item": SITE_ORIGIN
             },
             ...items.map((item, index) => ({
                 "@type": "ListItem",
                 "position": index + 2, // Start at 2 since Home is 1
                 "name": item.name,
-                "item": `https://jsonexport.com${item.item}`
+                "item": toAbsoluteUrl(item.item)
             }))
         ]
     };

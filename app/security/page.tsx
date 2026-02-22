@@ -3,14 +3,16 @@ import { ConverterApp } from '@/components/ConverterApp';
 import { Card } from '@/components/ui/card';
 import { Shield, Lock, Server, Monitor, Check, X, Eye, Database, FileCheck } from 'lucide-react';
 import { FAQSchema } from '@/components/FAQSchema';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES } from '@/lib/routes';
 
 export const metadata: Metadata = {
-    title: 'Secure JSON to Excel Converter (100% Client-Side, No Upload) - JsonExport',
-    description: 'The most secure JSON to Excel converter. Your data never leaves your browser. No server uploads, GDPR/HIPAA compliant, perfect for sensitive financial and healthcare data.',
+    ...buildPageMetadata({
+        title: 'Secure JSON to Excel Converter (100% Client-Side, No Upload) - JsonExport',
+        description: 'The most secure JSON to Excel converter. Your data never leaves your browser. No server uploads, GDPR/HIPAA compliant, perfect for sensitive financial and healthcare data.',
+        canonicalPath: ROUTES.security,
+    }),
     keywords: ['json to excel secure', 'json to excel offline', 'json to excel no upload', 'secure json converter', 'private json to excel', 'HIPAA compliant json converter'],
-    alternates: {
-        canonical: '/security',
-    }
 };
 
 const faqs = [

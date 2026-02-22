@@ -3,14 +3,16 @@ import { ConverterApp } from '@/components/ConverterApp';
 import { Card } from '@/components/ui/card';
 import { Check, X, Zap, Code, GraduationCap, Clock, Shield } from 'lucide-react';
 import { FAQSchema } from '@/components/FAQSchema';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES } from '@/lib/routes';
 
 export const metadata: Metadata = {
-    title: 'Power Query Alternative for JSON to Excel (No Coding Required) - JsonExport',
-    description: 'Looking for an easier alternative to Power Query for JSON to Excel conversion? JsonExport handles nested JSON without M language. Free, fast, no learning curve.',
+    ...buildPageMetadata({
+        title: 'Power Query Alternative for JSON to Excel (No Coding Required) - JsonExport',
+        description: 'Looking for an easier alternative to Power Query for JSON to Excel conversion? JsonExport handles nested JSON without M language. Free, fast, no learning curve.',
+        canonicalPath: ROUTES.alternativesPowerQuery,
+    }),
     keywords: ['power query alternative', 'json to excel without power query', 'power query alternative free', 'easier than power query', 'no-code json converter'],
-    alternates: {
-        canonical: '/alternatives/power-query',
-    }
 };
 
 const faqs = [

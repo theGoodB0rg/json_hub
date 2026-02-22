@@ -5,6 +5,7 @@ import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Footer } from "@/components/Footer"
+import { ROUTES, SITE_ORIGIN } from '@/lib/routes'
 
 const inter = Inter({
     subsets: ['latin'],
@@ -13,9 +14,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-    metadataBase: new URL('https://jsonexport.com'),
+    metadataBase: new URL(SITE_ORIGIN),
     alternates: {
-        canonical: 'https://jsonexport.com',
+        canonical: ROUTES.home,
     },
     title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
     description: 'Convert JSON to Excel instantly. 100% private (no upload), handles files up to 100MB, free to use with no signup. Ideal for data analysts who need quick, secure conversions without coding.',
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
         description: 'Convert JSON to Excel instantly. 100% private, handles large files, completely free. No coding required.',
-        url: 'https://jsonexport.com',
+        url: SITE_ORIGIN,
         siteName: 'JsonExport',
         locale: 'en_US',
         type: 'website',
@@ -101,7 +102,7 @@ export default function RootLayout({
                                     "priceCurrency": "USD"
                                 },
                                 "description": "Convert JSON to Excel, CSV, or HTML. 100% private, client-side processing. No coding required.",
-                                "url": "https://jsonexport.com",
+                                "url": SITE_ORIGIN,
                                 "aggregateRating": {
                                     "@type": "AggregateRating",
                                     "ratingValue": "4.9",
@@ -130,8 +131,8 @@ export default function RootLayout({
                                 "@context": "https://schema.org",
                                 "@type": "Organization",
                                 "name": "JsonExport",
-                                "url": "https://jsonexport.com",
-                                "logo": "https://jsonexport.com/logo-512.png",
+                                "url": SITE_ORIGIN,
+                                "logo": `${SITE_ORIGIN}/logo-512.png`,
                                 "sameAs": [
                                     "https://github.com/theGoodB0rg/json_hub"
                                 ]
