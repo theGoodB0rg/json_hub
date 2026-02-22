@@ -15,7 +15,7 @@ interface Testimonial {
 const testimonials: Testimonial[] = [
     {
         name: "Sarah K.",
-        role: "Data Analyst",
+        role: "RevOps Manager",
         company: "Fortune 500 Retail Company",
         content: "I used to spend 3+ hours every week converting HubSpot JSON exports to Excel for my manager. JsonExport cut that down to 5 minutes. The auto-unescape feature handles our double-encoded data flawlessly.",
         initials: "SK",
@@ -23,7 +23,7 @@ const testimonials: Testimonial[] = [
     },
     {
         name: "Michael R.",
-        role: "Business Intelligence Analyst",
+        role: "Salesforce Admin",
         company: "Healthcare Analytics (2,500+ employees)",
         content: "Privacy was my #1 concern. Other tools required uploading patient data to their servers. JsonExport processes everything client-side, which means we're HIPAA compliant. Absolute game-changer for our team.",
         initials: "MR",
@@ -31,7 +31,7 @@ const testimonials: Testimonial[] = [
     },
     {
         name: "Jennifer T.",
-        role: "Marketing Data Analyst",
+        role: "Marketing Ops Manager",
         company: "SaaS Startup",
         content: "Google Analytics JSON exports used to be a hassle to convert. Other tools either crash or require uploads to their servers. JsonExport's auto-unescape handles our double-encoded data flawlessly. Plus it's completely free!",
         initials: "JT",
@@ -39,7 +39,7 @@ const testimonials: Testimonial[] = [
     },
     {
         name: "David L.",
-        role: "E-commerce Analytics Lead",
+        role: "E-commerce Operations Lead",
         company: "Mid-size Retail (500+ stores)",
         content: "Converting Shopify order JSONs with nested line items used to be a nightmare. JsonExport's nested view makes it easy to see relationships, then export to flat Excel for reporting. No Python skills needed.",
         initials: "DL",
@@ -47,7 +47,7 @@ const testimonials: Testimonial[] = [
     },
     {
         name: "Rachel M.",
-        role: "Financial Data Analyst",
+        role: "Financial Administrator",
         company: "Fintech Company",
         content: "We pull Stripe transaction data daily. The timestamp conversion and metadata flattening features save me from writing custom scripts. What used to take 30 minutes now takes 2.",
         initials: "RM",
@@ -60,9 +60,9 @@ export function Testimonials() {
         <section className="py-16 bg-muted/30">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-4">Trusted by Data Analysts</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-4">Trusted by Ops Professionals</h2>
                     <p className="text-muted-foreground max-w-2xl mx-auto">
-                        Join thousands of data analysts who trust JsonExport for secure, fast JSON to Excel conversions
+                        Join thousands of ops, support, and admin professionals who trust JsonExport for secure, fast JSON to Excel conversions
                     </p>
                 </div>
 

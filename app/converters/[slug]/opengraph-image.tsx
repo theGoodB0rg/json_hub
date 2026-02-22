@@ -4,6 +4,7 @@ import { converterPages } from '@/lib/platform-data';
 
 export const size = OG_SIZE;
 export const contentType = 'image/png';
+export const runtime = 'edge';
 
 export async function generateStaticParams() {
     const params = converterPages.map((page) => ({
