@@ -4,17 +4,21 @@ import { BlogLayout } from '@/components/blog/BlogLayout';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle2, XCircle } from 'lucide-react';
+import { blogPostPath, toAbsoluteUrl } from '@/lib/routes';
+
+const guidePath = blogPostPath('how-to-convert-json-to-excel');
 
 export const metadata: Metadata = {
     title: 'How to Convert JSON to Excel (2026 Guide) - The Only Way That Actually Works',
     description: 'Stop struggling with Power Query. Learn the modern way to convert nested JSON data to Excel without coding. Visual guide + Free Tool.',
     alternates: {
-        canonical: 'https://jsonexport.com/blog/how-to-convert-json-to-excel',
+        canonical: guidePath,
     },
     openGraph: {
         title: 'How to Convert JSON to Excel (2026 Guide)',
         description: 'Stop struggling with Power Query. Learn the modern way to convert nested JSON data to Excel without coding.',
         type: 'article',
+        url: toAbsoluteUrl(guidePath),
         publishedTime: '2026-01-25T12:00:00.000Z',
         authors: ['JsonExport Team'],
     }

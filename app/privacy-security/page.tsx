@@ -4,14 +4,16 @@ import { Card } from '@/components/ui/card';
 import { Shield, Lock, WifiOff, FileJson, Server, Check, X, Database } from 'lucide-react';
 import { FAQSchema } from '@/components/FAQSchema';
 import { SecurityBadges } from '@/components/SecurityBadges';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES } from '@/lib/routes';
 
 export const metadata: Metadata = {
-    title: 'Secure JSON to Excel Converter | 100% Private, No Uploads, Offline',
-    description: 'The only JSON converter that guarantees 100% privacy by running entirely in your browser. No server uploads, GDPR/HIPAA compliant by default, and works offline.',
+    ...buildPageMetadata({
+        title: 'Secure JSON to Excel Converter | 100% Private, No Uploads, Offline',
+        description: 'The only JSON converter that guarantees 100% privacy by running entirely in your browser. No server uploads, GDPR/HIPAA compliant by default, and works offline.',
+        canonicalPath: ROUTES.privacySecurity,
+    }),
     keywords: ['secure json to excel', 'private json converter', 'json to excel offline', 'gdpr compliant json converter', 'hipaa compliant data tool', 'client side json conversion'],
-    alternates: {
-        canonical: '/privacy-security',
-    }
 };
 
 const faqs = [

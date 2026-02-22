@@ -3,26 +3,33 @@ import { getSortedPostsData } from '@/lib/blog'
 
 import { converterPages } from '@/lib/platform-data'
 import { dummyDatasets } from '@/lib/dummy-data'
+import {
+    ROUTES,
+    blogPostPath,
+    converterPath,
+    testDataPath,
+    toAbsoluteUrl,
+} from '@/lib/routes'
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const posts = getSortedPostsData()
 
     const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
-        url: `https://jsonexport.com/blog/${post.id}`,
+        url: toAbsoluteUrl(blogPostPath(post.id)),
         lastModified: new Date(post.date),
         changeFrequency: 'weekly',
         priority: 0.8,
     }))
 
     const converterEntries: MetadataRoute.Sitemap = converterPages.map((page) => ({
-        url: `https://jsonexport.com/converters/${page.slug}`,
+        url: toAbsoluteUrl(converterPath(page.slug)),
         lastModified: new Date(),
         changeFrequency: 'weekly',
         priority: 0.9,
     }))
 
     const testDataEntries: MetadataRoute.Sitemap = dummyDatasets.map((dataset) => ({
-        url: `https://jsonexport.com/test-data/${dataset.slug}`,
+        url: toAbsoluteUrl(testDataPath(dataset.slug)),
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.7,
@@ -30,25 +37,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     const staticPages: MetadataRoute.Sitemap = [
         {
-            url: 'https://jsonexport.com/alternatives/power-query',
+            url: toAbsoluteUrl(ROUTES.alternativesPowerQuery),
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.8,
         },
         {
-            url: 'https://jsonexport.com/alternatives/python-pandas',
+            url: toAbsoluteUrl(ROUTES.alternativesPythonPandas),
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.8,
         },
         {
-            url: 'https://jsonexport.com/privacy-security',
+            url: toAbsoluteUrl(ROUTES.privacySecurity),
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.8,
         },
         {
-            url: 'https://jsonexport.com/test-data',
+            url: toAbsoluteUrl(ROUTES.testData),
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.8,
@@ -57,7 +64,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     return [
         {
-            url: 'https://jsonexport.com',
+            url: toAbsoluteUrl(ROUTES.home),
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 1,

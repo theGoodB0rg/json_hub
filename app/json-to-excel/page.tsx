@@ -1,13 +1,13 @@
 import { ConverterApp } from "@/components/ConverterApp";
 import { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES } from '@/lib/routes';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
     title: 'JSON to Excel Converter (XLSX) | Free Online Tool',
     description: 'Convert JSON to Excel (XLSX) instantly. Preserves data types, handles nested arrays, and provides a downloadable spreadsheet. 100% Secure.',
-    alternates: {
-        canonical: 'https://jsonexport.com/json-to-excel',
-    }
-};
+    canonicalPath: ROUTES.jsonToExcel,
+});
 
 export default function JsonToExcelPage() {
     return (

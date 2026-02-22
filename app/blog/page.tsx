@@ -1,11 +1,15 @@
 import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/blog';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES, blogPostPath } from '@/lib/routes';
 
-export const metadata = {
+export const metadata: Metadata = buildPageMetadata({
     title: 'Blog - JsonExport',
     description: 'Articles, tutorials, and guides about JSON conversion, data formatting, and developer tools.',
-};
+    canonicalPath: ROUTES.blog,
+});
 
 export default function BlogIndex() {
     const allPostsData = getSortedPostsData();
@@ -23,7 +27,7 @@ export default function BlogIndex() {
 
             <div className="grid gap-6">
                 {allPostsData.map(({ id, date, title, description }) => (
-                    <Link href={`/blog/${id}`} key={id} className="block group">
+                    <Link href={blogPostPath(id)} key={id} className="block group">
                         <Card className="h-full transition-colors hover:border-primary/50 hover:bg-muted/30">
                             <CardHeader>
                                 <div className="flex justify-between items-start mb-2">

@@ -89,6 +89,20 @@ function collectConverterSlugs() {
     return uniqueSlugs;
 }
 
+function collectRouteMap() {
+    const routesFile = 'lib/routes.ts';
+    const routesContent = readFile(routesFile);
+    const routeRegex = /^\s*([A-Za-z0-9_]+):\s*'([^']+)'/gm;
+    const routeMap = new Map();
+
+    let match;
+    while ((match = routeRegex.exec(routesContent)) !== null) {
+        routeMap.set(match[1], match[2]);
+    }
+
+    return routeMap;
+}
+
 function checkDummyDatasetSlugs(converterSlugs) {
     const dummyFile = 'lib/dummy-data.ts';
     const dummyContent = readFile(dummyFile);
@@ -127,12 +141,30 @@ function checkSitemapStaticRoutes() {
     const sitemapContent = readFile(sitemapFile);
     const staticUrlRegex = /url:\s*'https:\/\/jsonexport\.com([^']*)'/g;
     const staticRouteMatches = extractMatches(sitemapContent, staticUrlRegex);
+    const routeMap = collectRouteMap();
+    const routeRefRegex = /url:\s*toAbsoluteUrl\(ROUTES\.([A-Za-z0-9_]+)\)/g;
 
     for (const match of staticRouteMatches) {
         const pathname = match.value || '/';
         if (!routeExists(pathname)) {
             const line = lineFromIndex(sitemapContent, match.index);
             addFailure(`${sitemapFile}:${line} references static URL path "${pathname}" with no matching app route`);
+        }
+    }
+
+    let routeMatch;
+    while ((routeMatch = routeRefRegex.exec(sitemapContent)) !== null) {
+        const routeKey = routeMatch[1];
+        if (!routeMap.has(routeKey)) {
+            const line = lineFromIndex(sitemapContent, routeMatch.index);
+            addFailure(`${sitemapFile}:${line} references unknown ROUTES key "${routeKey}"`);
+            continue;
+        }
+
+        const pathname = routeMap.get(routeKey);
+        if (!routeExists(pathname)) {
+            const line = lineFromIndex(sitemapContent, routeMatch.index);
+            addFailure(`${sitemapFile}:${line} references route "${routeKey}" (${pathname}) with no matching app route`);
         }
     }
 }

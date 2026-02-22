@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Download, FileSpreadsheet, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES, converterPath, testDataPath } from '@/lib/routes';
 
 export async function generateStaticParams() {
     return dummyDatasets.map((dataset) => ({
@@ -15,10 +17,11 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     const dataset = dummyDatasets.find((d) => d.slug === params.slug);
     if (!dataset) return { title: 'Dataset Not Found' };
 
-    return {
+    return buildPageMetadata({
         title: `${dataset.title} - Download Free | JsonExport`,
         description: dataset.description,
-    };
+        canonicalPath: testDataPath(dataset.slug),
+    });
 }
 
 export default function DummyDataPage({ params }: { params: { slug: string } }) {
@@ -31,15 +34,15 @@ export default function DummyDataPage({ params }: { params: { slug: string } }) 
 
     const jsonString = JSON.stringify(dataset.data, null, 2);
     const converterHref = converterSlugs.has(dataset.converterSlug)
-        ? `/converters/${dataset.converterSlug}`
-        : '/json-to-excel';
+        ? converterPath(dataset.converterSlug)
+        : ROUTES.jsonToExcel;
 
     return (
         <div className="min-h-screen bg-background">
             <main className="max-w-5xl mx-auto px-4 py-12 md:py-20 flex flex-col">
 
                 {/* Back button */}
-                <Link href="/test-data" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors w-fit mb-8">
+                <Link href={ROUTES.testData} className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors w-fit mb-8">
                     <ArrowLeft className="h-4 w-4" />
                     Back to All Datasets
                 </Link>

@@ -2,11 +2,14 @@ import { dummyDatasets } from '@/lib/dummy-data';
 import Link from 'next/link';
 import { Database, FileJson, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
+import { ROUTES, testDataPath } from '@/lib/routes';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
     title: "Free Dummy JSON Data for Testing | JsonExport",
     description: "Download free, realistic dummy JSON datasets for Stripe, Salesforce, Shopify, and more. Perfect for testing APIs, ETL pipelines, and JSON-to-Excel converters.",
-};
+    canonicalPath: ROUTES.testData,
+});
 
 export default function TestDataIndex() {
     return (
@@ -33,7 +36,7 @@ export default function TestDataIndex() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {dummyDatasets.map((dataset, idx) => (
                         <Link
-                            href={`/test-data/${dataset.slug}`}
+                            href={testDataPath(dataset.slug)}
                             key={dataset.slug}
                             className={`group relative flex flex-col justify-between p-6 bg-card border border-border/50 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-primary/30 animate-in fade-in slide-in-from-bottom-8`}
                             style={{ animationDelay: `${idx * 100}ms` }}
