@@ -2,7 +2,11 @@ export type ConversionEventName =
     | 'parse_success'
     | 'parse_error'
     | 'export_success'
-    | 'export_error';
+    | 'export_error'
+    | 'growth_badge_click'
+    | 'campaign_source_detected'
+    | 'affiliate_toast_shown'
+    | 'affiliate_toast_click';
 
 export interface ConversionEventPayload {
     [key: string]: string | number | boolean | null | undefined;

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Github, Lock, Zap, FileJson, FileSpreadsheet, FileText } from 'lucide-react';
 import { LinkToUs } from '@/components/LinkToUs';
+import { SocialProofBadges } from '@/components/SocialProofBadges';
 
 export function Footer() {
     return (
@@ -69,6 +70,9 @@ export function Footer() {
                                 <LinkToUs />
                             </li>
                         </ul>
+                        <div className="mt-5">
+                            <SocialProofBadges />
+                        </div>
                     </div>
                 </div>
 

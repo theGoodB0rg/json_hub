@@ -22,6 +22,8 @@ out
 # Testing and local data
 /test-data/
 performance_data/
+playwright-report/
+test-results/
 
 # AI workflows
 .agentworkflow/
