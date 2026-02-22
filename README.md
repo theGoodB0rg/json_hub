@@ -64,6 +64,11 @@ Reorder, hide, and manage columns via intuitive drag & drop interface.
 ### Privacy-First Architecture
 All processing happens in your browser. Zero network calls. No data upload.
 
+### Growth Execution (Phase 4)
+- UTM source-aware landing banner for campaign traffic (`utm_source=producthunt`, `g2`, `capterra`, etc.)
+- Social proof badges in footer with safe fallback when listing URLs are not configured
+- Conversion telemetry events for parse/export plus growth interactions (campaign detect, badge clicks, affiliate toast shown/clicked)
+
 ---
 
 ## Screenshots
@@ -123,6 +128,14 @@ npm install
 npm run dev
 
 # Open http://localhost:3000
+```
+
+Optional growth link configuration for local testing:
+
+```bash
+NEXT_PUBLIC_PRODUCT_HUNT_URL=https://www.producthunt.com/products/your-product-slug
+NEXT_PUBLIC_G2_URL=https://www.g2.com/products/your-product/reviews
+NEXT_PUBLIC_CAPTERRA_URL=https://www.capterra.com/p/your-product-id/
 ```
 
 ---
