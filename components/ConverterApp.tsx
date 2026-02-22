@@ -28,6 +28,7 @@ import { useAppStore } from '@/lib/store/store';
 import { BatchProcessor } from "@/components/BatchProcessor/BatchProcessor";
 import { MobileNav } from "@/components/MobileNav";
 import { SecurityBadges } from "@/components/SecurityBadges";
+import { ContextualAffiliateToast } from "@/components/ContextualAffiliateToast";
 
 interface ConverterAppProps {
     heading?: React.ReactNode;
@@ -227,6 +228,9 @@ export function ConverterApp({ heading, subheading, platform }: ConverterAppProp
                 {/* FAQ Section */}
                 <FAQ />
             </main>
+
+            {/* Logic Components */}
+            <ContextualAffiliateToast platform={platform} />
         </div>
     );
 }

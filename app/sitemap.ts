@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next'
 import { getSortedPostsData } from '@/lib/blog'
 
 import { converterPages } from '@/lib/platform-data'
+import { dummyDatasets } from '@/lib/dummy-data'
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const posts = getSortedPostsData()
@@ -18,6 +19,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: new Date(),
         changeFrequency: 'weekly',
         priority: 0.9,
+    }))
+
+    const testDataEntries: MetadataRoute.Sitemap = dummyDatasets.map((dataset) => ({
+        url: `https://jsonexport.com/test-data/${dataset.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.7,
     }))
 
     const staticPages: MetadataRoute.Sitemap = [
@@ -38,6 +46,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.8,
+        },
+        {
+            url: 'https://jsonexport.com/test-data',
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.8,
         }
     ]
 
@@ -49,6 +63,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 1,
         },
         ...converterEntries,
+        ...testDataEntries,
         ...staticPages,
         ...blogEntries,
     ]

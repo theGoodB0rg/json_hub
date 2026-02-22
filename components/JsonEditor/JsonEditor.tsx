@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { TemplateSelector } from '@/components/TemplateSelector/TemplateSelector';
 import { LightJsonEditor } from './LightJsonEditor';
 import { LargeFileUpsell } from '@/components/LargeFileUpsell/LargeFileUpsell';
+import { DiagnosticOverlay } from './DiagnosticOverlay';
 import { cn } from "@/lib/utils";
 import { Progress } from '@/components/ui/progress';
 
@@ -36,12 +37,13 @@ export function JsonEditor({ platform }: { platform?: string }) {
     const [fileSize, setFileSize] = useState<number>(0);
     const [showUpsell, setShowUpsell] = useState(false);
     const [pendingFile, setPendingFile] = useState<File | null>(null);
+    const [isDiagnosing, setIsDiagnosing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Auto-parse with debounce
     useEffect(() => {
-        // Don't auto-parse if input is large
-        if (rawInput.length > RECOMMENDED_MAX_SIZE) return;
+        // Don't auto-parse if input is large or if diagnostic theater is active
+        if (rawInput.length > RECOMMENDED_MAX_SIZE || isDiagnosing) return;
 
         const timer = setTimeout(() => {
             if (rawInput.trim()) {
@@ -50,7 +52,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
         }, 800);
 
         return () => clearTimeout(timer);
-    }, [rawInput, parseInput]);
+    }, [rawInput, parseInput, isDiagnosing]);
 
     const handleEditorChange = useCallback((value: string) => {
         setRawInput(value);
@@ -60,7 +62,13 @@ export function JsonEditor({ platform }: { platform?: string }) {
         setRawInput('');
         setSourceFilename(null);
         setFileSize(0);
+        setIsDiagnosing(false);
     }, [setRawInput, setSourceFilename]);
+
+    const handleDiagnosisComplete = useCallback(() => {
+        setIsDiagnosing(false);
+        parseInput();
+    }, [parseInput]);
 
     const processFile = useCallback((file: File, bypassWarning: boolean = false) => {
         setFileSize(file.size);
@@ -97,13 +105,13 @@ export function JsonEditor({ platform }: { platform?: string }) {
             const content = e.target?.result as string;
             setRawInput(content);
 
-            // Auto-parse if reasonable size
+            // Auto-parse if reasonable size (Start diagnostic theater)
             if (file.size <= WARNING_SIZE) {
-                setTimeout(() => parseInput(), 100);
+                setIsDiagnosing(true);
             }
         };
         reader.readAsText(file);
-    }, [setRawInput, setSourceFilename, parseInput, parseInputStreaming]);
+    }, [setRawInput, setSourceFilename, parseInputStreaming]);
 
     const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -294,12 +302,21 @@ export function JsonEditor({ platform }: { platform?: string }) {
                             parseErrors={parseErrors}
                             isLargeFile={false} // Handled by LargeFileViewer now
                             fileSize={fileSize}
-                            readOnly={isLoading}
+                            readOnly={isLoading || isDiagnosing}
                         />
                     )}
 
-                    {/* Loading overlay */}
-                    {isLoading && (
+                    {/* Diagnostic overlay (Theater) */}
+                    {isDiagnosing && (
+                        <DiagnosticOverlay
+                            fileSize={fileSize}
+                            rawInput={rawInput}
+                            onComplete={handleDiagnosisComplete}
+                        />
+                    )}
+
+                    {/* Loading overlay for normal parsing */}
+                    {isLoading && !isDiagnosing && (
                         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-50">
                             <div className="flex flex-col items-center gap-3 p-6 bg-background border rounded-lg shadow-lg">
                                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
