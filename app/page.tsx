@@ -54,6 +54,20 @@ export default function Home() {
                     ))}
                 </div>
             </section>
+
+            {/* Recommended Tools - Internal Link Hub */}
+            <section className="container mx-auto px-4 py-12 border-t border-border/40">
+                <h2 className="text-2xl font-bold mb-2">Recommended Tools</h2>
+                <p className="text-muted-foreground mb-6 max-w-3xl">
+                    A short list of tools we recommend alongside JsonExport for JSON workflows, API debugging, and preventing lost work.
+                </p>
+                <Link
+                    href={ROUTES.recommendedTools}
+                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                    View recommended tools
+                </Link>
+            </section>
         </>
     );
 }

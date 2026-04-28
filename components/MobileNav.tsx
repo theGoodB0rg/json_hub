@@ -47,6 +47,11 @@ export function MobileNav() {
                                 <span>Blog</span>
                             </Link>
                         </Button>
+                        <Button variant="ghost" asChild className="w-full justify-start text-muted-foreground">
+                            <Link href="/recommended-tools">
+                                <span>Recommended Tools</span>
+                            </Link>
+                        </Button>
                     </div>
 
                     <div className="h-px bg-border my-2" />

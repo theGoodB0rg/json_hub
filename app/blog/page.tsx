@@ -23,6 +23,13 @@ export default function BlogIndex() {
                 <p className="text-lg text-muted-foreground">
                     Tips, tricks, and guides for data formatting and conversion.
                 </p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                    Looking for our curated tooling stack?{' '}
+                    <Link href={ROUTES.recommendedTools} className="underline underline-offset-4 hover:text-primary">
+                        Recommended Tools
+                    </Link>
+                    .
+                </p>
             </div>
 
             <div className="grid gap-6">

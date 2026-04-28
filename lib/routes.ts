@@ -7,6 +7,7 @@ export const ROUTES = {
     testData: '/test-data',
     jsonToExcel: '/json-to-excel',
     jsonToCsv: '/json-to-csv',
+    recommendedTools: '/recommended-tools',
     alternativesPowerQuery: '/alternatives/power-query',
     alternativesPythonPandas: '/alternatives/python-pandas',
     privacySecurity: '/privacy-security',
