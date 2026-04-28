@@ -87,6 +87,9 @@ export function ConverterApp({ heading, subheading, platform }: ConverterAppProp
                             <a href="/blog" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                                 Blog
                             </a>
+                            <a href="/recommended-tools" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                                Recommended Tools
+                            </a>
                             <ShareButton />
                             <BatchProcessor />
                             <ProjectManager />

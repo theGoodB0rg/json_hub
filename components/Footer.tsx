@@ -57,6 +57,11 @@ export function Footer() {
                                 </Link>
                             </li>
                             <li>
+                                <Link href="/recommended-tools" className="hover:text-primary transition-colors">
+                                    Recommended Tools
+                                </Link>
+                            </li>
+                            <li>
                                 <a
                                     href="https://github.com/theGoodB0rg/json_hub"
                                     target="_blank"

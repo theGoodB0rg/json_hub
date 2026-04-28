@@ -27,3 +27,7 @@ test-results/
 
 # AI workflows
 .agentworkflow/
+
+# Temporary dev files (keep untracked)
+temp_old_*.tsx
+old_platform_data_temp.ts

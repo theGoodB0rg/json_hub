@@ -38,6 +38,8 @@
         "node_modules",
         "**/*.test.ts",
         "**/*.spec.ts",
-        "tests"
+        "tests",
+        "temp_old_*.tsx",
+        "old_platform_data_temp.ts"
     ]
 }
