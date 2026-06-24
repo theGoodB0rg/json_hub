@@ -150,6 +150,90 @@ export default function PrivacyPage() {
                     </div>
                 </section>
 
+                {/* Analytics Transparency */}
+                <section className="mb-16">
+                    <h2 className="text-3xl font-bold mb-8 text-center">What We Know About Your Visit</h2>
+                    <p className="text-lg text-muted-foreground mb-10 text-center max-w-2xl mx-auto">
+                        We believe transparency is better than legalese. Here is exactly what we track, why, and how little it matters for your privacy.
+                    </p>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <Card className="p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                    <span className="text-blue-600 dark:text-blue-400 text-lg font-bold">CW</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold">Cloudflare Web Analytics</h3>
+                                    <p className="text-xs text-muted-foreground">Aggregate, no cookies</p>
+                                </div>
+                            </div>
+                            <ul className="space-y-2 text-sm">
+                                <li className="flex gap-2">
+                                    <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                                    <span>Anonymized page views (which pages are visited)</span>
+                                </li>
+                                <li className="flex gap-2">
+                                    <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                                    <span>Referrer (where you came from — search engine, link, etc.)</span>
+                                </li>
+                                <li className="flex gap-2">
+                                    <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                                    <span>Approximate country &amp; device type (no IP stored)</span>
+                                </li>
+                                <li className="flex gap-2">
+                                    <X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                                    <span className="text-muted-foreground">No cookies, no tracking across sites, no personal data</span>
+                                </li>
+                            </ul>
+                        </Card>
+
+                        <Card className="p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
+                                    <span className="text-emerald-600 dark:text-emerald-400 text-lg font-bold">CT</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold">Client Telemetry</h3>
+                                    <p className="text-xs text-muted-foreground">Local storage, never sent anywhere</p>
+                                </div>
+                            </div>
+                            <ul className="space-y-2 text-sm">
+                                <li className="flex gap-2">
+                                    <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                                    <span>Feature usage (parse clicked, export format chosen)</span>
+                                </li>
+                                <li className="flex gap-2">
+                                    <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                                    <span>Anonymous visit count (new vs returning visitor — stored locally)</span>
+                                </li>
+                                <li className="flex gap-2">
+                                    <X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                                    <span className="text-muted-foreground">No personal data, no email, no account</span>
+                                </li>
+                                <li className="flex gap-2">
+                                    <X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                                    <span className="text-muted-foreground">Your JSON content is never tracked or stored</span>
+                                </li>
+                            </ul>
+                        </Card>
+                    </div>
+
+                    <div className="mt-8 bg-muted/30 rounded-xl p-6 text-sm">
+                        <p className="font-medium mb-2">Why we do this</p>
+                        <p className="text-muted-foreground">
+                            We track aggregate usage to know what features matter, which pages need improvement,
+                            and whether the tool is actually useful. We deliberately chose Cloudflare Web Analytics
+                            (zero cookies, zero personal data) over Google Analytics, and we keep detailed telemetry
+                            on your own device where you can see it, export it, or clear it at any time.
+                        </p>
+                        <p className="text-muted-foreground mt-2">
+                            To clear all client-side telemetry data, open your browser&apos;s developer tools,
+                            go to Application → Local Storage, and delete keys starting with <code className="text-xs bg-muted px-1 py-0.5 rounded">jsonexport:</code>.
+                        </p>
+                    </div>
+                </section>
+
                 {/* PWA / Install Link */}
                 <section className="mb-16 bg-muted/30 rounded-2xl p-8 text-center">
                     <h2 className="text-2xl font-bold mb-4">Install as an App</h2>

@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Footer } from "@/components/Footer"
 import { ROUTES, SITE_ORIGIN } from '@/lib/routes'
+import { AnalyticsProvider } from '@/components/AnalyticsProvider'
 
 const inter = Inter({
     subsets: ['latin'],
@@ -77,12 +78,14 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     <TooltipProvider delayDuration={300}>
-                        <div className="flex flex-col min-h-screen">
-                            <div className="flex-1">
-                                {children}
+                        <AnalyticsProvider>
+                            <div className="flex flex-col min-h-screen">
+                                <div className="flex-1">
+                                    {children}
+                                </div>
+                                <Footer />
                             </div>
-                            <Footer />
-                        </div>
+                        </AnalyticsProvider>
                     </TooltipProvider>
 
                     {/* Schema.org Structured Data for SEO */}
@@ -139,6 +142,19 @@ export default function RootLayout({
                             })
                         }}
                     />
+
+                    {/* Cloudflare Web Analytics (privacy-first, no cookies) */}
+                    {process.env.NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN && (
+                        <Script
+                            id="cloudflare-analytics"
+                            src="https://static.cloudflareinsights.com/beacon.min.js"
+                            data-cf-beacon={JSON.stringify({
+                                token: process.env.NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN,
+                                spa: 'auto',
+                            })}
+                            strategy="afterInteractive"
+                        />
+                    )}
                 </ThemeProvider>
             </body>
         </html>

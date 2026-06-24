@@ -6,6 +6,7 @@ import { flattenJSON } from '@/lib/parsers/flattener';
 import { smartUnwrap } from '@/lib/parsers/unwrapper';
 import type { AppState, ParseError, ExportFormat } from '@/types/store.types';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
+import { trackFunnelStep } from '@/lib/analytics';
 
 const initialState = {
     // Input State
@@ -82,6 +83,7 @@ export const useAppStore = create<AppState>()(
                                     source: 'worker',
                                     inputBytes: currentRawInput.length,
                                 });
+                                trackFunnelStep('parse_success');
                                 get().flattenData();
                             } else if (type === 'PARSE_ERROR') {
                                 set({
@@ -131,6 +133,7 @@ export const useAppStore = create<AppState>()(
                     parseInput: () => {
                         const { rawInput, worker } = get();
                         set({ isLoading: true });
+                        trackFunnelStep('parse_initiated');
 
                         if (worker) {
                             worker.postMessage({ type: 'PARSE', payload: rawInput });
@@ -144,6 +147,7 @@ export const useAppStore = create<AppState>()(
                                         source: 'main-thread',
                                         inputBytes: rawInput.length,
                                     });
+                                    trackFunnelStep('parse_success', { source: 'main-thread' });
                                     get().flattenData();
                                 } else {
                                     set({
@@ -172,6 +176,7 @@ export const useAppStore = create<AppState>()(
 
                     parseInputStreaming: (file: File) => {
                         set({ isLoading: true, streamingProgress: { itemCount: 0, bytesProcessed: 0, totalBytes: file.size, percent: 0 } });
+                        trackFunnelStep('parse_initiated', { method: 'streaming', fileName: file.name });
 
                         // Create or reuse streaming worker
                         let streamingWorker = get().streamingWorker;
@@ -431,6 +436,7 @@ export const useAppStore = create<AppState>()(
                         }
 
                         set({ isLoading: true, downloadProgress: 0 });
+                        trackFunnelStep('export_initiated', { format });
 
                         try {
                             const now = new Date();
@@ -529,6 +535,11 @@ export const useAppStore = create<AppState>()(
                                 structure: exportSettings.structure,
                                 rowCount: rows.length,
                                 schemaCount: effectiveSchema.length,
+                            });
+                            trackFunnelStep('export_complete', {
+                                format,
+                                structure: exportSettings.structure,
+                                rowCount: rows.length,
                             });
                             set({ isLoading: false, downloadProgress: 100 });
                         } catch (error) {
