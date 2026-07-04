@@ -16,7 +16,7 @@ export function GitHubStarBanner() {
                     animation-delay: 2s;
                 }
             `}</style>
-            <div className="w-full bg-[#0d1117] dark:bg-green-950/30 border-b border-[#30363d] dark:border-green-800/40">
+            <div className="sticky top-16 z-40 mx-2 md:mx-4 my-2 rounded-xl border bg-[#0d1117] dark:bg-green-950/30 border-[#30363d] dark:border-green-800/40 shadow-sm">
                 <div className="container mx-auto px-4 py-4 flex flex-wrap items-center justify-center gap-x-6 gap-3">
                     <div className="flex flex-col gap-0.5">
                         <a
