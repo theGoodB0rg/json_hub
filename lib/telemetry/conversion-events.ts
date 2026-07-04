@@ -6,7 +6,9 @@ export type ConversionEventName =
     | 'growth_badge_click'
     | 'campaign_source_detected'
     | 'affiliate_toast_shown'
-    | 'affiliate_toast_click';
+    | 'affiliate_toast_click'
+    | 'github_star_click'
+    | 'github_issues_click';
 
 export interface ConversionEventPayload {
     [key: string]: string | number | boolean | null | undefined;

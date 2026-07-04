@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/resizable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { ShieldCheck, Zap, Code2, Lock, Github } from "lucide-react";
+import { ShieldCheck, Zap, Code2, Lock } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { AffiliateSidebar } from "@/components/AffiliateSidebar";
 import { Testimonials } from "@/components/Testimonials";
@@ -28,6 +28,7 @@ import { useAppStore } from '@/lib/store/store';
 import { BatchProcessor } from "@/components/BatchProcessor/BatchProcessor";
 import { MobileNav } from "@/components/MobileNav";
 import { SecurityBadges } from "@/components/SecurityBadges";
+import { GitHubStarBanner } from "@/components/GitHubStarBanner";
 import { ContextualAffiliateToast } from "@/components/ContextualAffiliateToast";
 import { GrowthSourceBanner } from "@/components/GrowthSourceBanner";
 
@@ -107,6 +108,8 @@ export function ConverterApp({ heading, subheading, platform }: ConverterAppProp
                     </div>
                 </div>
             </header>
+
+            <GitHubStarBanner />
 
             <main className="flex-1 flex flex-col">
                 <GrowthSourceBanner />
