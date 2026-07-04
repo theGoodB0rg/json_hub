@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Github, Star } from 'lucide-react';
 import { ShareButton } from '@/components/ShareButton/ShareButton';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
@@ -51,6 +51,17 @@ export function MobileNav() {
                             <Link href="/recommended-tools">
                                 <span>Recommended Tools</span>
                             </Link>
+                        </Button>
+                        <Button variant="ghost" asChild className="w-full justify-start text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300">
+                            <a
+                                href="https://github.com/theGoodB0rg/json_hub"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <Star className="w-4 h-4 mr-2 fill-amber-500 text-amber-500" />
+                                <span>Star on GitHub</span>
+                                <Github className="w-4 h-4 ml-auto text-muted-foreground" />
+                            </a>
                         </Button>
                     </div>
 
