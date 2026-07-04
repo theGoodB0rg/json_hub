@@ -15,7 +15,7 @@ const inter = Inter({
 })
 
 const cloudflareAnalyticsToken =
-    process.env.NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN ?? '0810b14a4ea44fa4bd762d3297630408'
+    process.env.NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN || '0810b14a4ea44fa4bd762d3297630408'
 
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_ORIGIN),
