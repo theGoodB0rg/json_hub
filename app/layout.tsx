@@ -146,19 +146,18 @@ export default function RootLayout({
                         }}
                     />
 
-                    {/* Cloudflare Web Analytics (privacy-first, no cookies) */}
-                    {cloudflareAnalyticsToken && (
-                        <Script
-                            id="cloudflare-analytics"
-                            src="https://static.cloudflareinsights.com/beacon.min.js"
-                            data-cf-beacon={JSON.stringify({
-                                token: cloudflareAnalyticsToken,
-                                spa: 'auto',
-                            })}
-                            strategy="afterInteractive"
-                        />
-                    )}
                 </ThemeProvider>
+
+                {/* Cloudflare Web Analytics (privacy-first, no cookies) */}
+                {cloudflareAnalyticsToken && (
+                    <script
+                        defer
+                        src="https://static.cloudflareinsights.com/beacon.min.js"
+                        data-cf-beacon={JSON.stringify({
+                            token: cloudflareAnalyticsToken,
+                        })}
+                    />
+                )}
             </body>
         </html>
     )
