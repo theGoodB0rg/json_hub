@@ -12,7 +12,7 @@ function findHtmlFiles(dir) {
 }
 
 const token = process.env.NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN || '0810b14a4ea44fa4bd762d3297630408';
-const snippet = `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${token}"}'></script>`;
+const snippet = `<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "${token}"}'></script><!-- End Cloudflare Web Analytics -->`;
 
 const outDir = path.resolve(__dirname, '..', 'out');
 const files = findHtmlFiles(outDir);
