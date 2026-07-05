@@ -30,7 +30,7 @@
   "homepage": "https://jsonexport.com",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/inject-cloudflare-beacon.js",
     "start": "next start",
     "lint": "next lint",
     "check:slugs": "node scripts/validate-seo-integrity.js --slugs",

@@ -14,9 +14,6 @@ const inter = Inter({
     preload: true,
 })
 
-const cloudflareAnalyticsToken =
-    process.env.NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN || '0810b14a4ea44fa4bd762d3297630408'
-
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_ORIGIN),
     alternates: {
@@ -147,17 +144,6 @@ export default function RootLayout({
                     />
 
                 </ThemeProvider>
-
-                {/* Cloudflare Web Analytics (privacy-first, no cookies) */}
-                {cloudflareAnalyticsToken && (
-                    <script
-                        defer
-                        src="https://static.cloudflareinsights.com/beacon.min.js"
-                        data-cf-beacon={JSON.stringify({
-                            token: cloudflareAnalyticsToken,
-                        })}
-                    />
-                )}
             </body>
         </html>
     )
