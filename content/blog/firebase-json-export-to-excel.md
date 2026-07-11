@@ -1,7 +1,7 @@
 ---
-title: "Firebase JSON Export to Excel: Firestore and Realtime Database Guide"
+title: "Firebase JSON Export to Excel — Complete Guide"
 date: "2026-01-18"
-description: "Export Firebase Firestore and Realtime Database to Excel. Handle nested documents, subcollections, and deeply structured NoSQL data."
+description: "Convert Firebase Realtime Database and Firestore JSON exports to Excel. Flatten nested documents and collections for analysis."
 keywords: ["firebase export to excel", "firestore to excel", "firebase json export", "export firestore data", "firebase realtime database excel"]
 ---
 

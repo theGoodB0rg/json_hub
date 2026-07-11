@@ -1,7 +1,7 @@
 ---
-title: "Google Analytics 4 Export to Excel: Get Past the 5,000 Row Limit"
+title: "Export Google Analytics 4 to Excel — Step-by-Step"
 date: "2026-01-16"
-description: "Export unlimited GA4 data to Excel without BigQuery or SQL. Simple workarounds for the 5K row export limit."
+description: "Export GA4 data to Excel for custom reporting. API export, BigQuery method, and no-code tools compared. Step-by-step instructions."
 keywords: ["ga4 export to excel", "google analytics 4 excel", "ga4 row limit", "export google analytics data", "ga4 csv export"]
 ---
 

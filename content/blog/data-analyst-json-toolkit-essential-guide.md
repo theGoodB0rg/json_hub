@@ -1,7 +1,7 @@
 ---
-title: "The Data Analyst's JSON Toolkit: Essential Skills and Resources"
+title: "JSON Toolkit for Data Analysts — Essential Guide (2026)"
 date: "2026-01-20"
-description: "Everything data analysts need to work with JSON: tools, techniques, common patterns, and real-world workflows for API data, nested structures, and Excel integration."
+description: "The essential JSON toolkit for data analysts. Convert, flatten, and analyze JSON data without coding. Free tools and step-by-step workflows."
 keywords: ["data analyst json", "json for analysts", "json excel workflow", "analyst json tools", "json data analysis", "working with json data"]
 ---
 

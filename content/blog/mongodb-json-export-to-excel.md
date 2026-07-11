@@ -1,7 +1,7 @@
 ---
-title: "MongoDB JSON Export to Excel: Complete Guide (2026)"
+title: "MongoDB JSON Export to Excel — Flatten Documents"
 date: "2026-01-16"
-description: "Convert MongoDB exports to Excel spreadsheets without losing data. Handle nested documents, arrays, and ObjectIDs properly."
+description: "Convert MongoDB JSON and BSON exports to Excel. Flatten nested documents, handle ObjectIDs, and Extended JSON formats."
 keywords: ["mongodb to excel", "mongodb export to excel", "mongoexport to csv", "mongodb compass export", "bson to excel"]
 ---
 

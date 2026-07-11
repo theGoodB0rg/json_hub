@@ -1,7 +1,7 @@
 ---
-title: "Stripe Export to Excel: The Ultimate Guide (2026)"
+title: "Stripe Export to Excel — Ultimate Guide (2026)"
 date: "2026-01-28"
-description: "How to export data from Stripe to Excel. Comprehensive comparison of 4 methods: Dashboard Export, Stripe Sigma (SQL), API/CLI, and JsonExport. Find the right method for your transaction volume."
+description: "Export Stripe payments, invoices, and customers to Excel. Handle nested metadata and line items. Free and paid methods compared."
 keywords: ["stripe to excel", "stripe export data", "stripe transactions to excel", "stripe sigma vs export", "stripe export limits"]
 ---
 

@@ -1,7 +1,7 @@
 ---
-title: "Stripe Webhook Data to Excel: Analyze Payments, Refunds & Subscriptions"
+title: "Stripe to Excel: Webhook Data & JSON Reporting Guide"
 date: "2026-01-20"
-description: "Export Stripe webhook events to Excel for payment analysis, refund tracking, and subscription metrics. Handle nested JSON from payment_intent, invoice, and subscription objects."
+description: "Convert Stripe webhook events and API data to Excel for financial reporting. Handle nested metadata, line items, and timestamps."
 keywords: ["stripe webhook excel", "stripe export data", "stripe analytics excel", "stripe payment data analysis", "stripe json to excel", "stripe subscription reporting"]
 ---
 

@@ -1,7 +1,7 @@
 ---
-title: "JSON to Excel for Weekly Reports: Complete Automation Guide (2026)"
+title: "Automate JSON to Excel Reports — Weekly Workflow"
 date: "2026-01-18"
-description: "Automate your weekly JSON to Excel workflow. Step-by-step guide for data analysts who need to convert JSON reports on a schedule. Save hours every week."
+description: "Automate your weekly JSON to Excel reporting workflow. Save hours with step-by-step guides for Power Query, scripts, and no-code tools."
 keywords: ["automate json to excel", "json weekly reports", "recurring json conversion", "json excel automation", "scheduled json export"]
 ---
 

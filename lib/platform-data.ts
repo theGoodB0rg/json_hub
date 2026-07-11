@@ -22,9 +22,9 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'hubspot-json-to-excel',
         platformName: 'HubSpot',
-        title: 'Fix HubSpot Nested JSON to Excel - Free & Private',
-        description: 'HubSpot export showing nested [object Object]? Securely convert HubSpot JSON to flat Excel instantly. 100% client-side privacy.',
-        h1: 'HubSpot JSON Export Repair Tool',
+        title: 'HubSpot to Excel — Export HubSpot JSON to Spreadsheet',
+        description: 'Export HubSpot CRM data to Excel instantly. Flatten nested contact properties, deal stages, and company fields. 100% private — no upload required.',
+        h1: 'HubSpot to Excel Converter',
         subheading: 'HubSpot nested JSON unreadable in Excel? Fix it instantly without cloud uploads.',
         tldr: "To fix nested HubSpot data in Excel, paste your JSON export below. We automatically flatten the deeply nested objects into a clean table, processing everything locally in your browser so your CRM data stays private.",
         content: {
@@ -50,9 +50,9 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'salesforce-json-to-excel',
         platformName: 'Salesforce',
-        title: 'Fix Broken Salesforce JSON Exports to Excel - 100% Secure',
-        description: 'Salesforce export showing `[object Object]`? Securely convert Data Exports and API responses to clean Excel. 100% client-side processing.',
-        h1: 'Salesforce JSON Export Repair Tool',
+        title: 'Salesforce to Excel — Export Contacts, Opportunities & Reports',
+        description: 'Convert Salesforce JSON exports to clean Excel spreadsheets. Fix [object Object] columns from Data Loader, Workbench, or REST API. 100% client-side.',
+        h1: 'Salesforce to Excel Converter',
         subheading: 'Salesforce export showing `[object Object]` columns? Fix it instantly without cloud uploads.',
         tldr: "To fix broken Salesforce data in Excel, paste your JSON export (from Workbench, Data Loader, or API) below. We automatically flatten the `records` array and nested `attributes` metadata into a clean table, processing everything locally in your browser to ensure no PII leaves your device.",
         content: {
@@ -82,9 +82,9 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'stripe-json-to-excel',
         platformName: 'Stripe',
-        title: 'Convert Stripe JSON to Excel - Fix Nested Metadata',
-        description: 'Instantly convert Stripe API responses (Charges, Invoices, Customers) to Excel. Fix nested metadata columns and line items automatically.',
-        h1: 'Stripe Metadata & JSON Export Repair Tool',
+        title: 'Stripe to Excel — Export & Convert Stripe JSON Free',
+        description: 'Export Stripe charges, invoices, and customers to Excel. Flatten nested metadata and line items automatically. Free, private, no upload.',
+        h1: 'Stripe to Excel Converter',
         subheading: 'Stripe metadata columns unreadable in Excel? Flatten them instantly.',
         tldr: "To fix Stripe JSON in Excel, simply copy the full JSON response from your Stripe Developer Dashboard logs and paste it into the converter below. The tool automatically flattens nested metadata and line items into separate, usable columns.",
         content: {
@@ -238,9 +238,9 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'youtube-analytics-json-to-excel',
         platformName: 'YouTube',
-        title: 'YouTube Analytics JSON to Excel Converter',
-        description: 'Convert YouTube Data API responses to Excel. Analyze video performance, comments, and playlists.',
-        h1: 'YouTube Analytics JSON to Excel',
+        title: 'YouTube Analytics to Excel — Export Channel Data Free',
+        description: 'Convert YouTube Data API responses to Excel. Analyze video performance, comments, watch time, and playlists in spreadsheets. Free and private.',
+        h1: 'YouTube Analytics to Excel Converter',
         subheading: 'Deep dive into your channel performance with custom Excel analysis.',
         tldr: "Export more than 500 rows of analytics data by taking the JSON response from YouTube Studio (or Data API) and converting it to Excel here. Analyze video tags, earnings, and watch time in bulk.",
         content: {
@@ -266,9 +266,9 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'slack-json-to-csv',
         platformName: 'Slack',
-        title: 'Convert Slack Export JSON to CSV - Channels & Messages',
-        description: 'Convert Slack workspace exports to CSV. Analyze message history, user activity, and channel logs in Excel.',
-        h1: 'Slack JSON to CSV Converter',
+        title: 'Slack to CSV — Export Slack Messages & Chat History',
+        description: 'Convert Slack workspace exports to CSV or Excel. Archive message history, user activity, and channel logs. 100% private local processing.',
+        h1: 'Slack to CSV/Excel Converter',
         subheading: 'Turn your Slack data export into a readable message archive.',
         content: {
             intro: 'Slack exports are a goldmine of organizational knowledge, but the JSON format is fragmented across thousands of files. Our tool stitches them together into a single, analysis-ready CSV.',
@@ -358,9 +358,9 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'notion-json-to-excel',
         platformName: 'Notion',
-        title: 'Notion Database JSON to Excel Converter',
-        description: 'Convert Notion API exports to Excel. Backup your Notion databases and visualize properties in spreadsheets.',
-        h1: 'Notion JSON to Excel Converter',
+        title: 'Notion to Excel — Export & Convert Notion Databases',
+        description: 'Export Notion databases to Excel offline. Convert API exports preserving properties, relations, and rollups. Free, no signup required.',
+        h1: 'Notion to Excel Converter',
         subheading: 'Take your Notion databases offline. Convert API exports to real Excel tables.',
         content: {
             intro: 'Notion is great, but sometimes you need the power of Excel. Convert your Notion database exports into standard spreadsheets for deep analysis and charting.',
@@ -472,6 +472,279 @@ export const converterPages: ConverterPageConfig[] = [
                 question: "Does this handle subtasks?",
                 answer: "Yes. Subtasks are included with a reference to their parent task, allowing you to filter or group them easily in Excel."
             }
+        ]
+    },
+    {
+        slug: 'pipedrive-json-to-excel',
+        platformName: 'Pipedrive',
+        title: 'Pipedrive to Excel — Export CRM Data Free',
+        description: 'Convert Pipedrive JSON exports to Excel. Flatten deal stages, contact details, and activity logs. 100% private, no upload.',
+        h1: 'Pipedrive to Excel Converter',
+        subheading: 'Export your Pipedrive CRM data to Excel for custom reporting and analysis.',
+        content: {
+            intro: 'Pipedrive exports contain nested deal stages, organization data, and activity histories. Standard tools break this structure. JsonExport flattens everything into clean, analysis-ready spreadsheets.',
+            features: [
+                'Flatten deal stages and pipeline data',
+                'Extract contact and organization details',
+                'Handle custom fields automatically',
+                '100% private — no data upload'
+            ]
+        },
+        faqs: [
+            { question: 'How do I export Pipedrive data to Excel?', answer: 'Export your deals or contacts as JSON from the Pipedrive API, then paste the JSON here for instant Excel conversion.' },
+            { question: 'Does this handle custom fields?', answer: 'Yes. All custom fields are automatically detected and included as separate Excel columns.' }
+        ]
+    },
+    {
+        slug: 'harvest-json-to-excel',
+        platformName: 'Harvest',
+        title: 'Harvest to Excel — Export Time Tracking Data',
+        description: 'Convert Harvest time tracking JSON exports to Excel. Analyze hours, projects, and billing data in spreadsheets. Free and private.',
+        h1: 'Harvest to Excel Converter',
+        subheading: 'Turn Harvest time entries into Excel reports for invoicing and project analysis.',
+        content: {
+            intro: 'Harvest time tracking exports include nested project assignments, client data, and billing details. Our converter flattens this into clean rows for easy pivot table analysis.',
+            features: [
+                'Flatten time entries with project context',
+                'Preserve client and task relationships',
+                'Convert timestamps to Excel-compatible dates',
+                '100% client-side processing'
+            ]
+        },
+        faqs: [
+            { question: 'Can I export Harvest timesheets to Excel?', answer: 'Yes. Use the Harvest API to export your time entries as JSON, then paste them here for instant Excel conversion.' },
+            { question: 'Does this handle billable vs non-billable hours?', answer: 'Yes. The billable flag and hourly rates are preserved as separate columns in the output.' }
+        ]
+    },
+    {
+        slug: 'xero-json-to-excel',
+        platformName: 'Xero',
+        title: 'Xero to Excel — Export Accounting Data Free',
+        description: 'Convert Xero API exports to Excel. Analyze invoices, contacts, and bank transactions in spreadsheets. Secure, private, no upload.',
+        h1: 'Xero to Excel Converter',
+        subheading: 'Export Xero accounting data to Excel for custom financial reporting.',
+        content: {
+            intro: 'Xero API responses contain nested line items, tracking categories, and contact details. Our converter flattens the structure so you can build custom financial reports in Excel.',
+            features: [
+                'Flatten invoice line items into rows',
+                'Preserve tracking categories and tax details',
+                'Handle nested contact information',
+                '100% private — financial data stays local'
+            ]
+        },
+        faqs: [
+            { question: 'How do I get Xero data into Excel?', answer: 'Use the Xero API to export your data as JSON, then paste it here to convert to Excel instantly.' },
+            { question: 'Is my financial data secure?', answer: 'Yes. All processing happens in your browser. No financial data is ever uploaded to any server.' }
+        ]
+    },
+    {
+        slug: 'intercom-json-to-excel',
+        platformName: 'Intercom',
+        title: 'Intercom to Excel — Export Chat & Ticket Data',
+        description: 'Convert Intercom JSON exports to Excel. Analyze conversations, contacts, and support metrics in spreadsheets. Free and private.',
+        h1: 'Intercom to Excel Converter',
+        subheading: 'Export Intercom conversations and contacts to Excel for support analysis.',
+        content: {
+            intro: 'Intercom exports contain nested conversation parts, tags, and user attributes. This tool flattens them into structured rows so you can analyze support performance in Excel.',
+            features: [
+                'Flatten conversation threads and replies',
+                'Extract user attributes and tags',
+                'Handle custom data attributes',
+                '100% client-side — customer data stays private'
+            ]
+        },
+        faqs: [
+            { question: 'Can I export Intercom conversations to Excel?', answer: 'Yes. Export your conversations via the Intercom API as JSON, then paste them here for Excel conversion.' },
+            { question: 'Does this handle conversation parts?', answer: 'Yes. Each conversation part (message, note, assignment) is flattened into its own row with context preserved.' }
+        ]
+    },
+    {
+        slug: 'typeform-json-to-excel',
+        platformName: 'Typeform',
+        title: 'Typeform to Excel — Export Survey Responses',
+        description: 'Convert Typeform JSON response exports to Excel. Analyze survey answers, scores, and completion data. Free, private, no upload.',
+        h1: 'Typeform to Excel Converter',
+        subheading: 'Turn Typeform survey responses into structured Excel data for analysis.',
+        content: {
+            intro: 'Typeform response exports contain nested answer objects with different types (text, choice, number). Our converter normalizes these into a clean spreadsheet with one row per response.',
+            features: [
+                'Normalize different answer types into columns',
+                'Preserve question references and metadata',
+                'Handle logic jump and hidden fields',
+                '100% private processing'
+            ]
+        },
+        faqs: [
+            { question: 'How do I export Typeform responses to Excel?', answer: 'Use the Typeform API to export responses as JSON, then paste the data here for instant spreadsheet conversion.' },
+            { question: 'Does this handle multi-choice answers?', answer: 'Yes. Multi-choice and ranking answers are expanded into readable column values.' }
+        ]
+    },
+    {
+        slug: 'dropbox-json-to-excel',
+        platformName: 'Dropbox',
+        title: 'Dropbox Metadata to Excel — Export File Listings',
+        description: 'Convert Dropbox API file listings to Excel. Catalog files, folders, and sharing permissions in spreadsheets. Free and private.',
+        h1: 'Dropbox to Excel Converter',
+        subheading: 'Export Dropbox file metadata and folder structures to Excel.',
+        content: {
+            intro: 'Dropbox API responses include nested file metadata, sharing settings, and folder hierarchies. Our converter flattens this into a clean catalog you can sort and filter in Excel.',
+            features: [
+                'Flatten file and folder metadata',
+                'Extract sharing permissions and links',
+                'Handle nested folder structures',
+                '100% client-side processing'
+            ]
+        },
+        faqs: [
+            { question: 'Can I export a list of all Dropbox files to Excel?', answer: 'Yes. Use the Dropbox API to list files and folders as JSON, then paste the result here for Excel conversion.' },
+            { question: 'Does this show sharing permissions?', answer: 'Yes. Shared links, member access, and permission levels are extracted into dedicated columns.' }
+        ]
+    },
+    {
+        slug: 'mailchimp-json-to-excel',
+        platformName: 'Mailchimp',
+        title: 'Mailchimp to Excel — Export Campaigns & Contacts',
+        description: 'Convert Mailchimp JSON exports to Excel. Analyze campaigns, subscriber lists, and email performance metrics. Free and private.',
+        h1: 'Mailchimp to Excel Converter',
+        subheading: 'Export Mailchimp campaign data and subscriber lists to Excel for analysis.',
+        content: {
+            intro: 'Mailchimp API data includes nested campaign statistics, merge fields, and subscriber segments. Our converter flattens these into clean Excel tables for marketing analysis.',
+            features: [
+                'Flatten campaign statistics and metrics',
+                'Extract subscriber merge fields',
+                'Handle segment and tag data',
+                '100% private — subscriber data stays local'
+            ]
+        },
+        faqs: [
+            { question: 'How do I export Mailchimp contacts to Excel?', answer: 'Use the Mailchimp API to export your audience as JSON, then paste it here for instant Excel conversion.' },
+            { question: 'Does this handle merge fields?', answer: 'Yes. All merge fields (FNAME, LNAME, custom fields) are automatically extracted into separate columns.' }
+        ]
+    },
+    {
+        slug: 'onedrive-json-to-excel',
+        platformName: 'OneDrive',
+        title: 'OneDrive to Excel — Export File Metadata',
+        description: 'Convert OneDrive API file listings to Excel. Catalog files, permissions, and storage usage in spreadsheets. Free and private.',
+        h1: 'OneDrive to Excel Converter',
+        subheading: 'Export OneDrive file metadata and sharing details to Excel.',
+        content: {
+            intro: 'OneDrive Graph API responses contain nested file properties, sharing permissions, and storage quotas. Our converter turns this into a sortable, filterable file catalog in Excel.',
+            features: [
+                'Catalog files with size, type, and dates',
+                'Extract sharing permissions and links',
+                'Handle nested drive item properties',
+                '100% client-side — no data uploaded'
+            ]
+        },
+        faqs: [
+            { question: 'Can I list all OneDrive files in Excel?', answer: 'Yes. Use the Microsoft Graph API to list your drive items as JSON, then convert them to Excel here.' },
+            { question: 'Is this secure for corporate OneDrive data?', answer: 'Yes. All processing is 100% client-side. Your file metadata never leaves your browser.' }
+        ]
+    },
+    {
+        slug: 'timetonic-json-to-excel',
+        platformName: 'TimeTonic',
+        title: 'TimeTonic to Excel — Export Database Tables',
+        description: 'Convert TimeTonic database exports to Excel. Flatten table structures and relationships for spreadsheet analysis. Free and private.',
+        h1: 'TimeTonic to Excel Converter',
+        subheading: 'Export TimeTonic database tables to Excel for reporting and analysis.',
+        content: {
+            intro: 'TimeTonic database exports contain nested table relationships and custom field types. Our converter flattens these into standard Excel tables for easy analysis.',
+            features: [
+                'Flatten table relationships',
+                'Handle custom field types',
+                'Preserve linked record references',
+                '100% private processing'
+            ]
+        },
+        faqs: [
+            { question: 'Can I export TimeTonic tables to Excel?', answer: 'Yes. Export your TimeTonic data as JSON, then paste it here for instant Excel conversion.' },
+            { question: 'Does this handle linked records?', answer: 'Yes. Linked records are resolved and included as readable column values.' }
+        ]
+    },
+    {
+        slug: 'google-my-business-json-to-excel',
+        platformName: 'Google Business Profile',
+        title: 'Google Business Profile to Excel — Export Reviews & Data',
+        description: 'Convert Google Business Profile API data to Excel. Analyze reviews, locations, and insights in spreadsheets. Free and private.',
+        h1: 'Google Business Profile to Excel Converter',
+        subheading: 'Export Google Business Profile reviews and location data to Excel.',
+        content: {
+            intro: 'Google Business Profile API responses include nested review data, location attributes, and performance insights. Our converter flattens this for easy multi-location analysis in Excel.',
+            features: [
+                'Flatten review data with ratings and responses',
+                'Extract location attributes and hours',
+                'Handle multi-location datasets',
+                '100% private — business data stays local'
+            ]
+        },
+        faqs: [
+            { question: 'Can I export Google reviews to Excel?', answer: 'Yes. Use the Google Business Profile API to fetch reviews as JSON, then paste them here for Excel conversion.' },
+            { question: 'Does this handle multiple locations?', answer: 'Yes. Multi-location datasets are flattened with location identifiers preserved in each row.' }
+        ]
+    },
+    {
+        slug: 'clockify-json-to-excel',
+        platformName: 'Clockify',
+        title: 'Clockify to Excel — Export Time Entries Free',
+        description: 'Convert Clockify time tracking data to Excel. Analyze time entries, projects, and team reports in spreadsheets. Free and private.',
+        h1: 'Clockify to Excel Converter',
+        subheading: 'Export Clockify time entries and reports to Excel for project analysis.',
+        content: {
+            intro: 'Clockify API exports include nested project, client, and tag information within each time entry. Our converter flattens this so you can create pivot tables and custom reports in Excel.',
+            features: [
+                'Flatten time entries with project context',
+                'Extract tag and client information',
+                'Convert durations to Excel-compatible formats',
+                '100% client-side processing'
+            ]
+        },
+        faqs: [
+            { question: 'How do I export Clockify data to Excel?', answer: 'Use the Clockify API to export time entries as JSON, then paste the data here for instant conversion.' },
+            { question: 'Does this handle team reports?', answer: 'Yes. Team member information is preserved as columns, making it easy to filter by team member in Excel.' }
+        ]
+    },
+    {
+        slug: 'calendly-json-to-excel',
+        platformName: 'Calendly',
+        title: 'Calendly to Excel — Export Bookings & Events',
+        description: 'Convert Calendly scheduling data to Excel. Analyze bookings, event types, and invitee details in spreadsheets. Free and private.',
+        h1: 'Calendly to Excel Converter',
+        subheading: 'Export Calendly bookings and event data to Excel for scheduling analysis.',
+        content: {
+            intro: 'Calendly API data includes nested event details, invitee information, and scheduling metadata. Our converter flattens this into clean rows for easy reporting and analysis.',
+            features: [
+                'Flatten booking details with invitee info',
+                'Extract event type configurations',
+                'Handle cancellation and reschedule data',
+                '100% private — scheduling data stays local'
+            ]
+        },
+        faqs: [
+            { question: 'Can I export Calendly bookings to Excel?', answer: 'Yes. Use the Calendly API to export your scheduled events as JSON, then paste them here for Excel conversion.' },
+            { question: 'Does this include invitee details?', answer: 'Yes. Invitee names, emails, and custom question responses are extracted into their own columns.' }
+        ]
+    },
+    {
+        slug: 'quickbooks-json-to-excel',
+        platformName: 'QuickBooks',
+        title: 'QuickBooks to Excel — Export Financial Data',
+        description: 'Convert QuickBooks JSON exports to Excel. Analyze invoices, expenses, and financial reports in spreadsheets. Secure and private.',
+        h1: 'QuickBooks to Excel Converter',
+        subheading: 'Export QuickBooks financial data to Excel for custom accounting reports.',
+        content: {
+            intro: 'QuickBooks API responses contain nested line items, customer references, and tax calculations. Our converter flattens these into structured Excel tables for custom financial analysis.',
+            features: [
+                'Flatten invoice line items and details',
+                'Preserve customer and vendor references',
+                'Handle tax line calculations',
+                '100% private — financial data never leaves your browser'
+            ]
+        },
+        faqs: [
+            { question: 'How do I export QuickBooks data to Excel?', answer: 'Use the QuickBooks API to export invoices or reports as JSON, then paste the data here for instant Excel conversion.' },
+            { question: 'Is my financial data secure?', answer: 'Yes. All processing happens in your browser. No financial data is ever sent to any server.' }
         ]
     }
 ];

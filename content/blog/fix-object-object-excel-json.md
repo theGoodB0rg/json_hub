@@ -1,7 +1,7 @@
 ---
-title: "How to Fix '[object Object]' in Excel When Importing JSON (2026 Guide)"
+title: "Fix [object Object] in Excel When Importing JSON"
 date: "2026-01-16"
-description: "Fix the frustrating [object Object] error when importing JSON to Excel. 3 proven methods + step-by-step tutorial. No coding required."
+description: "Fix the [object Object] error when importing JSON to Excel. 3 proven methods with step-by-step instructions. No coding required."
 keywords: ["object object excel", "json to excel error", "nested json excel", "fix json excel import", "json shows object object"]
 ---
 

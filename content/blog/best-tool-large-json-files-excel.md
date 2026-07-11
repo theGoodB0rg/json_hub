@@ -1,7 +1,7 @@
 ---
-title: "Best JSON to Excel Tool for Large Files (10MB+) - 2026 Comparison"
+title: "Best Tool for Large JSON Files to Excel (2026 Review)"
 date: "2026-01-19"
-description: "Convert large JSON files (10MB-50MB+) to Excel without memory errors. Compare tools by file size limits, speed, and reliability. Free solutions included."
+description: "Convert large JSON files (10MB-100MB+) to Excel without memory errors. Compare tools by file size limits, speed, and reliability."
 keywords: ["json to excel large files", "json to excel 10mb", "large json excel converter", "json excel memory error", "convert big json files"]
 ---
 

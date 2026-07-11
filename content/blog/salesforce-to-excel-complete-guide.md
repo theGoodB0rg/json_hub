@@ -1,7 +1,7 @@
 ---
-title: "Export Salesforce Data to Excel: Get All Fields Without Data Loader"
+title: "Salesforce to Excel — Complete Export Guide (2026)"
 date: "2026-01-16"
-description: "Complete guide to exporting Salesforce reports, contacts, and opportunities to Excel with all fields and relationships intact. No SOQL required."
+description: "Export Salesforce data to Excel — contacts, opportunities, and reports. Step-by-step guide for Data Loader, API, and no-code methods."
 keywords: ["salesforce to excel", "export salesforce data", "salesforce reports excel", "salesforce data loader alternative", "salesforce export all fields"]
 faqs:
   - question: "How do I export more than 2,000 rows from Salesforce to Excel?"

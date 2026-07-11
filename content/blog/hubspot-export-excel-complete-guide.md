@@ -1,7 +1,7 @@
 ---
-title: "HubSpot Export to Excel: Get All Contact and Deal Data"
+title: "Export HubSpot to Excel — Complete Guide (2026)"
 date: "2026-01-16"
-description: "Export HubSpot contacts, deals, and companies to Excel with all custom properties and relationships intact."
+description: "Export HubSpot contacts, deals, and companies to Excel. Preserve nested properties and associations. 3 methods compared."
 keywords: ["hubspot export to excel", "hubspot contacts export", "hubspot deals spreadsheet", "export hubspot data", "hubspot custom properties excel"]
 ---
 
