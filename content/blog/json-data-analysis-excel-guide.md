@@ -1,7 +1,7 @@
 ---
-title: "JSON Data Analysis in Excel: Complete Guide for Data Analysts (2026)"
+title: "JSON Data Analysis in Excel — Complete Guide"
 date: "2026-01-16"
-description: "Transform messy JSON API data into Excel reports without coding. Perfect for data analysts who need to analyze JSON from Salesforce, HubSpot, or Google Analytics."
+description: "Analyze JSON data in Excel step-by-step. Import, flatten, and visualize API responses and database exports. No coding required."
 keywords: ["json data analysis", "json to excel for analysts", "business intelligence json", "analyze json data", "json reporting", "data cleaning json"]
 ---
 

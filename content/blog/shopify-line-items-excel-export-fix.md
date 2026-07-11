@@ -1,7 +1,7 @@
 ---
-title: "Why Shopify Line Items Break in Excel (And How to Fix It Instantly)"
+title: "Shopify Line Items in Excel — Fix Nested Export Data"
 date: "2026-02-22"
-description: "Stop spending hours writing Python scripts to parse Shopify order exports. Here is the operational guide to flattening nested line_items directly into Excel."
+description: "Fix broken Shopify line item exports in Excel. Flatten nested order data, variants, and tax lines into clean spreadsheet rows."
 ---
 
 If you manage e-commerce operations on Shopify, at some point you've likely exported your orders via the REST API or Webhooks. But when you try to open that JSON export in Excel, it usually looks like a disaster.

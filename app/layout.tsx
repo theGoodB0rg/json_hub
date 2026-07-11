@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     alternates: {
         canonical: ROUTES.home,
     },
-    title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
-    description: 'Convert JSON to Excel instantly. 100% private (no upload), handles files up to 100MB, free to use with no signup. Ideal for data analysts who need quick, secure conversions without coding.',
+    title: 'JSON to Excel Converter — Free, Private, No Upload | JsonExport',
+    description: 'Convert JSON to Excel, CSV, or XLSX instantly. 100% free, no upload, no signup. Handles nested arrays, [object Object] errors, and 100MB+ files in your browser.',
     applicationName: 'JsonExport',
     authors: [{ name: 'JsonExport Team' }],
     keywords: ['json to excel', 'json to excel converter', 'convert json to xlsx', 'json to csv', 'data analyst tools', 'json converter for data analysts', 'no-code json converter', 'secure json converter', 'json to excel free', 'flatten nested json', 'json to excel no upload', 'json to excel offline'],
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
         apple: '/logo-512.png',
     },
     openGraph: {
-        title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
-        description: 'Convert JSON to Excel instantly. 100% private, handles large files, completely free. No coding required.',
+        title: 'JSON to Excel Converter — Free, Private, No Upload | JsonExport',
+        description: 'Convert JSON to Excel, CSV, or XLSX instantly — 100% free, no upload, no signup. Handles nested data and large files privately in your browser.',
         url: SITE_ORIGIN,
         siteName: 'JsonExport',
         locale: 'en_US',
@@ -50,8 +50,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'JsonExport | Free JSON to Excel Converter for Data Analysts',
-        description: 'Convert JSON to Excel instantly. 100% private, no coding required. Free to use.',
+        title: 'JSON to Excel Converter — Free, Private, No Upload | JsonExport',
+        description: 'Convert JSON to Excel, CSV, or XLSX instantly — free, private, no upload. Handles nested data and large files.',
         creator: '@jsonexport',
     },
     manifest: '/manifest.json',
@@ -104,7 +104,7 @@ export default function RootLayout({
                                     "price": "0",
                                     "priceCurrency": "USD"
                                 },
-                                "description": "Convert JSON to Excel, CSV, or HTML. 100% private, client-side processing. No coding required.",
+                                "description": "Free JSON to Excel, CSV, and XLSX converter. 100% private client-side processing. Handles nested arrays, [object Object] errors, and 100MB+ files. No upload, no signup.",
                                 "url": SITE_ORIGIN,
                                 "aggregateRating": {
                                     "@type": "AggregateRating",

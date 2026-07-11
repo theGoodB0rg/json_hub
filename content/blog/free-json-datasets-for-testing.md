@@ -1,7 +1,7 @@
 ---
-title: "20+ Free JSON Datasets for Testing (Shopify, Jira, Stripe, & More)"
+title: "Free JSON Datasets for Testing & Practice (2026)"
 date: "2026-01-20"
-description: "Download free, realistic JSON datasets for testing your applications. Includes complex nested structures for Shopify orders, Jira issues, MongoDB logs, and large 50MB+ files."
+description: "Download free JSON datasets for testing converters, learning APIs, and practicing data analysis. Includes complex nested examples."
 keywords: ["free json sample", "json test data", "shopify json sample", "jira json sample", "large json file download"]
 ---
 

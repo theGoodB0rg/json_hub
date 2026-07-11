@@ -65,7 +65,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.8,
-        }
+        },
+        {
+            url: toAbsoluteUrl(ROUTES.jsonToExcel),
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.9,
+        },
+        {
+            url: toAbsoluteUrl(ROUTES.jsonToCsv),
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.9,
+        },
+        {
+            url: toAbsoluteUrl(ROUTES.blog),
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.8,
+        },
     ]
 
     return [
