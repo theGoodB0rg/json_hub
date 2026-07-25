@@ -1,6 +1,6 @@
 import { AFFILIATE_PARTNERS } from '@/lib/affiliates';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Database, BarChart, Zap } from 'lucide-react';
+import { ExternalLink, Database, Table, Zap } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function AffiliateSidebar() {
@@ -19,8 +19,9 @@ export function AffiliateSidebar() {
                 {AFFILIATE_PARTNERS.map((partner) => {
                     // Icon logic (temporary until SVGs are added)
                     let Icon = Database;
-                    if (partner.id === 'monday') Icon = BarChart;
-                    if (partner.id === 'make') Icon = Zap;
+                    if (partner.id === 'zapier') Icon = Zap;
+                    if (partner.id === 'notion') Icon = Database;
+                    if (partner.id === 'coupler') Icon = Table;
 
                     return (
                         <Card key={partner.id} className="overflow-hidden border-border/50 hover:border-primary/50 transition-colors shadow-sm bg-muted/20">
