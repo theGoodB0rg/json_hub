@@ -69,6 +69,7 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <head>
                 {/* Impact.com Site Verification Meta Tags */}
+                {/* @ts-ignore */}
                 <meta name="impact-site-verification" value="fa5b3c9a-8603-4033-844b-f0528518efa6" />
                 <meta name="impact-site-verification" content="fa5b3c9a-8603-4033-844b-f0528518efa6" />
 
