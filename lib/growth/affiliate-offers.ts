@@ -35,9 +35,9 @@ export const AFFILIATE_OFFERS: Record<string, AffiliateOffer> = {
     },
     shopify: {
         title: "Shopify Line Items Flattened! 🛍️",
-        description: "Need to sync Shopify orders to Sheets or Notion without writing JSON scripts?",
-        cta: "Try Zapier",
-        link: withGrowthParams('https://zapier.com/', 'shopify'),
+        description: "Need to sync Shopify orders to Sheets or Excel automatically without writing JSON scripts?",
+        cta: "Try Coupler.io",
+        link: withGrowthParams('https://www.coupler.io/?ref=john70', 'shopify'),
     },
     mongodb: {
         title: "MongoDB Documents Flattened! 🍃",
