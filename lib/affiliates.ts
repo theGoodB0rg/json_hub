@@ -11,33 +11,34 @@ export interface AffiliatePartner {
 
 export const AFFILIATE_PARTNERS: AffiliatePartner[] = [
     {
-        id: 'airtable',
-        name: 'Airtable',
-        description: 'Turn this JSON into a real database.',
-        benefit: 'Import directly to Relational DB',
-        logoUrl: '/images/partners/airtable.svg',
-        affiliateUrl: 'https://airtable.com/invite/r/YOUR_ID', // User to replace
-        bgColor: 'bg-yellow-500/10',
-        textColor: 'text-yellow-600',
+        id: 'zapier',
+        name: 'Zapier',
+        description: 'Automate your JSON API workflows instantly.',
+        benefit: 'Sync to 5,000+ Apps',
+        logoUrl: '/images/partners/zapier.svg',
+        affiliateUrl: 'https://zapier.com/YOUR_IMPACT_ID', // Replaced Make.com with Impact.com/Payoneer compatible affiliate
+        bgColor: 'bg-orange-500/10',
+        textColor: 'text-orange-600',
     },
     {
-        id: 'monday',
-        name: 'Monday.com',
-        description: 'Visualize this data securely.',
-        benefit: 'Create Dashboards Instantly',
-        logoUrl: '/images/partners/monday.svg',
-        affiliateUrl: 'https://monday.com/ref/YOUR_ID', // User to replace
-        bgColor: 'bg-blue-500/10',
-        textColor: 'text-blue-600',
+        id: 'notion',
+        name: 'Notion',
+        description: 'Turn converted JSON into a relational database.',
+        benefit: 'Import to Smart Workspace',
+        logoUrl: '/images/partners/notion.svg',
+        affiliateUrl: 'https://notion.so/YOUR_IMPACT_ID', // Supported via Impact.com
+        bgColor: 'bg-slate-500/10',
+        textColor: 'text-slate-700 dark:text-slate-300',
     },
     {
-        id: 'make',
-        name: 'Make.com',
-        description: 'Automate this workflow.',
-        benefit: 'Skip manual uploads',
-        logoUrl: '/images/partners/make.svg',
-        affiliateUrl: 'https://make.com/en/hq/YOUR_ID', // User to replace
-        bgColor: 'bg-purple-500/10',
-        textColor: 'text-purple-600',
+        id: 'coupler',
+        name: 'Coupler.io',
+        description: 'Auto-sync live API endpoints to Sheets & Excel.',
+        benefit: 'Automate Spreadsheet Sync',
+        logoUrl: '/images/partners/coupler.svg',
+        affiliateUrl: 'https://coupler.io/YOUR_IMPACT_ID', // Supported via Impact.com / Payoneer
+        bgColor: 'bg-emerald-500/10',
+        textColor: 'text-emerald-600',
     }
 ];
+

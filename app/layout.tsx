@@ -16,6 +16,9 @@ const inter = Inter({
 
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_ORIGIN),
+    other: {
+        'impact-site-verification': 'fa5b3c9a-8603-4033-844b-f0528518efa6',
+    },
     alternates: {
         canonical: ROUTES.home,
     },
@@ -65,6 +68,10 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
+                {/* Impact.com Site Verification Meta Tags */}
+                <meta name="impact-site-verification" value="fa5b3c9a-8603-4033-844b-f0528518efa6" />
+                <meta name="impact-site-verification" content="fa5b3c9a-8603-4033-844b-f0528518efa6" />
+
                 {/* Performance: Preconnect to external origins */}
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
