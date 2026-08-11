@@ -29,7 +29,11 @@ export function TemplateSelector({ platform }: { platform?: string }) {
         ecommerce: 'E-commerce',
         analytics: 'Analytics',
         general: 'General',
-        salesforce: 'Salesforce (CRM)'
+        salesforce: 'Salesforce (CRM)',
+        jira: 'Jira (Project Mgmt)',
+        mixpanel: 'Mixpanel (Product Analytics)',
+        make: 'Make.com (Automation)',
+        amplitude: 'Amplitude (Product Analytics)'
     };
 
     const groupedTemplates = JSON_TEMPLATES.reduce((acc, template) => {

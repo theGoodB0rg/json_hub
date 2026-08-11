@@ -1,7 +1,7 @@
 ---
 title: "How to Open Large JSON Files in Excel (10MB+)"
 excerpt: "Open large JSON files in Excel without crashes. 3 methods for handling 10MB-100MB+ files — free tools, Power Query, and Python solutions."
-date: "2026-01-14"
+date: "2026-08-11"
 author: "JsonExport Team"
 category: "Performance"
 ---
@@ -99,6 +99,20 @@ JsonExport excels at:
 1. Python + Pandas is your only reliable option
 2. Use the code examples above
 3. For very large files, use streaming parsers like `ijson`
+
+## Frequently Asked Questions (Troubleshooting)
+
+### Json file excel import not working - how to fix?
+If Excel's native JSON import fails, it's usually because the file is too large (over 50MB) or the JSON schema is too complex (deeply nested arrays). To fix this, use a dedicated flattening tool like **JsonExport** to convert the file to CSV first, or use the **Python + Pandas** script above if the file is over 100MB.
+
+### Flatten nested json not working - how to fix?
+When nested JSON won't flatten, it typically means there are arrays within arrays that the parser cannot resolve into a single 2D table row. **JsonExport** uses a specialized algorithm to automatically detect and flatten arrays by repeating parent data or stringifying deeply nested objects. If writing custom code, ensure you are using `pd.json_normalize()` with the correct `record_path` and `meta` arguments.
+
+### How to json to excel for free?
+You can convert JSON to Excel for free directly in your browser using [JsonExport.com](https://jsonexport.com). It processes the data 100% locally on your machine, requires no account, and handles files up to 100MB instantly without any cost.
+
+### How to json to excel in Excel natively?
+You can import JSON natively in Excel by going to **Data > Get Data > From File > From JSON**. This opens the Power Query Editor where you can manually click through your JSON tree to expand and flatten the columns. However, note that Power Query can be very slow for files larger than 10-20MB.
 
 ## Summary
 
