@@ -746,5 +746,68 @@ export const converterPages: ConverterPageConfig[] = [
             { question: 'How do I export QuickBooks data to Excel?', answer: 'Use the QuickBooks API to export invoices or reports as JSON, then paste the data here for instant Excel conversion.' },
             { question: 'Is my financial data secure?', answer: 'Yes. All processing happens in your browser. No financial data is ever sent to any server.' }
         ]
+    },
+    {
+        slug: 'mixpanel-json-to-excel',
+        platformName: 'Mixpanel',
+        title: 'Mixpanel to Excel — Export Events & Analytics Data',
+        description: 'Convert Mixpanel JSON exports to Excel. Flatten deeply nested event properties and user profiles for custom analytics in spreadsheets.',
+        h1: 'Mixpanel to Excel Converter',
+        subheading: 'Export Mixpanel event data to Excel for custom product analytics.',
+        content: {
+            intro: 'Mixpanel raw event exports contain deeply nested JSON properties that are difficult to analyze in Excel. Our converter flattens the structure so you can build custom pivot tables and charts.',
+            features: [
+                'Flatten nested event properties automatically',
+                'Extract user profiles and cohort data',
+                'Handle array-based event properties',
+                '100% private — analytics data stays in your browser'
+            ]
+        },
+        faqs: [
+            { question: 'How do I export Mixpanel events to Excel?', answer: 'Use the Mixpanel Raw Data Export API to download your events as JSON, then paste the data here for instant Excel conversion.' },
+            { question: 'Does this handle nested JSON properties?', answer: 'Yes. Mixpanel properties objects are automatically flattened into separate, sortable columns in Excel.' }
+        ]
+    },
+    {
+        slug: 'make-com-json-to-excel',
+        platformName: 'Make.com',
+        title: 'Make.com to Excel — Export Workflow Scenarios & History',
+        description: 'Convert Make.com (Integromat) JSON exports to Excel. Flatten nested bundles, collections, and execution histories for reporting.',
+        h1: 'Make.com to Excel Converter',
+        subheading: 'Export Make.com scenarios, execution histories, and data bundles to Excel.',
+        content: {
+            intro: 'Make.com (formerly Integromat) uses a complex, highly nested JSON structure involving collections, arrays, and bundles. Our converter automatically flattens this schema into a clean spreadsheet.',
+            features: [
+                'Flatten complex Make.com bundles and collections',
+                'Extract execution history and module outputs',
+                'Handle nested array structures effortlessly',
+                '100% private — automation data stays in your browser'
+            ]
+        },
+        faqs: [
+            { question: 'Can I export Make.com execution histories?', answer: 'Yes. Copy the JSON output from any module or execution history and paste it here for instant conversion.' },
+            { question: 'How does it handle nested bundles?', answer: 'Make.com bundles are automatically flattened, with parent-child relationships preserved via dot-notation column headers.' }
+        ]
+    },
+    {
+        slug: 'amplitude-json-to-excel',
+        platformName: 'Amplitude',
+        title: 'Amplitude to Excel — Export User Analytics & Events',
+        description: 'Convert Amplitude JSON exports to Excel. Flatten user properties and event data for spreadsheet analysis.',
+        h1: 'Amplitude to Excel Converter',
+        subheading: 'Export Amplitude user events to Excel for custom analytics reporting.',
+        content: {
+            intro: 'Amplitude exports contain complex event structures and nested user properties. Our converter flattens the schema, separating user traits from event metrics so you can easily analyze behavioral data in Excel.',
+            features: [
+                'Flatten user_properties and event_properties',
+                'Extract device and location parameters',
+                'Handle nested array structures effortlessly',
+                '100% private — analytics data stays in your browser'
+            ]
+        },
+        faqs: [
+            { question: 'How do I export Amplitude events to Excel?', answer: 'Use the Amplitude Export API to download your events as JSON, then paste the data here for instant Excel conversion.' },
+            { question: 'Does this handle nested JSON properties?', answer: 'Yes. Both user_properties and event_properties objects are automatically flattened into separate, sortable columns in Excel.' }
+        ]
     }
 ];

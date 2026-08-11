@@ -2,7 +2,7 @@ export interface JSONTemplate {
     id: string;
     name: string;
     description: string;
-    category: 'api' | 'ecommerce' | 'analytics' | 'general' | 'salesforce';
+    category: 'api' | 'ecommerce' | 'analytics' | 'general' | 'salesforce' | 'jira' | 'mixpanel' | 'make' | 'amplitude';
     data: string;
 }
 
@@ -245,5 +245,204 @@ export const JSON_TEMPLATES: JSONTemplate[] = [
                 }
             ]
         }, null, 2)
+    },
+    {
+        id: 'jira-issues-export',
+        name: 'Jira Issues Export',
+        description: 'Jira REST API response with nested fields and custom fields',
+        category: 'jira',
+        data: JSON.stringify({
+            "expand": "names,schema",
+            "startAt": 0,
+            "maxResults": 50,
+            "total": 2,
+            "issues": [
+                {
+                    "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+                    "id": "10002",
+                    "key": "ENG-101",
+                    "fields": {
+                        "summary": "Implement OAuth2 login flow",
+                        "issuetype": {
+                            "id": "10000",
+                            "name": "Story",
+                            "subtask": false
+                        },
+                        "creator": {
+                            "emailAddress": "dev@company.com",
+                            "displayName": "Alice Engineer",
+                            "active": true
+                        },
+                        "created": "2024-01-15T12:00:00.000+0000",
+                        "priority": {
+                            "name": "High",
+                            "id": "2"
+                        },
+                        "customfield_10014": "SPRINT-42",
+                        "customfield_10015": 8.0,
+                        "status": {
+                            "name": "In Progress",
+                            "statusCategory": {
+                                "name": "In Progress"
+                            }
+                        }
+                    }
+                },
+                {
+                    "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+                    "id": "10003",
+                    "key": "ENG-102",
+                    "fields": {
+                        "summary": "Fix race condition in payment webhook",
+                        "issuetype": {
+                            "id": "10001",
+                            "name": "Bug",
+                            "subtask": false
+                        },
+                        "creator": {
+                            "emailAddress": "qa@company.com",
+                            "displayName": "Bob QA",
+                            "active": true
+                        },
+                        "created": "2024-01-16T14:30:00.000+0000",
+                        "priority": {
+                            "name": "Highest",
+                            "id": "1"
+                        },
+                        "customfield_10014": "SPRINT-42",
+                        "customfield_10015": 3.0,
+                        "status": {
+                            "name": "To Do",
+                            "statusCategory": {
+                                "name": "To Do"
+                            }
+                        }
+                    }
+                }
+            ]
+        }, null, 2)
+    },
+    {
+        id: 'mixpanel-events-export',
+        name: 'Mixpanel Events Export',
+        description: 'Mixpanel Raw Data Export with nested properties and distinct_id',
+        category: 'mixpanel',
+        data: JSON.stringify([
+            {
+                "event": "Viewed Page",
+                "properties": {
+                    "time": 1704974400,
+                    "distinct_id": "user_789",
+                    "$browser": "Chrome",
+                    "$os": "Mac OS X",
+                    "$city": "San Francisco",
+                    "page_name": "Pricing",
+                    "utm_source": "google"
+                }
+            },
+            {
+                "event": "Sign Up",
+                "properties": {
+                    "time": 1704975000,
+                    "distinct_id": "user_789",
+                    "$browser": "Chrome",
+                    "$os": "Mac OS X",
+                    "plan": "Premium",
+                    "referral_code": "FRIEND20"
+                }
+            }
+        ], null, 2)
+    },
+    {
+        id: 'make-com-bundles-export',
+        name: 'Make.com Scenario Execution',
+        description: 'Make.com (Integromat) module output with nested bundles and collections',
+        category: 'make',
+        data: JSON.stringify([
+            {
+                "bundle": 1,
+                "data": {
+                    "id": "req_84719A",
+                    "timestamp": "2024-02-15T08:30:00Z",
+                    "customer": {
+                        "email": "lead@example.com",
+                        "name": "Jane Doe",
+                        "company": "TechCorp"
+                    },
+                    "metadata": {
+                        "source": "webhook",
+                        "processed": true,
+                        "tags": ["high-priority", "inbound"]
+                    },
+                    "collection": {
+                        "status": 200,
+                        "response_time_ms": 142
+                    }
+                }
+            },
+            {
+                "bundle": 2,
+                "data": {
+                    "id": "req_84719B",
+                    "timestamp": "2024-02-15T08:30:05Z",
+                    "customer": {
+                        "email": "support@example.com",
+                        "name": "John Smith",
+                        "company": "SupportInc"
+                    },
+                    "metadata": {
+                        "source": "api_poll",
+                        "processed": true,
+                        "tags": ["standard"]
+                    },
+                    "collection": {
+                        "status": 201,
+                        "response_time_ms": 305
+                    }
+                }
+            }
+        ], null, 2)
+    },
+    {
+        id: 'amplitude-events-export',
+        name: 'Amplitude Events Export',
+        description: 'Amplitude User Analytics Export with user_properties and event_properties',
+        category: 'amplitude',
+        data: JSON.stringify([
+            {
+                "app": 105678,
+                "device_id": "DVC_849204A",
+                "event_time": "2024-03-01 10:15:22.100",
+                "event_type": "Purchase Complete",
+                "user_properties": {
+                    "subscription_tier": "Pro",
+                    "ltv": 450.00,
+                    "account_manager": "Sarah J."
+                },
+                "event_properties": {
+                    "item_category": "Electronics",
+                    "price": 299.99,
+                    "currency": "USD",
+                    "discount_applied": true
+                }
+            },
+            {
+                "app": 105678,
+                "device_id": "DVC_192305B",
+                "event_time": "2024-03-01 11:05:40.500",
+                "event_type": "Add to Cart",
+                "user_properties": {
+                    "subscription_tier": "Free",
+                    "ltv": 0.00
+                },
+                "event_properties": {
+                    "item_category": "Software",
+                    "price": 49.00,
+                    "currency": "USD",
+                    "discount_applied": false
+                }
+            }
+        ], null, 2)
     }
 ];
+
