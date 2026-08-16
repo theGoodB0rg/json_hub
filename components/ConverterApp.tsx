@@ -24,6 +24,7 @@ import { ConversionHistory } from "@/components/ConversionHistory/ConversionHist
 import { FAQ } from "@/components/FAQ";
 import { ShareButton } from "@/components/ShareButton/ShareButton";
 import { useEffect } from 'react';
+import AppUpdater from '@/components/AppUpdater';
 import { useAppStore } from '@/lib/store/store';
 import { BatchProcessor } from "@/components/BatchProcessor/BatchProcessor";
 import { MobileNav } from "@/components/MobileNav";
@@ -85,6 +86,9 @@ export function ConverterApp({ heading, subheading, platform }: ConverterAppProp
 
     return (
         <div className="min-h-screen flex flex-col bg-background font-sans selection:bg-primary/10">
+            {/* Desktop Auto Updater */}
+            <AppUpdater />
+
             {/* Glassmorphic Header */}
             <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
