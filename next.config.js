@@ -20,9 +20,8 @@ const nextConfig = {
         removeConsole: process.env.NODE_ENV === 'production',
     },
 
-    // Experimental: Optimize CSS and package imports
+    // Experimental: Optimize package imports
     experimental: {
-        optimizeCss: true,
         optimizePackageImports: ['react-icons', 'lucide-react', '@monaco-editor/react'],
     },
 }

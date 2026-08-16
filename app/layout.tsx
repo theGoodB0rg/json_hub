@@ -67,18 +67,14 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <head>
+            <body className={inter.className}>
                 {/* Impact.com Site Verification Meta Tags */}
-                {/* @ts-ignore */}
-                <meta name="impact-site-verification" value="fa5b3c9a-8603-4033-844b-f0528518efa6" />
                 <meta name="impact-site-verification" content="fa5b3c9a-8603-4033-844b-f0528518efa6" />
 
                 {/* Performance: Preconnect to external origins */}
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-            </head>
-            <body className={inter.className}>
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"

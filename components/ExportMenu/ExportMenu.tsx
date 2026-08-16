@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { useAppStore } from '@/lib/store/store';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,6 +10,8 @@ import { FileSpreadsheet, FileText, FileCode, FolderArchive, Download, Settings2
 import { useState } from 'react';
 import { ExportSettingsDialog } from './ExportSettingsDialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useProStore } from '@/lib/store/proStore';
+import { LicenseModal } from '../LicenseModal';
 
 export function ExportMenu() {
     const {
@@ -16,10 +20,13 @@ export function ExportMenu() {
         setSelectedFormat,
         exportData,
         exportSettings,
-        updateExportSettings
+        updateExportSettings,
+        rawInput
     } = useAppStore();
 
+    const { isPro, setIsPro } = useProStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isLicenseModalOpen, setIsLicenseModalOpen] = useState(false);
 
     const formats = [
         { value: 'csv', label: 'CSV', icon: FileText },
@@ -29,6 +36,12 @@ export function ExportMenu() {
     ] as const;
 
     const handleExportClick = () => {
+        const isOversized = rawInput.length > 10 * 1024 * 1024;
+        if (isOversized && !isPro) {
+            setIsLicenseModalOpen(true);
+            return;
+        }
+
         if (exportSettings.askForPreference) {
             setIsDialogOpen(true);
         } else {
@@ -113,7 +126,23 @@ export function ExportMenu() {
                 setIsOpen={setIsDialogOpen}
                 onConfirm={(format) => exportData(format)}
             />
+
+            <LicenseModal 
+                isOpen={isLicenseModalOpen}
+                onOpenChange={setIsLicenseModalOpen}
+                onSuccess={async (key) => {
+                    setIsLicenseModalOpen(false);
+                    setIsPro(true);
+                    try {
+                        const { load } = await import('@tauri-apps/plugin-store');
+                        const store = await load('store.bin', { autoSave: false });
+                        await store.set('gumroad_license', key);
+                        await store.save();
+                    } catch (e) {
+                        // ignore error
+                    }
+                }}
+            />
         </Card>
     );
 }
-
