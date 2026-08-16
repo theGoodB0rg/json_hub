@@ -31,6 +31,7 @@ import { SecurityBadges } from "@/components/SecurityBadges";
 import { GitHubStarBanner } from "@/components/GitHubStarBanner";
 import { ContextualAffiliateToast } from "@/components/ContextualAffiliateToast";
 import { GrowthSourceBanner } from "@/components/GrowthSourceBanner";
+import { useProStore } from "@/lib/store/proStore";
 
 interface ConverterAppProps {
     heading?: React.ReactNode;
@@ -64,6 +65,24 @@ export function ConverterApp({ heading, subheading, platform }: ConverterAppProp
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Empty dependency array - only run on mount
 
+    const { isPro, setIsPro } = useProStore();
+
+    useEffect(() => {
+        const checkLicense = async () => {
+            try {
+                const { load } = await import('@tauri-apps/plugin-store');
+                const store = await load('store.bin', { autoSave: false });
+                const license = await store.get('gumroad_license');
+                if (license) {
+                    setIsPro(true);
+                }
+            } catch (e) {
+                // Not in Tauri or error loading store
+            }
+        };
+        checkLicense();
+    }, [setIsPro]);
+
     return (
         <div className="min-h-screen flex flex-col bg-background font-sans selection:bg-primary/10">
             {/* Glassmorphic Header */}
@@ -73,6 +92,11 @@ export function ConverterApp({ heading, subheading, platform }: ConverterAppProp
                         <Image src="/icon.svg" alt="Logo" width={32} height={32} className="h-8 w-8" />
 
                         <span className="font-bold text-lg tracking-tight">JsonExport</span>
+                        {isPro && (
+                            <span className="ml-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                                PRO
+                            </span>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-4">
