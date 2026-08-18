@@ -3,10 +3,12 @@ import { getSortedPostsData } from '@/lib/blog'
 
 import { converterPages } from '@/lib/platform-data'
 import { dummyDatasets } from '@/lib/dummy-data'
+import { conversionMatrix } from '@/lib/content-matrix/matrix'
 import {
     ROUTES,
     blogPostPath,
     converterPath,
+    conversionPath,
     testDataPath,
     toAbsoluteUrl,
 } from '@/lib/routes'
@@ -23,6 +25,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     const converterEntries: MetadataRoute.Sitemap = converterPages.map((page) => ({
         url: toAbsoluteUrl(converterPath(page.slug)),
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.9,
+    }))
+
+    const matrixEntries: MetadataRoute.Sitemap = conversionMatrix.map((item) => ({
+        url: toAbsoluteUrl(conversionPath(item.slug)),
         lastModified: new Date(),
         changeFrequency: 'weekly',
         priority: 0.9,
@@ -86,6 +95,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         },
     ]
 
+
     return [
         {
             url: toAbsoluteUrl(ROUTES.home),
@@ -94,6 +104,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 1,
         },
         ...converterEntries,
+        ...matrixEntries,
         ...testDataEntries,
         ...staticPages,
         ...blogEntries,

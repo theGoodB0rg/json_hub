@@ -11,7 +11,7 @@ export default function AppUpdater() {
 
   useEffect(() => {
     // Only run in Tauri environment
-    if (typeof window !== 'undefined' && window.__TAURI_INTERNALS__) {
+    if (typeof window !== 'undefined' && ('__TAURI_INTERNALS__' in window || (window as any).__TAURI_INTERNALS__)) {
       checkForUpdates();
     }
   }, []);
