@@ -1,17 +1,16 @@
 'use client';
 
-'use client';
-
 import { useAppStore } from '@/lib/store/store';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-import { FileSpreadsheet, FileText, FileCode, FolderArchive, Download, Settings2, LayoutGrid, Layers } from 'lucide-react';
+import { FileSpreadsheet, FileText, FileCode, FolderArchive, FileJson, Download, Settings2, LayoutGrid, Layers } from 'lucide-react';
 import { useState } from 'react';
 import { ExportSettingsDialog } from './ExportSettingsDialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useProStore } from '@/lib/store/proStore';
 import { LicenseModal } from '../LicenseModal';
+import { pluginRegistry } from '@/lib/plugins/registry';
 
 export function ExportMenu() {
     const {
@@ -21,19 +20,27 @@ export function ExportMenu() {
         exportData,
         exportSettings,
         updateExportSettings,
-        rawInput
+        rawInput,
+        activePluginId,
     } = useAppStore();
 
     const { isPro, setIsPro } = useProStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLicenseModalOpen, setIsLicenseModalOpen] = useState(false);
 
-    const formats = [
+    const currentPlugin = pluginRegistry.getOrDefault(activePluginId);
+
+    const allFormats = [
         { value: 'csv', label: 'CSV', icon: FileText },
         { value: 'xlsx', label: 'Excel', icon: FileSpreadsheet },
+        { value: 'json', label: 'JSON', icon: FileJson },
         { value: 'html', label: 'HTML', icon: FileCode },
         { value: 'zip', label: 'Download All (ZIP)', icon: FolderArchive },
     ] as const;
+
+    const formats = allFormats.filter((f) =>
+        currentPlugin.uiConfig.availableExportFormats.includes(f.value as any)
+    );
 
     const handleExportClick = () => {
         const isOversized = rawInput.length > 10 * 1024 * 1024;

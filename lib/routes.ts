@@ -29,6 +29,10 @@ export function converterPath(slug: string): string {
     return `${ROUTES.converters}/${slug}`;
 }
 
+export function conversionPath(slug: string): string {
+    return `/${slug}`;
+}
+
 export function testDataPath(slug: string): string {
     return `${ROUTES.testData}/${slug}`;
 }

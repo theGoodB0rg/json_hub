@@ -5,8 +5,10 @@ import { validateAndParse } from '@/lib/parsers/smartParse';
 import { flattenJSON } from '@/lib/parsers/flattener';
 import { smartUnwrap } from '@/lib/parsers/unwrapper';
 import type { AppState, ParseError, ExportFormat } from '@/types/store.types';
+import type { OutputViewMode } from '@/types/converter.types';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { trackFunnelStep } from '@/lib/analytics';
+import { pluginRegistry } from '@/lib/plugins/registry';
 
 const initialState = {
     // Input State
@@ -21,6 +23,11 @@ const initialState = {
     schema: [] as string[],
     columnOrder: [] as string[],
     excludedColumns: [] as string[],
+
+    // Output / Plugin State
+    activePluginId: 'json-to-excel',
+    formattedOutput: '',
+    outputMode: 'table' as OutputViewMode,
 
     // UI State
     activeTab: 'input' as const,
@@ -56,6 +63,19 @@ export const useAppStore = create<AppState>()(
             devtools(
                 (set, get) => ({
                     ...initialState,
+
+                    setPluginId: (pluginId: string) => {
+                        const plugin = pluginRegistry.getOrDefault(pluginId);
+                        set({
+                            activePluginId: plugin.id,
+                            outputMode: plugin.uiConfig.outputMode,
+                            selectedFormat: plugin.uiConfig.defaultExportFormat as ExportFormat,
+                        });
+                    },
+
+                    setOutputMode: (mode: OutputViewMode) => {
+                        set({ outputMode: mode });
+                    },
 
                     // Zundo Actions (placeholder types, temporal handles logic)
                     undo: () => { },
@@ -103,8 +123,8 @@ export const useAppStore = create<AppState>()(
                                 set({
                                     flatData: payload.rows,
                                     schema: payload.schema,
-                                    columnOrder: payload.schema, // Reset order on new data
-                                    excludedColumns: [], // Reset exclusions on new data
+                                    columnOrder: payload.schema,
+                                    excludedColumns: [],
                                     isLoading: false,
                                 });
                             } else if (type === 'ERROR') {
@@ -130,44 +150,58 @@ export const useAppStore = create<AppState>()(
                         set({ sourceFilename: name });
                     },
 
-                    parseInput: () => {
-                        const { rawInput, worker } = get();
+                    parseInput: async () => {
+                        const { rawInput, worker, activePluginId } = get();
                         set({ isLoading: true });
                         trackFunnelStep('parse_initiated');
 
-                        if (worker) {
+                        const isStandardJsonPlugin = activePluginId === 'json-to-excel' || activePluginId === 'json-to-csv';
+
+                        if (worker && isStandardJsonPlugin) {
                             worker.postMessage({ type: 'PARSE', payload: rawInput });
                         } else {
-                            console.warn('Worker not ready, processing on main thread');
                             try {
-                                const result = validateAndParse(rawInput);
+                                const plugin = pluginRegistry.getOrDefault(activePluginId);
+                                const result = await plugin.parse(rawInput);
                                 if (result.success) {
-                                    set({ parsedData: result.data, isParsed: true, parseErrors: [], isLoading: false });
+                                    const parsedObj = result.data ?? result.flatData;
+                                    set({
+                                        parsedData: parsedObj,
+                                        flatData: result.flatData ?? [],
+                                        schema: result.schema ?? [],
+                                        columnOrder: result.schema ?? [],
+                                        excludedColumns: [],
+                                        formattedOutput: result.formattedOutput ?? (typeof parsedObj === 'string' ? parsedObj : JSON.stringify(parsedObj, null, 2)),
+                                        isParsed: true,
+                                        parseErrors: [],
+                                        isLoading: false,
+                                        outputMode: plugin.uiConfig.outputMode,
+                                    });
                                     trackConversionEvent('parse_success', {
-                                        source: 'main-thread',
+                                        source: 'plugin',
                                         inputBytes: rawInput.length,
                                     });
-                                    trackFunnelStep('parse_success', { source: 'main-thread' });
-                                    get().flattenData();
+                                    trackFunnelStep('parse_success', { source: 'plugin' });
                                 } else {
                                     set({
                                         parsedData: null,
                                         isParsed: false,
-                                        parseErrors: result.errors || [],
+                                        parseErrors: result.errors || [{ message: 'Parse error' }],
                                         flatData: [],
                                         schema: [],
                                         columnOrder: [],
-                                        isLoading: false
+                                        formattedOutput: '',
+                                        isLoading: false,
                                     });
                                     trackConversionEvent('parse_error', {
-                                        source: 'main-thread',
+                                        source: 'plugin',
                                         message: result.errors?.[0]?.message ?? 'Parse error',
                                     });
                                 }
                             } catch (e) {
                                 set({ isLoading: false, parseErrors: [{ message: String(e) }] });
                                 trackConversionEvent('parse_error', {
-                                    source: 'main-thread',
+                                    source: 'plugin-exception',
                                     message: String(e),
                                 });
                             }
@@ -178,7 +212,6 @@ export const useAppStore = create<AppState>()(
                         set({ isLoading: true, streamingProgress: { itemCount: 0, bytesProcessed: 0, totalBytes: file.size, percent: 0 } });
                         trackFunnelStep('parse_initiated', { method: 'streaming', fileName: file.name });
 
-                        // Create or reuse streaming worker
                         let streamingWorker = get().streamingWorker;
                         if (!streamingWorker) {
                             streamingWorker = new Worker(new URL('../workers/streaming-parser.worker.ts', import.meta.url));
@@ -221,10 +254,8 @@ export const useAppStore = create<AppState>()(
                             set({ streamingWorker });
                         }
 
-                        // Start streaming
                         streamingWorker.postMessage({ type: 'STREAM_START', payload: { totalSize: file.size } });
 
-                        // Read file in chunks
                         const reader = file.stream().getReader();
 
                         const readChunks = async () => {
@@ -284,25 +315,20 @@ export const useAppStore = create<AppState>()(
                         const { flatData, parsedData } = get();
                         if (rowIndex < 0 || rowIndex >= flatData.length) return;
 
-                        // 1. Optimistic Update of Flat Data
                         const newFlatData = [...flatData];
                         newFlatData[rowIndex] = { ...newFlatData[rowIndex], [column]: value };
                         set({ flatData: newFlatData });
 
-                        // 2. Sync with Parsed Data (Source of Truth)
-                        // We assume flatData corresponds to smartUnwrap(parsedData).data array
                         try {
                             const { smartUnwrap } = require('@/lib/parsers/unwrapper');
-                            const { data: unwrappedData, wrapper } = smartUnwrap(parsedData);
+                            const { data: unwrappedData } = smartUnwrap(parsedData);
 
                             if (Array.isArray(unwrappedData) && unwrappedData[rowIndex]) {
-                                // Update the specific nested path
                                 const setDeep = (obj: any, path: string, val: any) => {
                                     const keys = path.split('.');
                                     let current = obj;
                                     for (let i = 0; i < keys.length - 1; i++) {
                                         const k = keys[i];
-                                        // Auto-create object if missing (shouldn't happen for existing paths)
                                         if (!current[k]) current[k] = {};
                                         current = current[k];
                                     }
@@ -310,15 +336,6 @@ export const useAppStore = create<AppState>()(
                                 };
 
                                 setDeep(unwrappedData[rowIndex], column, value);
-
-                                // Re-wrap if needed (currently simple re-assignment if reference held)
-                                // If 'wrapper' exists, unwrappedData is a property of it.
-                                // smartUnwrap usually returns consistent references if it's just accessing.
-                                // simpler: just trigger a "parsedData update" but we need to structure it right.
-                                // If parsedData was { users: [...] }, unwrappedData is the array. 
-                                // Modifying it in place works if we trigger a set({ parsedData: ...Clone }) or shallow mutation + set.
-                                // For Reactivity, better to clone top level.
-
                                 set({ parsedData: Array.isArray(parsedData) ? [...unwrappedData] : { ...parsedData } });
                             }
                         } catch (e) {
@@ -331,7 +348,6 @@ export const useAppStore = create<AppState>()(
                         if (!parsedData) return;
 
                         try {
-                            // Use structuredClone if available (faster than JSON parse/stringify)
                             const newData = typeof structuredClone === 'function'
                                 ? structuredClone(parsedData)
                                 : JSON.parse(JSON.stringify(parsedData));
@@ -348,17 +364,12 @@ export const useAppStore = create<AppState>()(
                             };
 
                             setDeep(newData, path, value);
-
                             set({ parsedData: newData });
-
-                            // Re-flatten to keep Flat View in sync
                             get().flattenData();
                         } catch (e) {
                             console.error("Failed to update data", e);
                         }
                     },
-
-                    // --- New Actions ---
 
                     setColumnOrder: (order: string[]) => {
                         set({ columnOrder: order });
@@ -386,17 +397,10 @@ export const useAppStore = create<AppState>()(
 
                         const { schema, columnOrder, excludedColumns, flatData } = get();
 
-                        // Update schema
                         const newSchema = schema.map(col => col === oldName ? newName : col);
-
-                        // Update columnOrder
                         const newColumnOrder = columnOrder.map(col => col === oldName ? newName : col);
-
-                        // Update excludedColumns if the renamed column was excluded
                         const newExcludedColumns = excludedColumns.map(col => col === oldName ? newName : col);
 
-                        // Optimization: Only remap data if column exists in first row
-                        // This avoids O(rows) operation when renaming columns that don't exist
                         const needsDataRemap = flatData.length > 0 && oldName in flatData[0];
 
                         if (!needsDataRemap) {
@@ -408,7 +412,6 @@ export const useAppStore = create<AppState>()(
                             return;
                         }
 
-                        // Update all flatData rows - rename the key
                         const newFlatData = flatData.map(row => {
                             if (!(oldName in row)) return row;
                             const newRow = { ...row };
@@ -424,8 +427,6 @@ export const useAppStore = create<AppState>()(
                             flatData: newFlatData,
                         });
                     },
-
-                    // -------------------
 
                     exportData: async (format: ExportFormat) => {
                         const { parsedData, exportSettings, rawInput, sourceFilename, columnOrder, excludedColumns, flatData } = get();
@@ -457,19 +458,13 @@ export const useAppStore = create<AppState>()(
                                 rows = result.rows;
                                 schema = result.schema;
                             } else {
-                                // Important: Use current flatData to respect row reordering and edits!
-                                // We trust flatData as the source of truth for the export now
                                 rows = flatData;
                                 schema = get().schema;
                             }
 
-                            // --- APPLY COLUMN ORDER & EXCLUSIONS ---
-                            // Filter schema
                             let effectiveSchema = columnOrder.length > 0 ? columnOrder : schema;
                             effectiveSchema = effectiveSchema.filter((col: string) => !excludedColumns.includes(col));
 
-                            // Note: `flatData` rows are objects, so reordering schema works by just passing the ordered list of keys to the exporter
-                            // However, we must ensure that any NEW columns (if schema grew) are included if not in columnOrder yet
                             const missingColumns = schema.filter((col: string) => !effectiveSchema.includes(col) && !excludedColumns.includes(col));
                             effectiveSchema = [...effectiveSchema, ...missingColumns];
 
@@ -506,15 +501,24 @@ export const useAppStore = create<AppState>()(
                                 }
                                 case 'zip': {
                                     const { downloadZip } = await import('@/lib/converters/zipExporter');
-                                    // Zip might need updates to respect order? leaving as is for now
                                     await downloadZip(rows, schema, parsedData, `json-hub-${fileName}.zip`);
+                                    break;
+                                }
+                                case 'json': {
+                                    const jsonStr = get().formattedOutput || JSON.stringify(parsedData, null, 2);
+                                    const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.download = `${fileName}.json`;
+                                    link.click();
+                                    URL.revokeObjectURL(url);
                                     break;
                                 }
                                 default:
                                     throw new Error(`Unsupported format: ${format}`);
                             }
 
-                            // Save to history... (omitted for brevity, assume success)
                             try {
                                 const { conversionHistory } = await import('@/lib/storage/conversionHistory');
                                 const exportMode = exportSettings.structure === 'nested' ? 'relational' :

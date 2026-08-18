@@ -13,6 +13,7 @@ import { LargeFileUpsell } from '@/components/LargeFileUpsell/LargeFileUpsell';
 import { DiagnosticOverlay } from './DiagnosticOverlay';
 import { cn } from "@/lib/utils";
 import { Progress } from '@/components/ui/progress';
+import { pluginRegistry } from '@/lib/plugins/registry';
 
 // Realistic file size limits based on testing (January 2026)
 const RECOMMENDED_MAX_SIZE = 10 * 1024 * 1024; // 10MB - works instantly
@@ -30,8 +31,11 @@ export function JsonEditor({ platform }: { platform?: string }) {
         setSourceFilename,
         isLoading,
         streamingProgress,
-        sourceFilename
+        sourceFilename,
+        activePluginId,
     } = useAppStore();
+
+    const currentPlugin = pluginRegistry.getOrDefault(activePluginId);
 
     const [isMaximized, setIsMaximized] = useState(false);
     const [fileSize, setFileSize] = useState<number>(0);
@@ -160,6 +164,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
             setRawInput(text);
             setSourceFilename('clipboard_data');
             setFileSize(text.length);
+
         } catch (err) {
             console.error('Failed to read clipboard', err);
             alert('Could not access clipboard. Please paste manually (Ctrl+V or Cmd+V).');
@@ -189,13 +194,15 @@ export function JsonEditor({ platform }: { platform?: string }) {
                 isMaximized ? "fixed inset-0 z-[100] h-[100dvh] w-screen rounded-none bg-background" : "h-full"
             )}>
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-sm font-semibold text-muted-foreground hidden sm:block">JSON Input</h2>
+                    <h2 className="text-sm font-semibold text-muted-foreground hidden sm:block">
+                        {currentPlugin.sourceFormat.toUpperCase()} Input
+                    </h2>
                     <div className="flex gap-2 w-full sm:w-auto justify-end">
                         <TemplateSelector platform={platform} />
                         <input
                             ref={fileInputRef}
                             type="file"
-                            accept=".json,.txt"
+                            accept={currentPlugin.uiConfig.dropzoneAcceptedExtensions.join(',')}
                             onChange={handleFileUpload}
                             className="hidden"
                             id="file-upload"
@@ -214,7 +221,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Upload File</p>
+                                <p>{currentPlugin.uiConfig.dropzoneText}</p>
                             </TooltipContent>
                         </Tooltip>
 
@@ -312,6 +319,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                             parseErrors={parseErrors}
                             isLargeFile={false} // Handled by LargeFileViewer now
                             fileSize={fileSize}
+                            placeholder={currentPlugin.uiConfig.inputPlaceholder}
                             readOnly={isLoading}
                         />
                     )}
@@ -330,7 +338,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-50">
                             <div className="flex flex-col items-center gap-3 p-6 bg-background border rounded-lg shadow-lg">
                                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                                <p className="text-sm font-medium">Processing JSON...</p>
+                                <p className="text-sm font-medium">Processing {currentPlugin.sourceFormat.toUpperCase()}...</p>
                                 <p className="text-xs text-muted-foreground">This may take a moment for large files</p>
                             </div>
                         </div>
@@ -341,7 +349,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                 {isLargeInput && !isParsed && !isLoading && (
                     <div className="mt-4">
                         <Button onClick={handleManualParse} className="w-full">
-                            Parse JSON ({(rawInput.length / (1024 * 1024)).toFixed(1)}MB)
+                            Parse {currentPlugin.sourceFormat.toUpperCase()} ({(rawInput.length / (1024 * 1024)).toFixed(1)}MB)
                         </Button>
                     </div>
                 )}
@@ -364,7 +372,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                 {isParsed && (
                     <div className="mt-4 p-3 bg-green-500/10 border border-green-500 rounded-md" data-testid="parse-success-banner">
                         <p className="text-sm font-semibold text-green-700 dark:text-green-400">
-                            ✓ JSON parsed and flattened successfully
+                            ✓ {currentPlugin.name} processed successfully
                         </p>
                     </div>
                 )}

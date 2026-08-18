@@ -64,7 +64,25 @@ function routeExists(pathname) {
     const routeDir = path.join(appBase, ...segments);
     const routeFiles = ['page.tsx', 'page.ts', 'route.ts', 'route.js'];
 
-    return routeFiles.some((fileName) => fs.existsSync(path.join(routeDir, fileName)));
+    if (routeFiles.some((fileName) => fs.existsSync(path.join(routeDir, fileName)))) {
+        return true;
+    }
+
+    // Dynamic routes support
+    if (segments.length === 1 && fs.existsSync(path.join(appBase, '[conversion]', 'page.tsx'))) {
+        return true;
+    }
+    if (segments.length === 2 && segments[0] === 'converters' && fs.existsSync(path.join(appBase, 'converters', '[slug]', 'page.tsx'))) {
+        return true;
+    }
+    if (segments.length === 2 && segments[0] === 'blog' && fs.existsSync(path.join(appBase, 'blog', '[slug]', 'page.tsx'))) {
+        return true;
+    }
+    if (segments.length === 2 && segments[0] === 'test-data' && fs.existsSync(path.join(appBase, 'test-data', '[slug]', 'page.tsx'))) {
+        return true;
+    }
+
+    return false;
 }
 
 function collectConverterSlugs() {

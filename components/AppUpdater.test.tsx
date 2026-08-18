@@ -15,6 +15,7 @@ jest.mock('@tauri-apps/plugin-process', () => ({
 describe('AppUpdater Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (window as any).__TAURI_INTERNALS__ = true;
   });
 
   it('renders nothing and does not crash when no update is available', async () => {

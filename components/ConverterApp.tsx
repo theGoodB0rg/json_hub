@@ -33,38 +33,52 @@ import { GitHubStarBanner } from "@/components/GitHubStarBanner";
 import { ContextualAffiliateToast } from "@/components/ContextualAffiliateToast";
 import { GrowthSourceBanner } from "@/components/GrowthSourceBanner";
 import { useProStore } from "@/lib/store/proStore";
+import { pluginRegistry } from "@/lib/plugins/registry";
+import { CodeOutputViewer } from "@/components/CodeOutput/CodeOutputViewer";
 
 interface ConverterAppProps {
     heading?: React.ReactNode;
     subheading?: string;
     platform?: string;
+    pluginId?: string;
+    initialSample?: string;
 }
 
-export function ConverterApp({ heading, subheading, platform }: ConverterAppProps) {
+export function ConverterApp({ heading, subheading, platform, pluginId, initialSample }: ConverterAppProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
-    const { setRawInput, parseInput, initWorker } = useAppStore();
+    const { setRawInput, parseInput, initWorker, activePluginId, setPluginId, outputMode } = useAppStore();
+    const currentPlugin = pluginRegistry.getOrDefault(pluginId || activePluginId);
 
     // Initialize worker on mount
     useEffect(() => {
         initWorker();
     }, [initWorker]);
 
-    // Auto-load JSON from shareable URL on mount
+    // Initialize plugin when pluginId prop is provided
     useEffect(() => {
-        const loadSharedData = async () => {
+        if (pluginId) {
+            setPluginId(pluginId);
+        }
+    }, [pluginId, setPluginId]);
+
+    // Auto-load sample or shareable data on mount
+    useEffect(() => {
+        const loadInitialData = async () => {
             const { loadFromShareableLink } = await import('@/lib/utils/shareLink');
             const sharedData = loadFromShareableLink();
 
             if (sharedData) {
                 setRawInput(sharedData);
-                // Auto-parse after a short delay to ensure UI is ready
+                setTimeout(() => parseInput(), 100);
+            } else if (initialSample) {
+                setRawInput(initialSample);
                 setTimeout(() => parseInput(), 100);
             }
         };
 
-        loadSharedData();
+        loadInitialData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Empty dependency array - only run on mount
+    }, [initialSample]);
 
     const { isPro, setIsPro } = useProStore();
 
@@ -191,7 +205,9 @@ export function ConverterApp({ heading, subheading, platform }: ConverterAppProp
                                         <ResizablePanel defaultSize={40} minSize={30} className="bg-background/50">
                                             <div className="h-full p-0 flex flex-col">
                                                 <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
-                                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Input JSON</span>
+                                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        Input {currentPlugin.sourceFormat.toUpperCase()}
+                                                    </span>
                                                     <span className="text-[10px] text-muted-foreground">Auto-detects format</span>
                                                 </div>
                                                 <div className="flex-1 overflow-hidden relative group">
@@ -205,14 +221,20 @@ export function ConverterApp({ heading, subheading, platform }: ConverterAppProp
                                         <ResizablePanel defaultSize={60} minSize={30} className="bg-background">
                                             <div className="h-full flex flex-col">
                                                 <div className="h-10 border-b border-border/50 px-4 flex items-center justify-between bg-muted/20">
-                                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data Grid Preview</span>
+                                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                                        {outputMode === 'code' ? 'JSON Code Preview' : 'Data Grid Preview'}
+                                                    </span>
                                                     <div className="flex items-center gap-2">
                                                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                                                         <span className="text-[10px] text-muted-foreground">Live App</span>
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 overflow-hidden p-4">
-                                                    <DataGrid platform={platform} />
+                                                    {outputMode === 'code' ? (
+                                                        <CodeOutputViewer />
+                                                    ) : (
+                                                        <DataGrid platform={platform} />
+                                                    )}
                                                 </div>
                                                 <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
                                                     <ExportMenu />
@@ -243,7 +265,11 @@ export function ConverterApp({ heading, subheading, platform }: ConverterAppProp
 
                                         <TabsContent value="preview" className="flex-1 mt-0 h-full flex flex-col overflow-hidden data-[state=inactive]:hidden">
                                             <div className="flex-1 overflow-hidden p-2 h-full">
-                                                <DataGrid platform={platform} />
+                                                {outputMode === 'code' ? (
+                                                    <CodeOutputViewer />
+                                                ) : (
+                                                    <DataGrid platform={platform} />
+                                                )}
                                             </div>
                                             <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
                                                 <ExportMenu />

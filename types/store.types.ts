@@ -1,3 +1,5 @@
+import type { OutputViewMode } from './converter.types';
+
 export interface StreamingProgress {
     itemCount: number;
     bytesProcessed: number;
@@ -22,9 +24,14 @@ export interface AppState {
     excludedColumns: string[]; // List of hidden/deleted columns
 
 
+    // Output / Plugin State
+    activePluginId: string;
+    formattedOutput: string;
+    outputMode: OutputViewMode;
+
     // UI State
     activeTab: 'input' | 'preview' | 'export';
-    selectedFormat: 'csv' | 'xlsx' | 'docx' | 'html' | 'zip';
+    selectedFormat: 'csv' | 'xlsx' | 'docx' | 'html' | 'zip' | 'json';
     viewMode: 'flat' | 'nested' | 'table';
     isLoading: boolean;
     downloadProgress: number;
@@ -45,8 +52,10 @@ export interface AppState {
     worker: Worker | null;
     streamingWorker: Worker | null;
 
-    // Actions
+    // Store Actions
     initWorker: () => void;
+    setPluginId: (pluginId: string) => void;
+    setOutputMode: (mode: OutputViewMode) => void;
     setRawInput: (input: string) => void;
     setSourceFilename: (name: string | null) => void;
     parseInput: () => void;
@@ -91,6 +100,6 @@ export interface ParseError {
     column?: number;
 }
 
-export type ExportFormat = 'csv' | 'xlsx' | 'docx' | 'html' | 'zip';
+export type ExportFormat = 'csv' | 'xlsx' | 'docx' | 'html' | 'zip' | 'json';
 
 export type ViewMode = 'flat' | 'nested' | 'table';
