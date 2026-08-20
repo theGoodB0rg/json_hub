@@ -6,7 +6,7 @@ import { ConverterApp } from '@/components/ConverterApp';
 import { FAQSchema } from '@/components/FAQSchema';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { buildPageMetadata } from '@/lib/seo';
-import { SITE_ORIGIN, toAbsoluteUrl } from '@/lib/routes';
+import { ROUTES, SITE_ORIGIN, toAbsoluteUrl } from '@/lib/routes';
 import { CheckCircle2, Shield, Zap, Sparkles, ArrowRight } from 'lucide-react';
 
 interface Props {
@@ -40,6 +40,7 @@ export default function ConversionPage({ params }: Props) {
 
     const breadcrumbItems = [
         { label: 'Home', href: '/' },
+        { label: 'Converters', href: ROUTES.converters },
         { label: item.h1, href: `/${item.slug}`, active: true },
     ];
 

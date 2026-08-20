@@ -34,6 +34,7 @@ import { ContextualAffiliateToast } from "@/components/ContextualAffiliateToast"
 import { GrowthSourceBanner } from "@/components/GrowthSourceBanner";
 import { useProStore } from "@/lib/store/proStore";
 import { pluginRegistry } from "@/lib/plugins/registry";
+import { ConvertersNavDropdown } from "@/components/ConvertersNavDropdown";
 import { CodeOutputViewer } from "@/components/CodeOutput/CodeOutputViewer";
 
 interface ConverterAppProps {
@@ -126,6 +127,7 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
 
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center gap-4">
+                            <ConvertersNavDropdown />
                             <ConversionHistory />
                             <a href="/blog" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                                 Blog

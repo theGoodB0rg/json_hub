@@ -88,6 +88,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.9,
         },
         {
+            url: toAbsoluteUrl(ROUTES.converters),
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.95,
+        },
+        {
             url: toAbsoluteUrl(ROUTES.blog),
             lastModified: new Date(),
             changeFrequency: 'daily',

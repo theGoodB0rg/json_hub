@@ -20,6 +20,8 @@ const RECOMMENDED_MAX_SIZE = 10 * 1024 * 1024; // 10MB - works instantly
 const WARNING_SIZE = 50 * 1024 * 1024; // 50MB - tested, works smoothly
 const HARD_MAX_SIZE = 100 * 1024 * 1024; // 100MB - show upsell (device-dependent above this)
 
+import { FormatSwitcher } from '@/components/FormatSwitcher/FormatSwitcher';
+
 export function JsonEditor({ platform }: { platform?: string }) {
     const {
         rawInput,
@@ -193,11 +195,11 @@ export function JsonEditor({ platform }: { platform?: string }) {
                 "flex flex-col p-4 transition-all duration-300",
                 isMaximized ? "fixed inset-0 z-[100] h-[100dvh] w-screen rounded-none bg-background" : "h-full"
             )}>
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-sm font-semibold text-muted-foreground hidden sm:block">
-                        {currentPlugin.sourceFormat.toUpperCase()} Input
-                    </h2>
-                    <div className="flex gap-2 w-full sm:w-auto justify-end">
+                <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
+                    <div className="flex items-center gap-2">
+                        <FormatSwitcher />
+                    </div>
+                    <div className="flex gap-2 w-full sm:w-auto justify-end items-center">
                         <TemplateSelector platform={platform} />
                         <input
                             ref={fileInputRef}
