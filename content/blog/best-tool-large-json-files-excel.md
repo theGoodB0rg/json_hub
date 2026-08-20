@@ -420,17 +420,11 @@ with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
 
 ## Conclusion: Choose the Right Tool for Your File Size
 
-**For everyday files (under 1 MB):**  
-→ **Use JsonExport** – instant, private, no coding required
-
-**For everyday files (under 50 MB):**  
-→ **Use JsonExport** – instant, private, no coding required. Handles up to 100MB directly in browser.
+**For everyday & medium files (under 50 MB):**  
+→ **Use JsonExport** – instant, 100% private, no coding required. Handles up to 100MB directly in your browser.
 
 **For massive files (100 MB+):**  
-→ **Use Python + Pandas** – verified solution for massive datasets.
-
-**For large files (20 MB+):**  
-→ **Use Python + Pandas** – the only reliable solution
+→ **Use Python + Pandas** – dedicated streaming & chunked processing for enterprise datasets.
 
 **Never use:**  
 ❌ Online upload-based converters (unreliable, slow, privacy risk)
@@ -439,11 +433,11 @@ with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
 
 ### Honest Recommendation by File Size
 
-- **< 50 MB:** JsonExport (instant, no setup)
-- **50-100 MB:** JsonExport (device-dependent) or Python
+- **< 50 MB:** JsonExport (instant, no setup, client-side private)
+- **50-100 MB:** JsonExport (in-browser / desktop) or Python
 - **100 MB+:** Python with chunked processing (required)
 
-**JsonExport handles files up to 100MB – that's more than most data analysts will ever need.**
+**JsonExport handles files up to 100MB in browser – that's more than enough for everyday data analyst workflows.**
 
 [Try JsonExport for Quick Conversions](https://jsonexport.com)
 
