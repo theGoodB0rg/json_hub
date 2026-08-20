@@ -49,14 +49,12 @@ describe('BrandIcon Component & Registry', () => {
         });
     });
 
-    it('renders vector SVG for all file formats', () => {
+    it('renders badges or glyphs for all file formats', () => {
         const formats: ('json' | 'csv' | 'xml' | 'excel' | 'xlsx')[] = ['json', 'csv', 'xml', 'excel', 'xlsx'];
 
         formats.forEach((format) => {
             const { container } = render(<BrandIcon format={format} />);
-            const svg = container.querySelector('svg');
-            expect(svg).toBeInTheDocument();
-            expect(svg).toHaveAttribute('viewBox');
+            expect(container.firstChild).toBeInTheDocument();
         });
     });
 

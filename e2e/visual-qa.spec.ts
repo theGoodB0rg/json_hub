@@ -44,6 +44,17 @@ test.describe('Visual QA & UI Inspection', () => {
         });
     });
 
+    test('Inspect Platform Converter Page (Shopify)', async ({ page }) => {
+        await page.goto('/converters/shopify-json-to-csv');
+        await page.waitForLoadState('networkidle');
+
+        // Screenshot: Shopify Converter Header & Hero
+        await page.screenshot({
+            path: path.join(ARTIFACT_DIR, 'qa_shopify_page.png'),
+            fullPage: true,
+        });
+    });
+
     test('Inspect Homepage & Header Dropdown', async ({ page }) => {
         await page.goto('/');
         await page.waitForLoadState('networkidle');
