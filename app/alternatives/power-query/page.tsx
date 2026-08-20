@@ -110,7 +110,7 @@ export default function PowerQueryAlternativePage() {
                                 </tr>
                                 <tr className="border-b border-border bg-muted/30">
                                     <td className="p-4 flex items-center gap-2">
-                                        <Code className="w-4 h-4" /> Coding Required
+                                        <Code className="w-4 h-4" /> No Coding Required
                                     </td>
                                     <td className="p-4 text-center"><Check className="w-5 h-5 mx-auto text-green-500" /></td>
                                     <td className="p-4 text-center"><X className="w-5 h-5 mx-auto text-red-500" /></td>

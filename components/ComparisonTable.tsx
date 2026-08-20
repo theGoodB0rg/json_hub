@@ -23,8 +23,8 @@ const comparisonData: ComparisonItem[] = [
         tool: "JsonExport",
         codingRequired: false,
         privacy: "Excellent",
-        fileSizeLimit: "Up to 1MB",
-        cost: "Free to Use",
+        fileSizeLimit: "Up to 100MB",
+        cost: "Free (Web) / Pro",
         learningCurve: "Easy",
         highlight: true,
     },
@@ -32,7 +32,7 @@ const comparisonData: ComparisonItem[] = [
         tool: "Power Query (Excel)",
         codingRequired: true,
         privacy: "Good",
-        fileSizeLimit: "Varies",
+        fileSizeLimit: "Varies (RAM)",
         cost: "Included with Excel",
         learningCurve: "Hard",
     },
@@ -48,8 +48,8 @@ const comparisonData: ComparisonItem[] = [
         tool: "Online Converters",
         codingRequired: false,
         privacy: "Poor",
-        fileSizeLimit: "5-10MB",
-        cost: "Free/Paid",
+        fileSizeLimit: "5-10MB (Server limit)",
+        cost: "Free / Paid",
         learningCurve: "Easy",
     },
 ];
@@ -76,8 +76,8 @@ export function ComparisonTable() {
                         <th className="p-4 font-semibold text-center">
                             <div className="flex items-center justify-center gap-2">
                                 <Code className="w-4 h-4" />
-                                <span className="hidden sm:inline">Coding Required</span>
-                                <span className="sm:hidden">Code</span>
+                                <span className="hidden sm:inline">No Coding Required</span>
+                                <span className="sm:hidden">No Code</span>
                             </div>
                         </th>
                         <th className="p-4 font-semibold text-center">
@@ -128,10 +128,10 @@ export function ComparisonTable() {
                                 </div>
                             </td>
                             <td className="p-4 text-center">
-                                {item.codingRequired ? (
-                                    <X className="w-5 h-5 mx-auto text-red-500 dark:text-red-400" />
-                                ) : (
+                                {!item.codingRequired ? (
                                     <Check className="w-5 h-5 mx-auto text-green-600 dark:text-green-400" />
+                                ) : (
+                                    <X className="w-5 h-5 mx-auto text-red-500 dark:text-red-400" />
                                 )}
                             </td>
                             <td className={`p-4 text-center font-medium ${privacyColors[item.privacy]}`}>
@@ -155,10 +155,10 @@ export function ComparisonTable() {
             <div className="mt-4 p-4 bg-muted/30 rounded-lg text-xs sm:text-sm space-y-2">
                 <p className="font-semibold">Why JsonExport?</p>
                 <ul className="space-y-1 list-disc list-inside text-muted-foreground">
-                    <li><strong>No upload:</strong> Your data never leaves your browser (100% client-side)</li>
-                    <li><strong>No upload needed:</strong> Your data never leaves your browser</li>
-                    <li><strong>No coding:</strong> Simple drag-and-drop interface</li>
-                    <li><strong>No cost:</strong> Free to use, no signup or premium tiers</li>
+                    <li><strong>100% Client-side privacy:</strong> Your data never leaves your browser — zero server uploads</li>
+                    <li><strong>Handles heavy files:</strong> Converts up to 100MB directly in your browser memory without server timeouts</li>
+                    <li><strong>Zero coding required:</strong> Visual interface with auto-unescaping and smart nesting detection</li>
+                    <li><strong>Free web app:</strong> Convert instantly with no signup; optional Pro desktop app for offline power users</li>
                 </ul>
             </div>
         </div>
