@@ -213,9 +213,19 @@ export function BrandIcon({
         const fmt = format.toLowerCase();
         if (fmt === 'json') {
             return (
-                <span className={cn("inline-flex items-center justify-center font-mono font-bold text-[11px] rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 px-1 py-0.5 border border-amber-500/20", className)}>
-                    {'{ }'}
-                </span>
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={cn("text-amber-500", className)}
+                    style={size ? { width: size, height: size } : undefined}
+                >
+                    <path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1" />
+                    <path d="M16 21h1a2 2 0 0 0 2-2v-5a2 2 0 0 1 2-2 2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1" />
+                </svg>
             );
         }
         if (fmt === 'csv' || fmt === 'tsv') {
@@ -234,15 +244,25 @@ export function BrandIcon({
                     <polyline points="14 2 14 8 20 8" />
                     <line x1="8" y1="13" x2="16" y2="13" />
                     <line x1="8" y1="17" x2="16" y2="17" />
-                    <line x1="10" y1="9" x2="10" y2="9" />
                 </svg>
             );
         }
         if (fmt === 'xml' || fmt === 'html') {
             return (
-                <span className={cn("inline-flex items-center justify-center font-mono font-bold text-[10px] rounded bg-orange-500/10 text-orange-600 dark:text-orange-400 px-1 py-0.5 border border-orange-500/20", className)}>
-                    {'</>'}
-                </span>
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={cn("text-orange-500", className)}
+                    style={size ? { width: size, height: size } : undefined}
+                >
+                    <polyline points="16 18 22 12 16 6" />
+                    <polyline points="8 6 2 12 8 18" />
+                    <line x1="14" y1="4" x2="10" y2="20" />
+                </svg>
             );
         }
         if (fmt === 'excel' || fmt === 'xlsx') {
