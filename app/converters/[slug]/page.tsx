@@ -13,7 +13,7 @@ import { PlatformIcon } from '@/components/converters/PlatformIcon';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { generateSoftwareApplicationSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema-generator';
 import { buildPageMetadata } from '@/lib/seo';
-import { ROUTES, converterPath } from '@/lib/routes';
+import { ROUTES, converterPath, toAbsoluteUrl } from '@/lib/routes';
 
 interface Props {
     params: {
@@ -51,12 +51,13 @@ export default function ConverterPage({ params }: Props) {
     const softwareSchema = generateSoftwareApplicationSchema(pageConfig);
     const howToSchema = generateHowToSchema(pageConfig);
     const breadcrumbSchema = generateBreadcrumbSchema([
-        { name: "Converters", item: "/#converters" }, // Anchor to home converters section or could be a dedicated page
-        { name: `${pageConfig.platformName} to Excel`, item: converterPath(pageConfig.slug) }
+        { name: "Converters", item: toAbsoluteUrl(ROUTES.converters) },
+        { name: `${pageConfig.platformName} to Excel`, item: toAbsoluteUrl(converterPath(pageConfig.slug)) }
     ]);
 
     const breadcrumbItems = [
-        { label: "Converters", href: "/#converters" },
+        { label: "Home", href: ROUTES.home },
+        { label: "Converters", href: ROUTES.converters },
         { label: `${pageConfig.platformName} to Excel`, href: converterPath(pageConfig.slug), active: true }
     ];
 

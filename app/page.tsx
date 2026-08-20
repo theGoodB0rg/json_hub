@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES, converterPath } from '@/lib/routes';
+import { BrandIcon } from '@/components/ui/BrandIcon';
 
 export const metadata: Metadata = buildPageMetadata({
     title: 'JSON to Excel Converter Online — Free, Private, No Upload | JsonExport',
@@ -35,20 +36,46 @@ export default function Home() {
 
             {/* Popular Converters Links - SEO Hub */}
             <section className="container mx-auto px-4 py-12 border-t border-border/40">
-                <h2 className="text-2xl font-bold mb-6">Popular Conversions</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {converterPages.map((page) => (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 className="text-2xl font-bold">Popular Converters &amp; Presets</h2>
+                        <p className="text-muted-foreground text-sm">Instant, zero-upload data converters for top SaaS tools and file formats</p>
+                    </div>
+                    <Link
+                        href={ROUTES.converters}
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+                    >
+                        Browse all 35+ converters &rarr;
+                    </Link>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {converterPages.slice(0, 9).map((page) => (
                         <Link
                             key={page.slug}
                             href={converterPath(page.slug)}
-                            className="group block p-4 rounded-lg border border-border/40 bg-card hover:border-primary/50 hover:bg-muted/30 transition-all"
+                            className="group block p-4 rounded-xl border border-border/40 bg-card hover:border-primary/50 hover:bg-muted/30 transition-all hover:shadow-sm"
                         >
-                            <h3 className="font-semibold text-primary group-hover:underline mb-2">{page.h1}</h3>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                                {page.description}
-                            </p>
+                            <div className="flex items-start gap-3">
+                                <BrandIcon platform={page.platformName} className="w-8 h-8 shrink-0 mt-0.5" />
+                                <div className="space-y-1 min-w-0">
+                                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors text-sm truncate">
+                                        {page.h1}
+                                    </h3>
+                                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                                        {page.description}
+                                    </p>
+                                </div>
+                            </div>
                         </Link>
                     ))}
+                </div>
+                <div className="mt-8 text-center">
+                    <Link
+                        href={ROUTES.converters}
+                        className="inline-flex items-center justify-center rounded-lg bg-secondary/80 hover:bg-secondary text-secondary-foreground px-6 py-2.5 text-sm font-medium transition-colors border border-border/50 shadow-sm"
+                    >
+                        Explore all 35+ formats &amp; platform integrations &rarr;
+                    </Link>
                 </div>
             </section>
 

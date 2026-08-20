@@ -1,42 +1,47 @@
-
-import { converterPages, ConverterPageConfig } from "@/lib/platform-data";
-import Link from "next/link";
-import { Card } from "@/components/ui/card";
-import { PlatformIcon } from '@/components/converters/PlatformIcon';
+import React from 'react';
+import Link from 'next/link';
+import { Card } from '@/components/ui/card';
+import { BrandIcon } from '@/components/ui/BrandIcon';
+import { getRelatedConverters } from '@/lib/converters/catalog';
+import { ArrowRight } from 'lucide-react';
+import { ROUTES } from '@/lib/routes';
 
 interface Props {
     currentSlug: string;
 }
 
 export function RelatedTools({ currentSlug }: Props) {
-    // Deterministic shuffle based on the current slug
-    // This prevents hydration mismatches by ensuring the server and client
-    // always generate the same list for a given page.
-    const seed = currentSlug.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-
-    const related = converterPages
-        .filter(p => p.slug !== currentSlug)
-        .sort((a, b) => {
-            // Simple pseudo-random sort stable for the same seed
-            const hashA = (a.slug.length + seed) % 13;
-            const hashB = (b.slug.length + seed) % 13;
-            return hashA - hashB;
-        })
-        .slice(0, 6);
+    const related = getRelatedConverters(currentSlug, 6);
 
     return (
-        <section className="mb-16 pt-8 border-t">
-            <h3 className="text-2xl font-bold mb-6">More Converters</h3>
-            <div className="grid md:grid-cols-3 gap-6">
+        <section className="mb-16 pt-10 border-t border-border/40 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h3 className="text-2xl font-bold tracking-tight">Related Data Converters</h3>
+                    <p className="text-sm text-muted-foreground">More format and platform converters matching your workflow</p>
+                </div>
+                <Link
+                    href={ROUTES.converters}
+                    className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1 self-start sm:self-auto"
+                >
+                    View all 35+ converters &rarr;
+                </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {related.map((tool) => (
-                    <Link key={tool.slug} href={`/converters/${tool.slug}`} className="block group">
-                        <Card className="p-4 h-full hover:border-primary/50 transition-colors flex items-center gap-4">
-                            <PlatformIcon platform={tool.platformName} className="w-8 h-8 opacity-80 group-hover:opacity-100 transition-opacity" />
-                            <div>
-                                <h4 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                                    {tool.platformName} to Excel
+                    <Link key={tool.slug} href={tool.href} className="block group">
+                        <Card className="p-4 h-full border border-border/40 hover:border-primary/50 transition-all hover:shadow-sm flex items-start gap-3 bg-card/80">
+                            <BrandIcon
+                                platform={tool.platformName}
+                                format={!tool.isPlatformIntegration ? tool.sourceFormat : undefined}
+                                className="w-8 h-8 shrink-0 mt-0.5"
+                            />
+                            <div className="space-y-1 min-w-0 flex-1">
+                                <h4 className="font-semibold text-sm group-hover:text-primary transition-colors truncate">
+                                    {tool.shortTitle}
                                 </h4>
-                                <p className="text-xs text-muted-foreground line-clamp-1">
+                                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                                     {tool.description}
                                 </p>
                             </div>
