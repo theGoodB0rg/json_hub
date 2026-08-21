@@ -2,100 +2,133 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, ExternalLink, Zap, Server, Code } from 'lucide-react';
+import { Zap, Download, ShieldCheck, Layers, Cpu, ExternalLink } from 'lucide-react';
+import { useState } from 'react';
+import { LicenseModal } from '../LicenseModal';
+import { useProStore } from '@/lib/store/proStore';
 
 interface LargeFileUpsellProps {
     isOpen: boolean;
     onClose: () => void;
-    onProceedAnyway: () => void;
+    onProceedAnyway?: () => void;
     fileSize: number;
 }
 
 export function LargeFileUpsell({ isOpen, onClose, onProceedAnyway, fileSize }: LargeFileUpsellProps) {
     const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(1);
+    const [isLicenseOpen, setIsLicenseOpen] = useState(false);
+    const { setIsPro } = useProStore();
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-lg">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                        <AlertTriangle className="h-5 w-5" />
-                        Large File Detected ({fileSizeMB}MB)
-                    </DialogTitle>
-                    <DialogDescription>
-                        Files over 100MB may exceed browser memory limits. For best results with very large files, consider these specialized tools:
-                    </DialogDescription>
-                </DialogHeader>
+        <>
+            <Dialog open={isOpen} onOpenChange={onClose}>
+                <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-primary font-bold text-lg">
+                            <Zap className="h-5 w-5 text-amber-500 fill-amber-500" />
+                            Large File Detected ({fileSizeMB}MB)
+                        </DialogTitle>
+                        <DialogDescription className="text-sm">
+                            Browser memory limits (V8) make web processing slow and prone to freezing on files over 10MB.
+                        </DialogDescription>
+                    </DialogHeader>
 
-                <div className="space-y-3 my-4">
-                    {/* Affiliate recommendations */}
-                    <a
-                        href="https://flatfile.com/?ref=jsonexport"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
-                    >
-                        <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                            <Server className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div className="flex-1">
-                            <div className="font-semibold flex items-center gap-1">
-                                Flatfile <ExternalLink className="h-3 w-3" />
+                    <div className="space-y-4 my-2">
+                        {/* Primary Desktop Pro Hero Card */}
+                        <div className="p-4 rounded-xl border border-primary/30 bg-primary/5 relative overflow-hidden">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground rounded-full">
+                                    Recommended
+                                </span>
+                                <h4 className="font-bold text-base flex items-center gap-1.5">
+                                    JsonExport Desktop Pro <Cpu className="w-4 h-4 text-primary" />
+                                </h4>
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                                Enterprise data import. Handles 100MB+ files with smart mapping.
-                            </p>
-                        </div>
-                    </a>
 
-                    <a
-                        href="https://airtable.com/?ref=jsonexport"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
-                    >
-                        <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
-                            <Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <div className="flex-1">
-                            <div className="font-semibold flex items-center gap-1">
-                                Airtable <ExternalLink className="h-3 w-3" />
+                            <p className="text-xs text-muted-foreground mb-3">
+                                Powered by our native Rust streaming engine. Process multi-gigabyte JSON files directly on your machine with constant 20MB RAM.
+                            </p>
+
+                            <div className="grid grid-cols-2 gap-2 text-xs mb-4">
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <Zap className="w-3.5 h-3.5 text-amber-500" />
+                                    <span>2GB files in 3 seconds</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <Layers className="w-3.5 h-3.5 text-blue-500" />
+                                    <span>Batch 500+ files</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                                    <span>100% Offline / DLP Safe</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <Download className="w-3.5 h-3.5 text-purple-500" />
+                                    <span>Right-click OS menu</span>
+                                </div>
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                                Import JSON directly into spreadsheet database. Great for recurring imports.
-                            </p>
-                        </div>
-                    </a>
 
-                    <a
-                        href="/blog/5-ways-convert-json-to-excel-ranked"
-                        className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
-                    >
-                        <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
-                            <Code className="h-5 w-5 text-green-600 dark:text-green-400" />
+                            <div className="flex flex-col sm:flex-row gap-2">
+                                <Button
+                                    asChild
+                                    className="flex-1 font-bold shadow-md shadow-primary/20"
+                                >
+                                    <a
+                                        href="https://gumroad.com/l/json_hub"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Get Desktop Pro — $29 Lifetime
+                                    </a>
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        onClose();
+                                        setIsLicenseOpen(true);
+                                    }}
+                                    className="text-xs"
+                                >
+                                    Enter License Key
+                                </Button>
+                            </div>
                         </div>
-                        <div className="flex-1">
-                            <div className="font-semibold">Python + Pandas (Free)</div>
-                            <p className="text-sm text-muted-foreground">
-                                For developers: handles unlimited file sizes. See our guide.
-                            </p>
+
+                        {/* Secondary Cloud Pipeline Option */}
+                        <div className="text-xs text-muted-foreground flex items-center justify-between px-1">
+                            <span>Need live automated scheduled sync?</span>
+                            <a
+                                href="https://coupler.io/?ref=jsonexport"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline flex items-center gap-1 font-medium"
+                            >
+                                Coupler.io Cloud Sync <ExternalLink className="w-3 h-3" />
+                            </a>
                         </div>
-                    </a>
-                </div>
+                    </div>
 
-                <div className="flex gap-2 justify-end">
-                    <Button variant="outline" onClick={onClose}>
-                        Cancel
-                    </Button>
-                    <Button variant="secondary" onClick={onProceedAnyway}>
-                        Try Anyway (May Freeze)
-                    </Button>
-                </div>
+                    <div className="flex gap-2 justify-end pt-2 border-t">
+                        <Button variant="ghost" size="sm" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        {onProceedAnyway && (
+                            <Button variant="outline" size="sm" onClick={onProceedAnyway} className="text-xs text-muted-foreground">
+                                Try in Browser Anyway
+                            </Button>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
 
-                <p className="text-xs text-muted-foreground text-center">
-                    JsonExport handles files up to 100MB. For larger datasets, these tools offer streaming processing.
-                </p>
-            </DialogContent>
-        </Dialog>
+            <LicenseModal
+                isOpen={isLicenseOpen}
+                onOpenChange={setIsLicenseOpen}
+                onSuccess={() => {
+                    setIsLicenseOpen(false);
+                    setIsPro(true);
+                }}
+            />
+        </>
     );
 }

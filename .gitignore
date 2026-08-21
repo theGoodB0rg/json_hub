@@ -14,6 +14,10 @@ node_modules
 *.class
 *.exe
 *.dll
+*.msi
+target/
+src-tauri/target/
+release_binaries/
 
 # Next.js
 .next

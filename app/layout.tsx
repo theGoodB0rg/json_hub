@@ -5,6 +5,7 @@ import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Footer } from "@/components/Footer"
+import { DesktopLinkGuard } from "@/components/DesktopLinkGuard"
 import { ROUTES, SITE_ORIGIN } from '@/lib/routes'
 import { AnalyticsProvider } from '@/components/AnalyticsProvider'
 
@@ -83,6 +84,7 @@ export default function RootLayout({
                 >
                     <TooltipProvider delayDuration={300}>
                         <AnalyticsProvider>
+                            <DesktopLinkGuard />
                             <div className="flex flex-col min-h-screen">
                                 <div className="flex-1">
                                     {children}
