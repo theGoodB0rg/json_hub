@@ -1,9 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
-import { ModeToggle } from "@/components/mode-toggle";
-import { ProjectManager } from "@/components/ProjectManager";
 import { JsonEditor } from '@/components/JsonEditor/JsonEditor';
 import { HeroAnimation } from '@/components/HeroAnimation';
 import { DataGrid } from '@/components/DataGrid/DataGrid';
@@ -15,26 +11,21 @@ import {
 } from '@/components/ui/resizable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { ShieldCheck, Zap, Code2, Lock } from "lucide-react";
+import { Zap, Code2 } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { AffiliateSidebar } from "@/components/AffiliateSidebar";
 import { Testimonials } from "@/components/Testimonials";
 import { UsageStats } from "@/components/UsageStats";
-import { ConversionHistory } from "@/components/ConversionHistory/ConversionHistory";
 import { FAQ } from "@/components/FAQ";
-import { ShareButton } from "@/components/ShareButton/ShareButton";
 import { useEffect } from 'react';
 import AppUpdater from '@/components/AppUpdater';
 import { useAppStore } from '@/lib/store/store';
-import { BatchProcessor } from "@/components/BatchProcessor/BatchProcessor";
-import { MobileNav } from "@/components/MobileNav";
 import { SecurityBadges } from "@/components/SecurityBadges";
 import { GitHubStarBanner } from "@/components/GitHubStarBanner";
 import { ContextualAffiliateToast } from "@/components/ContextualAffiliateToast";
 import { GrowthSourceBanner } from "@/components/GrowthSourceBanner";
 import { useProStore } from "@/lib/store/proStore";
 import { pluginRegistry } from "@/lib/plugins/registry";
-import { ConvertersNavDropdown } from "@/components/ConvertersNavDropdown";
 import { CodeOutputViewer } from "@/components/CodeOutput/CodeOutputViewer";
 
 interface ConverterAppProps {
@@ -100,61 +91,9 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
     }, [setIsPro]);
 
     return (
-        <div className="min-h-screen flex flex-col bg-background font-sans selection:bg-primary/10">
+        <div className="flex flex-col bg-background font-sans selection:bg-primary/10">
             {/* Desktop Auto Updater */}
             <AppUpdater />
-
-            {/* Glassmorphic Header */}
-            <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 shrink-0">
-                        <Image src="/icon.svg" alt="Logo" width={32} height={32} className="h-8 w-8 shrink-0" />
-                        <span className="font-bold text-lg tracking-tight whitespace-nowrap">JsonExport</span>
-                        {isPro && (
-                            <span className="ml-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm shrink-0">
-                                PRO
-                            </span>
-                        )}
-                    </div>
-
-                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                        {/* Privacy Badge - Only on ultra-wide screens to prevent collisions */}
-                        <div className="hidden xl:flex items-center gap-2 text-xs font-medium text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full border border-border/50 shrink-0">
-                            <ShieldCheck className="w-3.5 h-3.5 text-green-500 shrink-0" />
-                            <span className="whitespace-nowrap">Privacy-First & Secure</span>
-                        </div>
-                        <div className="h-6 w-px bg-border/50 hidden xl:block shrink-0" />
-
-                        {/* Desktop Navigation on Wide Screens (>= lg) */}
-                        <div className="hidden lg:flex items-center gap-2 xl:gap-3">
-                            <ConvertersNavDropdown />
-                            <ConversionHistory />
-                            <a href="/blog" className="hidden xl:inline-block text-sm font-medium text-muted-foreground hover:text-primary transition-colors whitespace-nowrap px-1">
-                                Blog
-                            </a>
-                            <a href="/recommended-tools" className="hidden xl:inline-block text-sm font-medium text-muted-foreground hover:text-primary transition-colors whitespace-nowrap px-1">
-                                Recommended Tools
-                            </a>
-                            <ShareButton />
-                            <BatchProcessor />
-                            <ProjectManager />
-                        </div>
-
-                        {/* Mid-screen compact Converters button (sm to lg) */}
-                        <div className="hidden sm:flex lg:hidden items-center gap-1.5">
-                            <ConvertersNavDropdown />
-                        </div>
-
-                        {/* Theme Toggle */}
-                        <ModeToggle />
-
-                        {/* Mobile & Tablet Slide-Out Drawer (< lg) */}
-                        <div className="lg:hidden flex items-center">
-                            <MobileNav />
-                        </div>
-                    </div>
-                </div>
-            </header>
 
             <GitHubStarBanner />
 
