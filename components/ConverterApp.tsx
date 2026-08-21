@@ -106,33 +106,33 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
 
             {/* Glassmorphic Header */}
             <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Image src="/icon.svg" alt="Logo" width={32} height={32} className="h-8 w-8" />
-
-                        <span className="font-bold text-lg tracking-tight">JsonExport</span>
+                <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 shrink-0">
+                        <Image src="/icon.svg" alt="Logo" width={32} height={32} className="h-8 w-8 shrink-0" />
+                        <span className="font-bold text-lg tracking-tight whitespace-nowrap">JsonExport</span>
                         {isPro && (
-                            <span className="ml-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                            <span className="ml-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm shrink-0">
                                 PRO
                             </span>
                         )}
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="hidden md:flex items-center gap-2 text-xs font-medium text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full border border-border/50">
-                            <ShieldCheck className="w-3.5 h-3.5 text-green-500" />
-                            <span>Privacy-First & Secure</span>
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                        {/* Privacy Badge - Only on ultra-wide screens to prevent collisions */}
+                        <div className="hidden xl:flex items-center gap-2 text-xs font-medium text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full border border-border/50 shrink-0">
+                            <ShieldCheck className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                            <span className="whitespace-nowrap">Privacy-First & Secure</span>
                         </div>
-                        <div className="h-6 w-px bg-border/50 hidden md:block" />
+                        <div className="h-6 w-px bg-border/50 hidden xl:block shrink-0" />
 
-                        {/* Desktop Navigation */}
-                        <div className="hidden md:flex items-center gap-4">
+                        {/* Desktop Navigation on Wide Screens (>= lg) */}
+                        <div className="hidden lg:flex items-center gap-2 xl:gap-3">
                             <ConvertersNavDropdown />
                             <ConversionHistory />
-                            <a href="/blog" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                            <a href="/blog" className="hidden xl:inline-block text-sm font-medium text-muted-foreground hover:text-primary transition-colors whitespace-nowrap px-1">
                                 Blog
                             </a>
-                            <a href="/recommended-tools" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                            <a href="/recommended-tools" className="hidden xl:inline-block text-sm font-medium text-muted-foreground hover:text-primary transition-colors whitespace-nowrap px-1">
                                 Recommended Tools
                             </a>
                             <ShareButton />
@@ -140,14 +140,17 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                             <ProjectManager />
                         </div>
 
-                        {/* Mobile Navigation & Theme */}
-                        <div className="flex items-center gap-2 md:hidden">
-                            <ModeToggle />
-                            <MobileNav />
+                        {/* Mid-screen compact Converters button (sm to lg) */}
+                        <div className="hidden sm:flex lg:hidden items-center gap-1.5">
+                            <ConvertersNavDropdown />
                         </div>
 
-                        <div className="hidden md:block">
-                            <ModeToggle />
+                        {/* Theme Toggle */}
+                        <ModeToggle />
+
+                        {/* Mobile & Tablet Slide-Out Drawer (< lg) */}
+                        <div className="lg:hidden flex items-center">
+                            <MobileNav />
                         </div>
                     </div>
                 </div>

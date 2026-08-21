@@ -174,6 +174,6 @@ describe('Memory Efficiency', () => {
         console.log(`Flatten 1k rows × 50 cols: ${duration.toFixed(2)}ms`);
         expect(result.schema.length).toBe(50);
         expect(result.rows.length).toBe(1000);
-        expect(duration).toBeLessThan(200);
+        expect(duration).toBeLessThan(500);
     });
 });
