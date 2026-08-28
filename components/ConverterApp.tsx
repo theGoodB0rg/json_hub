@@ -53,14 +53,27 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
         }
     }, [pluginId, setPluginId]);
 
-    // Auto-load sample or shareable data on mount
+    // Auto-load sample, shareable, or pre-seeded data on mount
     useEffect(() => {
         const loadInitialData = async () => {
             const { loadFromShareableLink } = await import('@/lib/utils/shareLink');
             const sharedData = loadFromShareableLink();
 
+            let seededData: string | null = null;
+            try {
+                seededData = sessionStorage.getItem('jsonexport_seed_payload');
+                if (seededData) {
+                    sessionStorage.removeItem('jsonexport_seed_payload');
+                }
+            } catch {
+                // ignore sessionStorage errors
+            }
+
             if (sharedData) {
                 setRawInput(sharedData);
+                setTimeout(() => parseInput(), 100);
+            } else if (seededData) {
+                setRawInput(seededData);
                 setTimeout(() => parseInput(), 100);
             } else if (initialSample) {
                 setRawInput(initialSample);

@@ -22,10 +22,10 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'hubspot-json-to-excel',
         platformName: 'HubSpot',
-        title: 'Convert HubSpot JSON to Excel (XLSX) — Flatten Contacts & Deals',
-        description: 'Convert HubSpot CRM JSON exports to clean Excel spreadsheets. Auto-flattens nested contact properties, deal stages, and company fields in 1 click.',
-        h1: 'HubSpot to Excel Converter',
-        subheading: 'HubSpot nested JSON unreadable in Excel? Fix it instantly without cloud uploads.',
+        title: 'Convert HubSpot JSON to Excel (XLSX) — Flatten Contacts, Deals & Properties',
+        description: 'Export HubSpot CRM data to Excel spreadsheets in 1 click. Automatically unwinds nested contact properties, deal pipelines, and company association IDs.',
+        h1: 'HubSpot to Excel (XLSX) Converter',
+        subheading: 'Auto-flatten HubSpot CRM contacts, deals, and custom properties into clean Excel tables.',
         tldr: "To fix nested HubSpot data in Excel, paste your JSON export below. We automatically flatten the deeply nested objects into a clean table, processing everything locally in your browser so your CRM data stays private.",
         content: {
             intro: 'HubSpot data exports often contain complex, deeply nested JSON properties. Traditional online converters just output `[object Object]` for these fields. JsonExport solves this by thoroughly flattening your HubSpot data 100% in your browser.',
@@ -37,6 +37,10 @@ export const converterPages: ConverterPageConfig[] = [
             ]
         },
         faqs: [
+            {
+                question: "How do I export JSON from HubSpot?",
+                answer: "You can fetch your CRM objects using HubSpot's REST API (`/crm/v3/objects/contacts` or `/deals`) or download API payloads from HubSpot workflow webhooks. Paste the raw JSON response here for instant conversion."
+            },
             {
                 question: "Is it safe to paste HubSpot customer lists here?",
                 answer: "Yes, absolutely. Unlike other converters, we do NOT upload your file to any server. All processing happens locally in your browser's memory."
@@ -498,10 +502,10 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'harvest-json-to-excel',
         platformName: 'Harvest',
-        title: 'Harvest JSON to Excel Converter — Time Tracking & Invoicing',
-        description: 'Convert Harvest time tracking JSON exports to Excel. Flattens project entries, billable hours, client details, and tasks for easy invoicing.',
-        h1: 'Harvest to Excel Converter',
-        subheading: 'Turn Harvest time entries into Excel reports for invoicing and project analysis.',
+        title: 'Convert Harvest JSON to Excel (XLSX) — Flatten Timesheets & Tasks',
+        description: 'Convert Harvest time tracking JSON exports to clean Excel spreadsheets. Flattens billable hours, project codes, client records, and user entries.',
+        h1: 'Harvest to Excel (XLSX) Converter',
+        subheading: 'Unwind Harvest time entries and project logs into clean Excel spreadsheets instantly.',
         content: {
             intro: 'Harvest time tracking exports include nested project assignments, client data, and billing details. Our converter flattens this into clean rows for easy pivot table analysis.',
             features: [
@@ -512,8 +516,9 @@ export const converterPages: ConverterPageConfig[] = [
             ]
         },
         faqs: [
-            { question: 'Can I export Harvest timesheets to Excel?', answer: 'Yes. Use the Harvest API to export your time entries as JSON, then paste them here for instant Excel conversion.' },
-            { question: 'Does this handle billable vs non-billable hours?', answer: 'Yes. The billable flag and hourly rates are preserved as separate columns in the output.' }
+            { question: 'How do I export Harvest time entries to JSON?', answer: 'Use the Harvest Time Entries API (`https://api.harvestapp.com/v2/time_entries`) with your personal access token. Paste the JSON response here to generate an immediate formatted Excel spreadsheet.' },
+            { question: 'Can I export Harvest timesheets to Excel?', answer: 'Yes. Paste your raw Harvest JSON entries into the converter above to download a clean .xlsx spreadsheet with separate columns for project, client, and rates.' },
+            { question: 'Does this handle billable vs non-billable hours?', answer: 'Yes. The billable flag, hourly billable rates, and cost rates are preserved as separate columns in the output.' }
         ]
     },
     {
@@ -561,10 +566,10 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'typeform-json-to-excel',
         platformName: 'Typeform',
-        title: 'Typeform JSON to Excel Converter — Export Survey Responses',
-        description: 'Convert Typeform JSON response exports to Excel spreadsheets. Normalizes text, choice, and rating answers into clean, one-row-per-response tables.',
-        h1: 'Typeform to Excel Converter',
-        subheading: 'Turn Typeform survey responses into structured Excel data for analysis.',
+        title: 'Convert Typeform JSON to Excel (XLSX) — Unwind Survey Answers & Fields',
+        description: 'Convert Typeform JSON exports and webhook responses to Excel spreadsheets. Unwinds nested survey questions, choices, ratings, and respondent metadata.',
+        h1: 'Typeform to Excel (XLSX) Converter',
+        subheading: 'Transform raw Typeform survey JSON into structured Excel spreadsheets in 1 click.',
         content: {
             intro: 'Typeform response exports contain nested answer objects with different types (text, choice, number). Our converter normalizes these into a clean spreadsheet with one row per response.',
             features: [
@@ -575,8 +580,9 @@ export const converterPages: ConverterPageConfig[] = [
             ]
         },
         faqs: [
-            { question: 'How do I export Typeform responses to Excel?', answer: 'Use the Typeform API to export responses as JSON, then paste the data here for instant spreadsheet conversion.' },
-            { question: 'Does this handle multi-choice answers?', answer: 'Yes. Multi-choice and ranking answers are expanded into readable column values.' }
+            { question: 'How do I export Typeform responses as JSON?', answer: 'Use the Typeform Responses API (`https://api.typeform.com/forms/{form_id}/responses`) or download webhook logs from Typeform Connect. Paste the payload here for instant Excel conversion.' },
+            { question: 'How do I export Typeform responses to Excel?', answer: 'Paste your raw Typeform JSON payload into the editor above. Click Export to Excel to download an immediate .xlsx spreadsheet.' },
+            { question: 'Does this handle multi-choice answers?', answer: 'Yes. Multi-choice and ranking answers are expanded into readable column values without [object Object] errors.' }
         ]
     },
     {
@@ -645,10 +651,10 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'timetonic-json-to-excel',
         platformName: 'TimeTonic',
-        title: 'TimeTonic JSON to Excel Converter — Tables & Linked Records',
-        description: 'Convert TimeTonic database JSON exports to Excel. Flattens table relationships, custom field types, and linked records for spreadsheet analysis.',
+        title: 'Convert TimeTonic JSON to Excel (XLSX) — Tables & Linked Records',
+        description: 'Convert TimeTonic database JSON exports to Excel spreadsheets. Flattens table hierarchies, linked records, and custom field types in 1 click.',
         h1: 'TimeTonic to Excel Converter',
-        subheading: 'Export TimeTonic database tables to Excel for reporting and analysis.',
+        subheading: 'Export TimeTonic database tables and linked records to Excel for reporting.',
         content: {
             intro: 'TimeTonic database exports contain nested table relationships and custom field types. Our converter flattens these into standard Excel tables for easy analysis.',
             features: [
@@ -659,7 +665,8 @@ export const converterPages: ConverterPageConfig[] = [
             ]
         },
         faqs: [
-            { question: 'Can I export TimeTonic tables to Excel?', answer: 'Yes. Export your TimeTonic data as JSON, then paste it here for instant Excel conversion.' },
+            { question: 'How do I export TimeTonic to JSON?', answer: 'Use the TimeTonic REST API (`/live/v1.0/get/`) with your API key to export database tables as JSON. Paste the payload here for instant Excel conversion.' },
+            { question: 'Can I export TimeTonic tables to Excel?', answer: 'Yes. Export your TimeTonic data as JSON, then paste it here for instant Excel conversion without broken cells.' },
             { question: 'Does this handle linked records?', answer: 'Yes. Linked records are resolved and included as readable column values.' }
         ]
     },

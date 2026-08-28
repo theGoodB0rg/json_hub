@@ -120,8 +120,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
             topPages,
             countries: [],
             devices: [],
-            appearance: [],
-            dateRange: `${liveGsc.startDate} to ${liveGsc.endDate}`,
+            source: `Live Google Search Console API (${liveGsc.startDate} to ${liveGsc.endDate})`,
         };
 
         // Save live snapshot
@@ -309,7 +308,7 @@ function printTerminalDashboard(data: UnifiedReportData): void {
     console.log(`• Total Organic Clicks:      ${gsc.totalClicks}`);
     console.log(`• Total Search Impressions:  ${gsc.totalImpressions}`);
     console.log(`• Average Search CTR:        ${gsc.avgCtr}%`);
-    console.log(`• Date Window:               ${gsc.dateRange || 'Last 28 Days'}\n`);
+    console.log(`• Source / Date Window:      ${gsc.source || 'Last 28 Days'}\n`);
 
     console.log('Top High-Intent Search Queries:');
     gsc.topQueries.slice(0, 6).forEach((q, i) => {
