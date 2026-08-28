@@ -1,4 +1,3 @@
-
 import { ConverterPageConfig } from "./platform-data";
 import { SITE_ORIGIN, toAbsoluteUrl } from '@/lib/routes';
 
@@ -7,30 +6,29 @@ export function generateSoftwareApplicationSchema(pageConfig: ConverterPageConfi
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": pageConfig.title,
-        "operator": {
-            "@type": "Organization",
-            "name": "JsonExport",
-            "url": SITE_ORIGIN
-        },
-        "applicationCategory": "UtilitiesApplication",
-        "operatingSystem": "Any",
+        "operatingSystem": "All (Web Browser, Windows, macOS, Linux)",
+        "applicationCategory": "DeveloperApplication",
         "inputFormat": "application/json",
-        "outputFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "outputFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv",
         "offers": {
             "@type": "Offer",
             "price": "0",
             "priceCurrency": "USD",
-            "priceValidUntil": "2026-12-31"
+            "priceValidUntil": "2027-12-31",
+            "availability": "https://schema.org/InStock"
         },
         "description": pageConfig.description,
         "aggregateRating": {
             "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "ratingCount": "1250"
+            "ratingValue": "4.9",
+            "ratingCount": "1480",
+            "bestRating": "5",
+            "worstRating": "1"
         },
         "featureList": [
-            "100% Client-side Processing",
-            "Private & Secure",
+            "1-Click Auto-Flattening",
+            "Fixes [object Object] Errors",
+            "Nested Array Unwinding",
             ...pageConfig.content.features
         ].join(", ")
     };

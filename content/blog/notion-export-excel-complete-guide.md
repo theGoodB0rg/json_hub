@@ -1,5 +1,5 @@
 ---
-title: "How to Export Notion to Excel — Complete Guide (2026)"
+title: "How to Export Notion to Excel with Sub-Pages & Relations [Guide]"
 date: "2026-01-29"
 description: "Export Notion databases to Excel with relations, rollups, and formulas intact. 3 methods compared — step-by-step instructions for each."
 keywords: ["notion export to excel", "notion database export", "notion to spreadsheet", "export notion data", "notion csv export", "notion API export"]

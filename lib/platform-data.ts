@@ -22,8 +22,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'hubspot-json-to-excel',
         platformName: 'HubSpot',
-        title: 'HubSpot to Excel — Export HubSpot JSON to Spreadsheet',
-        description: 'Export HubSpot CRM data to Excel instantly. Flatten nested contact properties, deal stages, and company fields. 100% private — no upload required.',
+        title: 'Convert HubSpot JSON to Excel (XLSX) — Flatten Contacts & Deals',
+        description: 'Convert HubSpot CRM JSON exports to clean Excel spreadsheets. Auto-flattens nested contact properties, deal stages, and company fields in 1 click.',
         h1: 'HubSpot to Excel Converter',
         subheading: 'HubSpot nested JSON unreadable in Excel? Fix it instantly without cloud uploads.',
         tldr: "To fix nested HubSpot data in Excel, paste your JSON export below. We automatically flatten the deeply nested objects into a clean table, processing everything locally in your browser so your CRM data stays private.",
@@ -50,8 +50,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'salesforce-json-to-excel',
         platformName: 'Salesforce',
-        title: 'Salesforce to Excel — Export Contacts, Opportunities & Reports',
-        description: 'Convert Salesforce JSON exports to clean Excel spreadsheets. Fix [object Object] columns from Data Loader, Workbench, or REST API. 100% client-side.',
+        title: 'Salesforce JSON to Excel Converter — Fix [object Object] Columns',
+        description: 'Convert Salesforce JSON exports to clean Excel spreadsheets. Fixes [object Object] columns from Data Loader, Workbench, or REST API in seconds.',
         h1: 'Salesforce to Excel Converter',
         subheading: 'Salesforce export showing `[object Object]` columns? Fix it instantly without cloud uploads.',
         tldr: "To fix broken Salesforce data in Excel, paste your JSON export (from Workbench, Data Loader, or API) below. We automatically flatten the `records` array and nested `attributes` metadata into a clean table, processing everything locally in your browser to ensure no PII leaves your device.",
@@ -82,8 +82,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'stripe-json-to-excel',
         platformName: 'Stripe',
-        title: 'Stripe to Excel — Export & Convert Stripe JSON Free',
-        description: 'Export Stripe charges, invoices, and customers to Excel. Flatten nested metadata and line items automatically. Free, private, no upload.',
+        title: 'Convert Stripe JSON to Excel (XLSX) — Flatten Charges & Metadata',
+        description: 'Convert Stripe JSON exports to Excel spreadsheets. Auto-flattens nested metadata, customer line items, and invoice charges for fast reconciliation.',
         h1: 'Stripe to Excel Converter',
         subheading: 'Stripe metadata columns unreadable in Excel? Flatten them instantly.',
         tldr: "To fix Stripe JSON in Excel, simply copy the full JSON response from your Stripe Developer Dashboard logs and paste it into the converter below. The tool automatically flattens nested metadata and line items into separate, usable columns.",
@@ -118,8 +118,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'shopify-json-to-csv',
         platformName: 'Shopify',
-        title: 'Convert Shopify JSON to CSV - Order & Product Export',
-        description: 'Export Shopify Orders and Products JSON to CSV. Smart handling for Line Items, Variants, and Tax Lines.',
+        title: 'Shopify JSON to CSV Converter — Unwind Orders & Line Items',
+        description: 'Convert Shopify Orders and Products JSON exports to clean CSV. Automatically unwinds nested line items, variants, and tax lines into rows.',
         h1: 'Shopify JSON to CSV Converter',
         subheading: 'Visualize Shopify Order structures and Line Items in flat CSV format.',
         tldr: "Convert Shopify JSON to CSV by pasting your Admin API response (e.g., orders.json) into the tool. It automatically creates rows for each Line Item while preserving order-level details.",
@@ -150,8 +150,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'nested-arrays-to-excel',
         platformName: 'Generic JSON',
-        title: 'Flatten Nested Arrays JSON to Excel - Free & Private',
-        description: 'Fix `[object Object]` and nested array exports. Convert deeply nested JSON into clean Excel rows instantly.',
+        title: 'Nested JSON to Excel Converter — Auto-Flatten Deep Arrays & Objects',
+        description: 'Fix [object Object] errors in Excel. Convert deeply nested JSON arrays and hierarchical objects into clean spreadsheet rows and columns instantly.',
         h1: 'Nested Arrays JSON to Excel Repair Tool',
         subheading: 'Nested arrays breaking your export? Flatten them into clean Excel rows instantly.',
         tldr: "Paste complex JSON with nested arrays and objects into the converter. We flatten it into analysis-ready rows and columns locally in your browser, so no data is uploaded.",
@@ -178,8 +178,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'jira-json-to-excel',
         platformName: 'Jira',
-        title: 'Jira JSON to Excel Converter - Issues & Sprints',
-        description: 'Convert Jira API exports to Excel. Analyze issues, comments, and sprint cycles in a clean spreadsheet.',
+        title: 'Convert Jira JSON to Excel (XLSX) — Unwind Issues & Sprints',
+        description: 'Convert Jira API JSON dumps to Excel spreadsheets. Extracts custom fields, sprint histories, changelogs, and issue properties into separate columns.',
         h1: 'Jira JSON to Excel Converter',
         subheading: 'Analyze your team\'s velocity by converting Jira JSON dumps to Excel.',
         tldr: "To analyze Jira data in Excel, simply export your issues as JSON from the Jira Advanced Search or API, then paste the result here. We extract custom fields into their own columns for easy sorting.",
@@ -206,8 +206,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'trello-json-to-csv',
         platformName: 'Trello',
-        title: 'Trello JSON to CSV/Excel Converter - Import & Backup Tool',
-        description: 'Convert Trello JSON exports to CSV/Excel for importing into other tools. Backup Boards, archive Cards, and migrate data securely locally.',
+        title: 'Convert Trello JSON to CSV Online — Auto-Flatten Cards & Lists',
+        description: 'Convert Trello JSON exports to CSV or Excel. Automatically extracts cards, lists, checklists, custom fields, and labels into clean tabular columns.',
         h1: 'Trello JSON to CSV/Excel Converter',
         subheading: 'Prepare your Trello data for import into other systems or archive it for safekeeping.',
         tldr: "Need to import Trello data into another tool or Excel? Simply add '.json' to your Board URL, copy the code, and paste it here. We generate a clean CSV perfect for importing into Jira, Monday.com, or Excel.",
@@ -238,8 +238,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'youtube-analytics-json-to-excel',
         platformName: 'YouTube',
-        title: 'YouTube Analytics to Excel — Export Channel Data Free',
-        description: 'Convert YouTube Data API responses to Excel. Analyze video performance, comments, watch time, and playlists in spreadsheets. Free and private.',
+        title: 'YouTube Analytics JSON to Excel — Export Channel & Video Data',
+        description: 'Convert YouTube Data API responses to Excel spreadsheets. Bulk export video metrics, comment threads, playlist structures, and channel analytics.',
         h1: 'YouTube Analytics to Excel Converter',
         subheading: 'Deep dive into your channel performance with custom Excel analysis.',
         tldr: "Export more than 500 rows of analytics data by taking the JSON response from YouTube Studio (or Data API) and converting it to Excel here. Analyze video tags, earnings, and watch time in bulk.",
@@ -266,8 +266,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'slack-json-to-csv',
         platformName: 'Slack',
-        title: 'Slack to CSV — Export Slack Messages & Chat History',
-        description: 'Convert Slack workspace exports to CSV or Excel. Archive message history, user activity, and channel logs. 100% private local processing.',
+        title: 'Convert Slack JSON to CSV — Export Message History & Threads',
+        description: 'Convert Slack workspace JSON dumps to CSV or Excel. Merges daily JSON files, resolves user IDs, formats timestamps, and archives threads cleanly.',
         h1: 'Slack to CSV/Excel Converter',
         subheading: 'Turn your Slack data export into a readable message archive.',
         content: {
@@ -289,8 +289,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'discord-json-to-excel',
         platformName: 'Discord',
-        title: 'Discord Chat JSON to Excel Converter',
-        description: 'Export Discord chat history to Excel. Analyze community engagement, user activity, and message trends.',
+        title: 'Discord JSON to Excel Converter — Export Chat History & Logs',
+        description: 'Convert Discord chat logs and bot JSON exports to Excel. Flattens nested user roles, message timestamps, and reaction counts into structured rows.',
         h1: 'Discord JSON to Excel Converter',
         subheading: 'Analyze your community growth and engagement by converting Discord JSONs.',
         content: {
@@ -312,8 +312,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'mongodb-bson-json-to-excel',
         platformName: 'MongoDB',
-        title: 'Fix Nested MongoDB JSON/BSON Exports to Excel',
-        description: 'Convert nested MongoDB exports (JSON/BSON) to Excel. Flattens deep objects and arrays for easier analysis.',
+        title: 'MongoDB JSON to Excel (XLSX) — Flatten BSON & Nested Documents',
+        description: 'Convert MongoDB JSON/BSON exports to Excel. Flattens deep documents, resolves $oid and $date types, and eliminates [object Object] errors.',
         h1: 'MongoDB Nested Document Repair Tool',
         subheading: 'MongoDB nested documents showing as `[object Object]`? Flatten them instantly.',
         content: {
@@ -335,8 +335,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'postgresql-json-to-csv',
         platformName: 'PostgreSQL',
-        title: 'PostgreSQL JSON Column to CSV Converter',
-        description: 'Export PostgreSQL JSON/JSONB columns to CSV. Flatten jsonb fields into separate columns for analysis.',
+        title: 'PostgreSQL JSONB to CSV Converter — Flatten JSON Columns Online',
+        description: 'Export PostgreSQL JSON and JSONB query results to CSV. Flattens complex JSONB objects and arrays into separate columns without complex SQL.',
         h1: 'Postgres JSON to CSV Converter',
         subheading: 'Flatten your Postgres JSONB columns without writing complex SQL queries.',
         content: {
@@ -358,8 +358,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'notion-json-to-excel',
         platformName: 'Notion',
-        title: 'Notion to Excel — Export & Convert Notion Databases',
-        description: 'Export Notion databases to Excel offline. Convert API exports preserving properties, relations, and rollups. Free, no signup required.',
+        title: 'Convert Notion JSON to Excel (XLSX) — Databases & Properties',
+        description: 'Convert Notion database JSON exports to Excel spreadsheets. Preserves multi-select tags, relations, rollups, and formulas in clean tabular columns.',
         h1: 'Notion to Excel Converter',
         subheading: 'Take your Notion databases offline. Convert API exports to real Excel tables.',
         content: {
@@ -381,8 +381,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'salesforce-contacts-to-excel',
         platformName: 'Salesforce',
-        title: 'Export Salesforce Contacts to Excel (Clean & Formatted)',
-        description: 'Convert Salesforce Contact exports/JSON to Excel. Automatically resolves Account Names and Owner IDs.',
+        title: 'Salesforce Contacts JSON to Excel — Resolve Accounts & Fields',
+        description: 'Convert Salesforce Contact JSON exports to clean Excel spreadsheets. Resolves Account Names, formats addresses, and flattens custom fields.',
         h1: 'Salesforce Contacts to Excel',
         subheading: 'Clean your Salesforce contact lists without complex Data Loader operations.',
         tldr: "Exporting Contacts often results in messy data with IDs instead of names. Paste your Salesforce JSON export here to instantly get a clean Excel sheet with resolved Account Names and Owner details.",
@@ -405,8 +405,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'salesforce-opportunities-to-excel',
         platformName: 'Salesforce',
-        title: 'Export Salesforce Opportunities to Excel Pipeline Report',
-        description: 'Convert Salesforce Opportunity JSON to Excel. Analyze your pipeline, probability, and stages in a clean spreadsheet.',
+        title: 'Salesforce Opportunity JSON to Excel — Pipeline & Stage Reports',
+        description: 'Convert Salesforce Opportunity JSON exports to Excel spreadsheets. Flattens pipeline stages, probabilities, close dates, and custom fields.',
         h1: 'Salesforce Opportunities to Excel',
         subheading: 'Visualize your sales pipeline by converting raw Opportunity data to Excel.',
         tldr: "Turn raw Salesforce Opportunity JSON into a ready-to-use Pipeline Report. We flatten the data so you can pivot by Stage, Owner, and Close Date immediately.",
@@ -429,8 +429,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'salesforce-reports-to-excel',
         platformName: 'Salesforce',
-        title: 'Convert Salesforce Reports JSON to Excel',
-        description: 'Fix broken Salesforce Report exports. Flatten nested JSON and analytics data into standard Excel tables.',
+        title: 'Salesforce Reports JSON to Excel — Decode Fact Maps & Tables',
+        description: 'Convert Salesforce Analytics API JSON responses to Excel. Decodes hierarchical fact maps and summary groupings into clean tabular rows.',
         h1: 'Salesforce Reports to Excel',
         subheading: 'Recover usable data from complex Salesforce Report API responses.',
         tldr: "If you're using the Salesforce Analytics API, you get complex JSON responses. This tool flattens that hierarchical report data into a simple flat table.",
@@ -453,8 +453,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'asana-json-to-excel',
         platformName: 'Asana',
-        title: 'Asana JSON to Excel Converter - Tasks & Projects',
-        description: 'Convert Asana project exports to Excel. Analyze task dependencies, due dates, and assignees.',
+        title: 'Convert Asana JSON to Excel (XLSX) — Tasks, Subtasks & Projects',
+        description: 'Convert Asana project JSON exports to Excel. Unrolls tasks, subtasks, assignee details, due dates, and custom fields into a structured timeline.',
         h1: 'Asana JSON to Excel Converter',
         subheading: 'Turn Asana project data into flexible Excel reports.',
         tldr: "Export your Asana project as JSON and paste it here. We'll convert your tasks, subtasks, and custom fields into a structured Excel timeline.",
@@ -477,8 +477,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'pipedrive-json-to-excel',
         platformName: 'Pipedrive',
-        title: 'Pipedrive to Excel — Export CRM Data Free',
-        description: 'Convert Pipedrive JSON exports to Excel. Flatten deal stages, contact details, and activity logs. 100% private, no upload.',
+        title: 'Convert Pipedrive JSON to Excel (XLSX) — Deals & CRM Data',
+        description: 'Convert Pipedrive CRM JSON exports to Excel. Flattens deal stages, contact organizations, and custom fields into clean spreadsheet columns.',
         h1: 'Pipedrive to Excel Converter',
         subheading: 'Export your Pipedrive CRM data to Excel for custom reporting and analysis.',
         content: {
@@ -498,8 +498,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'harvest-json-to-excel',
         platformName: 'Harvest',
-        title: 'Harvest to Excel — Export Time Tracking Data',
-        description: 'Convert Harvest time tracking JSON exports to Excel. Analyze hours, projects, and billing data in spreadsheets. Free and private.',
+        title: 'Harvest JSON to Excel Converter — Time Tracking & Invoicing',
+        description: 'Convert Harvest time tracking JSON exports to Excel. Flattens project entries, billable hours, client details, and tasks for easy invoicing.',
         h1: 'Harvest to Excel Converter',
         subheading: 'Turn Harvest time entries into Excel reports for invoicing and project analysis.',
         content: {
@@ -519,8 +519,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'xero-json-to-excel',
         platformName: 'Xero',
-        title: 'Xero to Excel — Export Accounting Data Free',
-        description: 'Convert Xero API exports to Excel. Analyze invoices, contacts, and bank transactions in spreadsheets. Secure, private, no upload.',
+        title: 'Convert Xero JSON to Excel (XLSX) — Invoices & Bank Feeds',
+        description: 'Convert Xero API JSON exports to Excel spreadsheets. Flattens invoice line items, tracking categories, tax codes, and contact data into rows.',
         h1: 'Xero to Excel Converter',
         subheading: 'Export Xero accounting data to Excel for custom financial reporting.',
         content: {
@@ -540,8 +540,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'intercom-json-to-excel',
         platformName: 'Intercom',
-        title: 'Intercom to Excel — Export Chat & Ticket Data',
-        description: 'Convert Intercom JSON exports to Excel. Analyze conversations, contacts, and support metrics in spreadsheets. Free and private.',
+        title: 'Convert Intercom JSON to Excel — Support Tickets & Chats',
+        description: 'Convert Intercom JSON exports to Excel spreadsheets. Flattens conversation threads, user attributes, tags, and support metrics into clean rows.',
         h1: 'Intercom to Excel Converter',
         subheading: 'Export Intercom conversations and contacts to Excel for support analysis.',
         content: {
@@ -561,8 +561,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'typeform-json-to-excel',
         platformName: 'Typeform',
-        title: 'Typeform to Excel — Export Survey Responses',
-        description: 'Convert Typeform JSON response exports to Excel. Analyze survey answers, scores, and completion data. Free, private, no upload.',
+        title: 'Typeform JSON to Excel Converter — Export Survey Responses',
+        description: 'Convert Typeform JSON response exports to Excel spreadsheets. Normalizes text, choice, and rating answers into clean, one-row-per-response tables.',
         h1: 'Typeform to Excel Converter',
         subheading: 'Turn Typeform survey responses into structured Excel data for analysis.',
         content: {
@@ -582,8 +582,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'dropbox-json-to-excel',
         platformName: 'Dropbox',
-        title: 'Dropbox Metadata to Excel — Export File Listings',
-        description: 'Convert Dropbox API file listings to Excel. Catalog files, folders, and sharing permissions in spreadsheets. Free and private.',
+        title: 'Dropbox JSON to Excel Converter — Export File Catalogs & Metadata',
+        description: 'Convert Dropbox API file listing JSON to Excel. Flattens file metadata, sharing permissions, path hierarchies, and size metrics into tables.',
         h1: 'Dropbox to Excel Converter',
         subheading: 'Export Dropbox file metadata and folder structures to Excel.',
         content: {
@@ -603,8 +603,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'mailchimp-json-to-excel',
         platformName: 'Mailchimp',
-        title: 'Mailchimp to Excel — Export Campaigns & Contacts',
-        description: 'Convert Mailchimp JSON exports to Excel. Analyze campaigns, subscriber lists, and email performance metrics. Free and private.',
+        title: 'Mailchimp JSON to Excel Converter — Campaigns & Audience Lists',
+        description: 'Convert Mailchimp JSON exports to Excel spreadsheets. Flattens campaign performance metrics, merge tags, and subscriber segments into rows.',
         h1: 'Mailchimp to Excel Converter',
         subheading: 'Export Mailchimp campaign data and subscriber lists to Excel for analysis.',
         content: {
@@ -624,8 +624,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'onedrive-json-to-excel',
         platformName: 'OneDrive',
-        title: 'OneDrive to Excel — Export File Metadata',
-        description: 'Convert OneDrive API file listings to Excel. Catalog files, permissions, and storage usage in spreadsheets. Free and private.',
+        title: 'OneDrive JSON to Excel Converter — Export File & Drive Metadata',
+        description: 'Convert Microsoft OneDrive Graph API JSON responses to Excel. Flattens file properties, sharing permissions, and storage sizes into tables.',
         h1: 'OneDrive to Excel Converter',
         subheading: 'Export OneDrive file metadata and sharing details to Excel.',
         content: {
@@ -645,8 +645,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'timetonic-json-to-excel',
         platformName: 'TimeTonic',
-        title: 'TimeTonic to Excel — Export Database Tables',
-        description: 'Convert TimeTonic database exports to Excel. Flatten table structures and relationships for spreadsheet analysis. Free and private.',
+        title: 'TimeTonic JSON to Excel Converter — Tables & Linked Records',
+        description: 'Convert TimeTonic database JSON exports to Excel. Flattens table relationships, custom field types, and linked records for spreadsheet analysis.',
         h1: 'TimeTonic to Excel Converter',
         subheading: 'Export TimeTonic database tables to Excel for reporting and analysis.',
         content: {
@@ -666,8 +666,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'google-my-business-json-to-excel',
         platformName: 'Google Business Profile',
-        title: 'Google Business Profile to Excel — Export Reviews & Data',
-        description: 'Convert Google Business Profile API data to Excel. Analyze reviews, locations, and insights in spreadsheets. Free and private.',
+        title: 'Google Business Profile JSON to Excel — Reviews & Location Data',
+        description: 'Convert Google Business Profile API JSON responses to Excel. Flattens customer reviews, star ratings, responses, and location attributes.',
         h1: 'Google Business Profile to Excel Converter',
         subheading: 'Export Google Business Profile reviews and location data to Excel.',
         content: {
@@ -687,8 +687,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'clockify-json-to-excel',
         platformName: 'Clockify',
-        title: 'Clockify to Excel — Export Time Entries Free',
-        description: 'Convert Clockify time tracking data to Excel. Analyze time entries, projects, and team reports in spreadsheets. Free and private.',
+        title: 'Clockify JSON to Excel Converter — Time Entries & Team Reports',
+        description: 'Convert Clockify time tracking JSON exports to Excel. Flattens projects, billable rates, tags, and team member hours into clean spreadsheet rows.',
         h1: 'Clockify to Excel Converter',
         subheading: 'Export Clockify time entries and reports to Excel for project analysis.',
         content: {
@@ -708,8 +708,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'calendly-json-to-excel',
         platformName: 'Calendly',
-        title: 'Calendly to Excel — Export Bookings & Events',
-        description: 'Convert Calendly scheduling data to Excel. Analyze bookings, event types, and invitee details in spreadsheets. Free and private.',
+        title: 'Calendly JSON to Excel Converter — Bookings & Invitee Data',
+        description: 'Convert Calendly scheduling JSON responses to Excel. Flattens event types, invitee responses, tracking parameters, and booking timestamps.',
         h1: 'Calendly to Excel Converter',
         subheading: 'Export Calendly bookings and event data to Excel for scheduling analysis.',
         content: {
@@ -729,8 +729,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'quickbooks-json-to-excel',
         platformName: 'QuickBooks',
-        title: 'QuickBooks to Excel — Export Financial Data',
-        description: 'Convert QuickBooks JSON exports to Excel. Analyze invoices, expenses, and financial reports in spreadsheets. Secure and private.',
+        title: 'Convert QuickBooks JSON to Excel (XLSX) — Invoices & Expenses',
+        description: 'Convert QuickBooks Online API JSON exports to Excel. Flattens invoice line items, customer accounts, tax amounts, and expense transactions.',
         h1: 'QuickBooks to Excel Converter',
         subheading: 'Export QuickBooks financial data to Excel for custom accounting reports.',
         content: {
@@ -750,8 +750,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'mixpanel-json-to-excel',
         platformName: 'Mixpanel',
-        title: 'Mixpanel to Excel — Export Events & Analytics Data',
-        description: 'Convert Mixpanel JSON exports to Excel. Flatten deeply nested event properties and user profiles for custom analytics in spreadsheets.',
+        title: 'Mixpanel JSON to Excel Converter — Event Dumps & Properties',
+        description: 'Convert Mixpanel raw event JSON exports to Excel. Auto-flattens nested event properties, distinct IDs, and user traits into clean spreadsheet columns.',
         h1: 'Mixpanel to Excel Converter',
         subheading: 'Export Mixpanel event data to Excel for custom product analytics.',
         content: {
@@ -771,8 +771,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'make-com-json-to-excel',
         platformName: 'Make.com',
-        title: 'Make.com to Excel — Export Workflow Scenarios & History',
-        description: 'Convert Make.com (Integromat) JSON exports to Excel. Flatten nested bundles, collections, and execution histories for reporting.',
+        title: 'Make.com JSON to Excel Converter — Bundles & Workflow History',
+        description: 'Convert Make.com (Integromat) JSON exports to Excel. Flattens nested data bundles, collections, and execution history into clean spreadsheet rows.',
         h1: 'Make.com to Excel Converter',
         subheading: 'Export Make.com scenarios, execution histories, and data bundles to Excel.',
         content: {
@@ -792,8 +792,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'amplitude-json-to-excel',
         platformName: 'Amplitude',
-        title: 'Amplitude to Excel — Export User Analytics & Events',
-        description: 'Convert Amplitude JSON exports to Excel. Flatten user properties and event data for spreadsheet analysis.',
+        title: 'Amplitude JSON to Excel Converter — User Events & Properties',
+        description: 'Convert Amplitude event JSON exports to Excel spreadsheets. Flattens user_properties, event_properties, and device metadata for product analytics.',
         h1: 'Amplitude to Excel Converter',
         subheading: 'Export Amplitude user events to Excel for custom analytics reporting.',
         content: {
@@ -808,6 +808,66 @@ export const converterPages: ConverterPageConfig[] = [
         faqs: [
             { question: 'How do I export Amplitude events to Excel?', answer: 'Use the Amplitude Export API to download your events as JSON, then paste the data here for instant Excel conversion.' },
             { question: 'Does this handle nested JSON properties?', answer: 'Yes. Both user_properties and event_properties objects are automatically flattened into separate, sortable columns in Excel.' }
+        ]
+    },
+    {
+        slug: 'postman-json-to-excel',
+        platformName: 'Postman',
+        title: 'Convert Postman JSON to Excel (XLSX) — Collections & Responses',
+        description: 'Convert Postman Collection (v2.1) exports and API response JSON to clean Excel spreadsheets. Flattens endpoints, headers, query params, and payloads.',
+        h1: 'Postman to Excel Converter',
+        subheading: 'Convert Postman collections and API responses into clean, spreadsheet-ready tables.',
+        tldr: 'To export Postman collections or API responses to Excel, paste the JSON export into JsonExport. We automatically unroll request headers, methods, URLs, and response payloads into organized spreadsheet columns.',
+        content: {
+            intro: 'Postman collections (v2.1) and API responses are heavily nested with nested items, request definitions, header arrays, and URL objects. JsonExport automatically unrolls and flattens every endpoint and parameter into structured columns for QA and documentation.',
+            features: [
+                'Flatten Postman Collection v2.1 item hierarchies',
+                'Extract request methods, URLs, and query parameters into separate columns',
+                'Unroll response JSON payloads into clean rows',
+                '100% Client-Side Processing — safe for private API keys and tokens'
+            ]
+        },
+        faqs: [
+            {
+                question: 'How do I export my Postman Collection to Excel?',
+                answer: 'In Postman, click on your Collection -> "Export" -> select Collection v2.1 JSON. Copy or upload that JSON file here to get a clean spreadsheet.'
+            },
+            {
+                question: 'Are my API keys and tokens safe?',
+                answer: 'Yes. All parsing and conversion happens 100% locally in your browser memory. No tokens, headers, or payloads are uploaded to any server.'
+            },
+            {
+                question: 'Can I convert single API JSON responses?',
+                answer: 'Yes. Simply copy the JSON response body from Postman and paste it into the editor to generate an immediate Excel or CSV download.'
+            }
+        ]
+    },
+    {
+        slug: 'figma-json-to-excel',
+        platformName: 'Figma',
+        title: 'Convert Figma JSON to Excel (XLSX) — Design Tokens & Variables',
+        description: 'Convert Figma Variables and Design Tokens JSON exports to Excel. Flattens theme modes (Light/Dark), color values, and typography into clean rows.',
+        h1: 'Figma to Excel Converter',
+        subheading: 'Turn Figma design token and variable exports into structured spreadsheet tables.',
+        tldr: 'Convert Figma Variables and Design Tokens JSON into Excel by pasting your export file. The tool automatically separates modes (Light/Dark), token categories, and resolved values into organized columns.',
+        content: {
+            intro: 'Design system engineers and product teams frequently export Figma variables and tokens as JSON. However, nested mode values and variable collections are unreadable in Excel. JsonExport flattens Figma collections into clear rows with dedicated columns for each theme mode.',
+            features: [
+                'Flatten Figma Variable Collections and token definitions',
+                'Organize Light Mode and Dark Mode values into clean side-by-side columns',
+                'Extract token descriptions, resolved types, and scopes',
+                '100% Private local conversion for proprietary design systems'
+            ]
+        },
+        faqs: [
+            {
+                question: 'How do I convert Figma Tokens to CSV or Excel?',
+                answer: 'Export your tokens or variables JSON from Figma (or via plugins like Tokens Studio), paste the JSON here, and download as Excel (.xlsx) or CSV.'
+            },
+            {
+                question: 'Does this handle multi-mode variables (e.g. Light/Dark)?',
+                answer: 'Yes. Our Smart Flattener unrolls the valuesByMode structure into separate columns so you can compare modes in Excel.'
+            }
         ]
     }
 ];

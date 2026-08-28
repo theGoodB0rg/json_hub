@@ -1,5 +1,5 @@
 ---
-title: "Salesforce to Excel — Complete Export Guide (2026)"
+title: "How to Export Salesforce to Excel (Bypass 2,000 Row Limits & Fix [object Object])"
 date: "2026-01-16"
 description: "Export Salesforce data to Excel — contacts, opportunities, and reports. Step-by-step guide for Data Loader, API, and no-code methods."
 keywords: ["salesforce to excel", "export salesforce data", "salesforce reports excel", "salesforce data loader alternative", "salesforce export all fields"]

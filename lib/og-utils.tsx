@@ -72,7 +72,21 @@ export const ICONS = {
         <svg width="120" height="120" viewBox="0 0 24 24" fill="#F06A6A" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" fill="#F06A6A" />
             <path d="M12 7V17M7 12H17" stroke="white" strokeWidth="2" />
-            {/* Using a placeholder for Asana simple aesthetic since I don't have the exact path handy from the other file, but I will use the generic 'json' if needed or just this simple one. Actually let me use a generic 'JSON' file icon if platform not found. */}
+        </svg>
+    ),
+    postman: (
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="#FF6C37" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#FF6C37" />
+            <path d="M7 12l3 3 7-7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    ),
+    figma: (
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 12a4 4 0 1 1 0-8h4v8H8z" fill="#F24E1E" />
+            <path d="M12 4h4a4 4 0 1 1 0 8h-4V4z" fill="#FF7262" />
+            <path d="M12 12h4a4 4 0 1 1 0 8h-4v-8z" fill="#1ABCFE" />
+            <path d="M8 20a4 4 0 0 1 0-8h4v4a4 4 0 0 1-4 4z" fill="#0ACF83" />
+            <path d="M8 12a4 4 0 1 1 0-8h4v8H8z" fill="#A259FF" />
         </svg>
     ),
     generic_json: (
