@@ -16,11 +16,24 @@ export function buildPageMetadata({
     description,
     canonicalPath = ROUTES.home,
 }: BuildPageMetadataInput): Metadata {
+    const url = toAbsoluteUrl(canonicalPath);
     return {
         title,
         description,
         alternates: {
             canonical: canonicalPath,
+        },
+        openGraph: {
+            title,
+            description,
+            type: 'website',
+            url,
+            siteName: 'JsonExport',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
         },
     };
 }

@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ConverterPageConfig } from '@/lib/platform-data';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BrandIcon } from '@/components/ui/BrandIcon';
 import { ArrowRight, Check, Copy, FileCode2, Table2 } from 'lucide-react';
 import { useAppStore } from '@/lib/store/store';
+import { getPlatformSample } from '@/lib/converters/platform-samples';
+import { flattenJSON } from '@/lib/parsers/flattener';
 
 interface Props {
     pageConfig: ConverterPageConfig;
@@ -16,39 +18,29 @@ export function DemoPreview({ pageConfig }: Props) {
     const [copied, setCopied] = useState(false);
     const { setRawInput, parseInput } = useAppStore();
 
-    // Default sample snippet tailored to the platform
-    const sampleSnippet = JSON.stringify({
-        platform: pageConfig.platformName,
-        export_date: "2024-03-15T10:00:00Z",
-        records: [
-            {
-                id: `${pageConfig.platformName.toLowerCase().slice(0, 3)}_101`,
-                status: "active",
-                metadata: {
-                    plan: "enterprise",
-                    region: "us-east-1",
-                    seats: 25
-                },
-                financials: {
-                    mrr: 1450.00,
-                    currency: "USD"
-                }
-            },
-            {
-                id: `${pageConfig.platformName.toLowerCase().slice(0, 3)}_102`,
-                status: "active",
-                metadata: {
-                    plan: "growth",
-                    region: "eu-west-1",
-                    seats: 10
-                },
-                financials: {
-                    mrr: 590.00,
-                    currency: "USD"
-                }
-            }
-        ]
-    }, null, 2);
+    // Load authentic platform sample
+    const platformSample = useMemo(() => {
+        return getPlatformSample(pageConfig.platformName);
+    }, [pageConfig.platformName]);
+
+    const sampleSnippet = platformSample.sampleJson;
+
+    // Dynamically flatten the authentic sample data for the preview table
+    const previewData = useMemo(() => {
+        try {
+            const parsed = JSON.parse(sampleSnippet);
+            const { rows, schema } = flattenJSON(parsed);
+            return {
+                columns: schema.slice(0, 6), // Top 6 columns for clean display
+                rows: rows.slice(0, 4), // First 4 rows
+            };
+        } catch {
+            return {
+                columns: ['id', 'name', 'status'],
+                rows: [{ id: '1', name: 'Sample', status: 'active' }],
+            };
+        }
+    }, [sampleSnippet]);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(sampleSnippet);
@@ -73,12 +65,12 @@ export function DemoPreview({ pageConfig }: Props) {
                     How JsonExport Flattens {pageConfig.platformName} Data
                 </h3>
                 <p className="text-muted-foreground text-sm max-w-2xl mx-auto mt-2">
-                    Nested objects and complex arrays are automatically unpacked into clean, spreadsheet-ready columns with zero manual coding.
+                    {platformSample.description}. Nested objects and complex arrays are unpacked into clean spreadsheet columns automatically.
                 </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* BEFORE: Raw Nested Input */}
+                {/* BEFORE: Raw Authentic Platform JSON */}
                 <Card className="p-5 bg-card/80 border border-border/50 flex flex-col shadow-sm">
                     <div className="flex items-center justify-between pb-3 border-b border-border/40 mb-3">
                         <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
@@ -108,7 +100,7 @@ export function DemoPreview({ pageConfig }: Props) {
                             <span>After: Flattened Excel (.xlsx) Columns</span>
                         </div>
                         <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                            Dot-Notation Auto-Unwrapped
+                            Clean Dot-Notation Columns
                         </span>
                     </div>
 
@@ -116,28 +108,27 @@ export function DemoPreview({ pageConfig }: Props) {
                         <table className="w-full text-xs text-left border-collapse">
                             <thead>
                                 <tr className="bg-muted/60 border-b border-border/40 text-muted-foreground">
-                                    <th className="p-2.5 font-semibold">records.id</th>
-                                    <th className="p-2.5 font-semibold">records.status</th>
-                                    <th className="p-2.5 font-semibold">metadata.plan</th>
-                                    <th className="p-2.5 font-semibold">metadata.region</th>
-                                    <th className="p-2.5 font-semibold">financials.mrr</th>
+                                    {previewData.columns.map((col) => (
+                                        <th key={col} className="p-2.5 font-semibold whitespace-nowrap">
+                                            {col}
+                                        </th>
+                                    ))}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border/20 font-mono">
-                                <tr className="hover:bg-muted/30 transition-colors">
-                                    <td className="p-2.5 text-primary font-medium">{pageConfig.platformName.toLowerCase().slice(0, 3)}_101</td>
-                                    <td className="p-2.5">active</td>
-                                    <td className="p-2.5 text-indigo-500">enterprise</td>
-                                    <td className="p-2.5">us-east-1</td>
-                                    <td className="p-2.5 text-emerald-500">$1,450.00</td>
-                                </tr>
-                                <tr className="hover:bg-muted/30 transition-colors">
-                                    <td className="p-2.5 text-primary font-medium">{pageConfig.platformName.toLowerCase().slice(0, 3)}_102</td>
-                                    <td className="p-2.5">active</td>
-                                    <td className="p-2.5 text-indigo-500">growth</td>
-                                    <td className="p-2.5">eu-west-1</td>
-                                    <td className="p-2.5 text-emerald-500">$590.00</td>
-                                </tr>
+                                {previewData.rows.map((row, idx) => (
+                                    <tr key={idx} className="hover:bg-muted/30 transition-colors">
+                                        {previewData.columns.map((col) => {
+                                            const val = row[col];
+                                            const displayVal = val === null || val === undefined ? '—' : String(val);
+                                            return (
+                                                <td key={col} className="p-2.5 whitespace-nowrap text-foreground/85">
+                                                    {displayVal}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>

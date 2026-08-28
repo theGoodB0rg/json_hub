@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useProStore } from '@/lib/store/proStore';
 import { LicenseModal } from '../LicenseModal';
 import { pluginRegistry } from '@/lib/plugins/registry';
+import { ConversionFeedback } from '@/components/FeedbackWidget/ConversionFeedback';
 
 export function ExportMenu() {
     const {
@@ -27,6 +28,7 @@ export function ExportMenu() {
     const { isPro, setIsPro } = useProStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLicenseModalOpen, setIsLicenseModalOpen] = useState(false);
+    const [hasExported, setHasExported] = useState(false);
 
     const currentPlugin = pluginRegistry.getOrDefault(activePluginId);
 
@@ -53,6 +55,7 @@ export function ExportMenu() {
             setIsDialogOpen(true);
         } else {
             exportData(selectedFormat);
+            setHasExported(true);
         }
     };
 
@@ -61,12 +64,12 @@ export function ExportMenu() {
     }
 
     return (
-        <Card className="p-4 border-none shadow-xl bg-card/50 backdrop-blur-sm ring-1 ring-white/10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-5">
+        <Card className="p-4 border-none shadow-xl bg-card/50 backdrop-blur-sm ring-1 ring-white/10 relative overflow-hidden space-y-4">
+            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                 <Download className="w-20 h-20" />
             </div>
 
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold flex items-center gap-2">
                     <Download className="w-4 h-4 text-primary" />
                     Export Options
@@ -103,7 +106,7 @@ export function ExportMenu() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="grid grid-cols-2 gap-2">
                 {formats.map((format) => (
                     <Button
                         key={format.value}
@@ -128,10 +131,21 @@ export function ExportMenu() {
                 Download {formats.find((f) => f.value === selectedFormat)?.label}
             </Button>
 
+            {hasExported && (
+                <ConversionFeedback
+                    platform={activePluginId}
+                    format={selectedFormat}
+                    onDismiss={() => setHasExported(false)}
+                />
+            )}
+
             <ExportSettingsDialog
                 isOpen={isDialogOpen}
                 setIsOpen={setIsDialogOpen}
-                onConfirm={(format) => exportData(format)}
+                onConfirm={(format) => {
+                    exportData(format);
+                    setHasExported(true);
+                }}
             />
 
             <LicenseModal 

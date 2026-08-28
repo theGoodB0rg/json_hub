@@ -5,6 +5,7 @@ import { conversionMatrix, getMatrixItem } from '@/lib/content-matrix/matrix';
 import { ConverterApp } from '@/components/ConverterApp';
 import { FAQSchema } from '@/components/FAQSchema';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { RelatedTools } from '@/components/converters/RelatedTools';
 import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES, SITE_ORIGIN, toAbsoluteUrl } from '@/lib/routes';
 import { CheckCircle2, Shield, Zap, Sparkles, ArrowRight } from 'lucide-react';
@@ -196,20 +197,7 @@ export default function ConversionPage({ params }: Props) {
                 </section>
 
                 {/* Related Tools Links */}
-                <section className="space-y-4 pt-8 border-t border-border/40">
-                    <h3 className="text-xl font-bold">Related Conversion Tools</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        {conversionMatrix.filter((c) => c.slug !== item.slug).map((c) => (
-                            <Link
-                                key={c.slug}
-                                href={`/${c.slug}`}
-                                className="p-3 rounded-lg border border-border/40 hover:border-primary/50 text-sm font-medium hover:text-primary transition-colors bg-card/40"
-                            >
-                                {c.h1}
-                            </Link>
-                        ))}
-                    </div>
-                </section>
+                <RelatedTools currentSlug={item.slug} />
             </div>
 
             {/* Injected Schema */}

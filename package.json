@@ -42,6 +42,10 @@
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
     "optimize-images": "node scripts/optimize-images.js",
+    "telemetry:pull": "npx tsx scripts/pull-telemetry.ts",
+    "telemetry:stats": "npx tsx scripts/analyze-telemetry.ts",
+    "analytics": "npx tsx scripts/analytics/unified-report.ts",
+    "analytics:report": "npx tsx scripts/analytics/unified-report.ts",
     "trend-research": "node scripts/trend-research/index.js",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"

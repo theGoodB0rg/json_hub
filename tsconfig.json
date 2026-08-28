@@ -36,6 +36,7 @@
     ],
     "exclude": [
         "node_modules",
+        "worker",
         "**/*.test.ts",
         "**/*.spec.ts",
         "tests",

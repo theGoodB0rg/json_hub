@@ -1,5 +1,5 @@
 ---
-title: "Export Airtable to Excel — Complete Guide (2026)"
+title: "How to Export Airtable to Excel with Linked Records & Attachments [Guide]"
 date: "2026-01-18"
 description: "Export Airtable bases, views, and linked records to Excel. Step-by-step guide covering native export, API method, and automation tools."
 keywords: ["airtable export to excel", "airtable to spreadsheet", "export airtable data", "airtable csv export", "airtable linked records excel"]

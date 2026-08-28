@@ -1,5 +1,5 @@
 ---
-title: "How to Open Large JSON Files in Excel (10MB+)"
+title: "How to Open Large JSON Files in Excel Without Crashing (Step-by-Step)"
 excerpt: "Open large JSON files in Excel without crashes. 3 methods for handling 10MB-100MB+ files — free tools, Power Query, and Python solutions."
 date: "2026-08-11"
 author: "JsonExport Team"

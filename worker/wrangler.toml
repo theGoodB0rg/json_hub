@@ -1,0 +1,11 @@
+name = "jsonexport-telemetry"
+main = "telemetry-worker.ts"
+compatibility_date = "2024-01-01"
+account_id = "18d17abc6c7f3200383d6aba1aad23ac"
+workers_dev = true
+
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jsonexport-db"
+database_id = "1a1816f6-ef4f-418a-b441-279ae39cc3f2"

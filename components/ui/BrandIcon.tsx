@@ -30,6 +30,8 @@ import {
     siGitlab,
     siClickup,
     siLinear,
+    siPostman,
+    siFigma,
     type SimpleIcon,
 } from 'simple-icons';
 
@@ -79,12 +81,16 @@ const SIMPLE_ICONS_MAP: Record<string, SimpleIcon> = {
     gitlab: siGitlab,
     clickup: siClickup,
     linear: siLinear,
+    postman: siPostman,
+    figma: siFigma,
 };
 
 /**
  * Official Brand Color Definitions
  */
 export const BRAND_COLORS: Record<string, { bg: string; text: string; hex: string }> = {
+    postman: { bg: 'bg-[#FF6C37]/10', text: 'text-[#FF6C37]', hex: '#FF6C37' },
+    figma: { bg: 'bg-[#F24E1E]/10', text: 'text-[#F24E1E]', hex: '#F24E1E' },
     stripe: { bg: 'bg-[#635BFF]/10', text: 'text-[#635BFF]', hex: '#635BFF' },
     shopify: { bg: 'bg-[#7AB55C]/10', text: 'text-[#7AB55C]', hex: '#7AB55C' },
     salesforce: { bg: 'bg-[#00A1E0]/10', text: 'text-[#00A1E0]', hex: '#00A1E0' },
@@ -143,6 +149,8 @@ export const BRAND_COLORS: Record<string, { bg: string; text: string; hex: strin
 export function normalizePlatformKey(raw?: string): string {
     if (!raw) return '';
     const clean = raw.toLowerCase().trim();
+    if (clean.includes('postman')) return 'postman';
+    if (clean.includes('figma')) return 'figma';
     if (clean.includes('stripe')) return 'stripe';
     if (clean.includes('shopify')) return 'shopify';
     if (clean.includes('salesforce')) return 'salesforce';

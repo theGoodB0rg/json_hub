@@ -8,8 +8,8 @@ import { ROUTES, converterPath } from '@/lib/routes';
 import { BrandIcon } from '@/components/ui/BrandIcon';
 
 export const metadata: Metadata = buildPageMetadata({
-    title: 'JSON to Excel Converter Online — Free, Private, No Upload | JsonExport',
-    description: 'Convert JSON to Excel, CSV, or XLSX instantly — 100% free, no file upload, no signup. Handles nested arrays, [object Object] errors, and 100MB+ files privately in your browser.',
+    title: 'JSON Export — Convert & Flatten JSON to Excel (XLSX) & CSV Online',
+    description: 'Convert and export JSON to Excel (.xlsx) or CSV in 1 click. Auto-flattens nested arrays, eliminates [object Object] errors, and handles large 100MB+ files online.',
     canonicalPath: ROUTES.home,
 });
 
@@ -22,7 +22,7 @@ export default function Home() {
                         Convert <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">JSON to Excel</span> Instantly.
                     </h1>
                 }
-                subheading="Free, private JSON converter — handles nested data, [object Object] errors, and CRM exports from Stripe, Salesforce, HubSpot. No upload required, everything runs in your browser."
+                subheading="The fast online JSON exporter — auto-flattens nested arrays, fixes [object Object] errors, and unwinds API dumps from Stripe, Salesforce, HubSpot into clean spreadsheets."
             />
 
             {/* Comparison Table Section */}
