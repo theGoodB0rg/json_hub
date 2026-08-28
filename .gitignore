@@ -3,6 +3,9 @@ node_modules
 /dist/  
 .env
 .env*.local
+gsc-credentials.json
+*credentials*.json
+*service_account*.json
 .DS_Store   
 .vscode/
 .idea/
