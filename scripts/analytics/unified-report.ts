@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { pullTelemetryData } from '../pull-telemetry';
-import { loadGscData, GscSummary } from './gsc-parser';
+import { loadGscData, GscSummary, GscQuery, GscPage } from './gsc-parser';
+import { fetchLiveGscData } from './gsc-fetcher';
 
 interface TelemetryEvent {
     id: string;
@@ -68,9 +69,69 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
         console.warn(`⚠️ Telemetry sync warning: ${e.message}`);
     }
 
-    // 2. Load Google Search Console Organic Intelligence
-    console.log('🔍 [2/3] Parsing Google Search Console Organic Signals...');
-    const gscSummary = loadGscData();
+    // 2. Fetch Live Google Search Console Organic Intelligence
+    console.log('🔍 [2/3] Querying Google Search Console Live API...');
+    let gscSummary: GscSummary;
+    try {
+        const liveGsc = await fetchLiveGscData();
+        const topQueries: GscQuery[] = liveGsc.queries
+            .sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions)
+            .slice(0, 20)
+            .map((q) => ({
+                query: q.query,
+                clicks: q.clicks,
+                impressions: q.impressions,
+                ctr: Number((q.ctr * 100).toFixed(2)),
+                position: Number(q.position.toFixed(1)),
+                opportunityScore: q.impressions * (1 - q.ctr),
+            }));
+
+        const opportunityQueries: GscQuery[] = liveGsc.queries
+            .filter((q) => q.position >= 3 && q.position <= 25 && q.impressions >= 10)
+            .sort((a, b) => b.impressions - a.impressions)
+            .slice(0, 15)
+            .map((q) => ({
+                query: q.query,
+                clicks: q.clicks,
+                impressions: q.impressions,
+                ctr: Number((q.ctr * 100).toFixed(2)),
+                position: Number(q.position.toFixed(1)),
+                opportunityScore: q.impressions * (1 - q.ctr),
+            }));
+
+        const topPages: GscPage[] = liveGsc.pages
+            .sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions)
+            .slice(0, 20)
+            .map((p) => ({
+                page: p.page,
+                clicks: p.clicks,
+                impressions: p.impressions,
+                ctr: Number((p.ctr * 100).toFixed(2)),
+                position: Number(p.position.toFixed(1)),
+            }));
+
+        gscSummary = {
+            totalClicks: liveGsc.totalClicks,
+            totalImpressions: liveGsc.totalImpressions,
+            avgCtr: Number(liveGsc.avgCtr.toFixed(2)),
+            avgPosition: Number(liveGsc.avgPosition.toFixed(1)),
+            topQueries,
+            opportunityQueries,
+            topPages,
+            countries: [],
+            devices: [],
+            appearance: [],
+            dateRange: `${liveGsc.startDate} to ${liveGsc.endDate}`,
+        };
+
+        // Save live snapshot
+        fs.writeFileSync(path.join(outDir, 'gsc_live_latest.json'), JSON.stringify(liveGsc, null, 2), 'utf8');
+        console.log(`✅ Live GSC API Connected: ${liveGsc.queries.length} queries, ${liveGsc.pages.length} pages pulled.`);
+    } catch (e: any) {
+        console.warn(`⚠️ Live GSC fetch notice: ${e.message}`);
+        console.log('🔄 Reading local Search Console snapshots...');
+        gscSummary = loadGscData();
+    }
 
     // 3. Process Telemetry Metrics
     console.log('📊 [3/3] Cross-referencing Conversion & Organic Intelligence...\n');
@@ -121,6 +182,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
         );
     }
 
+    // Top traffic page
     if (gscSummary.topPages.length > 0) {
         const topPage = gscSummary.topPages[0];
         recommendations.push(
@@ -128,22 +190,23 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
         );
     }
 
-    if (negFeedback > 0) {
+    // Satisfaction
+    if (satisfactionRate >= 90 && events.length > 0) {
         recommendations.push(
-            `User Feedback Alert: ${negFeedback} negative rating(s) recorded. Review recent user notes in telemetry dashboard to address formatting edge cases.`
+            `Output Quality: ${satisfactionRate}% satisfaction recorded across user feedback submissions. Conversion flattening engine is operating cleanly.`
         );
-    } else {
+    } else if (satisfactionRate < 80 && totalRated > 0) {
         recommendations.push(
-            `Output Quality: 100% satisfaction recorded across user feedback submissions. Conversion flattening engine is operating cleanly.`
+            `Alert: User satisfaction is at ${satisfactionRate}%. Inspect negative feedback in performance_data/telemetry_latest.json to isolate flattening bugs.`
         );
     }
 
     const reportData: UnifiedReportData = {
-        generatedAt: new Date().toISOString(),
+        generatedAt: new Date().toUTCString(),
         gsc: gscSummary,
         telemetry: {
             totalEvents: events.length,
-            parseAttempts: parseAttempts || parseSuccess,
+            parseAttempts,
             parseSuccess,
             exportComplete,
             parseErrors,
@@ -154,89 +217,28 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
             satisfactionRate,
             platformCounts,
             topErrors,
-            recentFeedback: feedback.slice(0, 10)
+            recentFeedback: feedback.slice(0, 5),
         },
-        recommendations
+        recommendations,
     };
 
-    // Print Terminal Dashboard
-    printDashboard(reportData);
+    // 5. Generate Formatted Output Artifacts
+    const mdReport = formatMarkdownReport(reportData);
+    fs.writeFileSync(path.join(outDir, 'unified_analytics_latest.md'), mdReport, 'utf8');
+    fs.writeFileSync(path.join(outDir, 'unified_analytics_latest.json'), JSON.stringify(reportData, null, 2), 'utf8');
 
-    // Save outputs
-    const reportMd = generateMarkdownReport(reportData);
-    fs.writeFileSync(path.join(outDir, 'unified_analytics_latest.md'), reportMd, 'utf-8');
-    fs.writeFileSync(path.join(outDir, 'unified_analytics_latest.json'), JSON.stringify(reportData, null, 2), 'utf-8');
-
-    console.log(`\n📄 Intelligence Report Saved: performance_data/unified_analytics_latest.md`);
-    console.log(`📁 Machine JSON Saved:       performance_data/unified_analytics_latest.json\n`);
+    // 6. Terminal Output Dashboard
+    printTerminalDashboard(reportData);
 
     return reportData;
 }
 
-function printDashboard(data: UnifiedReportData) {
-    const { gsc, telemetry, recommendations } = data;
-    console.log('======================================================================');
-    console.log('🚀 JSONEXPORT.COM — UNIFIED SEARCH & CONVERSION INTELLIGENCE DASHBOARD');
-    console.log('======================================================================');
-    console.log(`Generated: ${new Date(data.generatedAt).toLocaleString()}\n`);
-
-    console.log('┌───────────────────────────────────────────────────────────────────┐');
-    console.log('│ 1. GOOGLE SEARCH CONSOLE — ORGANIC SEARCH PERFORMANCE              │');
-    console.log('└───────────────────────────────────────────────────────────────────┘');
-    console.log(`• Total Organic Clicks:      ${gsc.totalClicks.toLocaleString()}`);
-    console.log(`• Total Search Impressions:  ${gsc.totalImpressions.toLocaleString()}`);
-    console.log(`• Average Search CTR:        ${gsc.avgCtr}%`);
-    console.log('\nTop High-Intent Search Queries:');
-    gsc.topQueries.slice(0, 6).forEach((q, i) => {
-        console.log(`  ${i + 1}. "${q.query.padEnd(28)}" | Clicks: ${String(q.clicks).padStart(3)} | Impr: ${String(q.impressions).padStart(4)} | Pos: ${q.position.toFixed(1)}`);
-    });
-
-    if (gsc.opportunityQueries.length > 0) {
-        console.log('\n🌟 Low-Hanging SEO Opportunities (Pos 3-25, High Impressions):');
-        gsc.opportunityQueries.slice(0, 4).forEach((q, i) => {
-            console.log(`  ⭐ "${q.query.padEnd(28)}" | Impr: ${String(q.impressions).padStart(4)} | Current Pos: ${q.position.toFixed(1)} | CTR: ${q.ctr}%`);
-        });
-    }
-
-    console.log('\n┌───────────────────────────────────────────────────────────────────┐');
-    console.log('│ 2. CLOUDFLARE D1 — APP USAGE & CONVERSION FUNNEL                  │');
-    console.log('└───────────────────────────────────────────────────────────────────┘');
-    console.log(`• Total Tracked Events:      ${telemetry.totalEvents}`);
-    console.log(`• Parses Completed:          ${telemetry.parseSuccess}`);
-    console.log(`• Spreadsheets Exported:     ${telemetry.exportComplete} (${telemetry.conversionRate}% conversion rate)`);
-    console.log(`• User Output Satisfaction:  ${telemetry.satisfactionRate}% (👍 ${telemetry.positiveFeedback} | 👎 ${telemetry.negativeFeedback})`);
-
-    const platforms = Object.entries(telemetry.platformCounts);
-    if (platforms.length > 0) {
-        console.log('\nActive Platform Transformations:');
-        platforms.forEach(([p, stats]) => {
-            console.log(`  • ${p.padEnd(16)} | Parses: ${stats.parses} | Exports: ${stats.exports}`);
-        });
-    }
-
-    if (telemetry.recentFeedback.length > 0) {
-        console.log('\nRecent User Output Feedback:');
-        telemetry.recentFeedback.slice(0, 3).forEach(f => {
-            const icon = f.rating === 'positive' ? '👍' : '👎';
-            console.log(`  ${icon} [${f.platform || 'general'}] "${f.comment || 'No comment'}"`);
-        });
-    }
-
-    console.log('\n┌───────────────────────────────────────────────────────────────────┐');
-    console.log('│ 3. STRATEGIC ACTION ITEMS FOR REPO & PROGRAMMATIC SEO             │');
-    console.log('└───────────────────────────────────────────────────────────────────┘');
-    recommendations.forEach((rec, i) => {
-        console.log(`  ${i + 1}. ${rec}`);
-    });
-    console.log('======================================================================');
-}
-
-function generateMarkdownReport(data: UnifiedReportData): string {
+function formatMarkdownReport(data: UnifiedReportData): string {
     const { gsc, telemetry, recommendations, generatedAt } = data;
 
     return `# Unified Analytics & Search Intelligence Report
 
-*Generated at: ${new Date(generatedAt).toUTCString()}*
+*Generated at: ${generatedAt}*
 
 ---
 
@@ -258,7 +260,7 @@ function generateMarkdownReport(data: UnifiedReportData): string {
 ### Top Driving Queries
 | Query | Clicks | Impressions | CTR | Avg Position |
 | :--- | :--- | :--- | :--- | :--- |
-${gsc.topQueries.slice(0, 10).map(q => `| \`${q.query}\` | ${q.clicks} | ${q.impressions} | ${q.ctr}% | ${q.position.toFixed(1)} |`).join('\n')}
+${gsc.topQueries.slice(0, 10).map(q => `| \`${q.query}\` | ${q.clicks} | ${q.impressions} | ${q.ctr}% | ${q.position} |`).join('\n')}
 
 ### High-Opportunity Keywords (Positions 3–25 with High Search Volume)
 > [!TIP]
@@ -266,12 +268,12 @@ ${gsc.topQueries.slice(0, 10).map(q => `| \`${q.query}\` | ${q.clicks} | ${q.imp
 
 | Keyword | Impressions | Current Pos | CTR | Potential Growth Action |
 | :--- | :--- | :--- | :--- | :--- |
-${gsc.opportunityQueries.slice(0, 8).map(q => `| \`${q.query}\` | ${q.impressions} | ${q.position.toFixed(1)} | ${q.ctr}% | Target with custom landing page & sample data |`).join('\n')}
+${gsc.opportunityQueries.slice(0, 8).map(q => `| \`${q.query}\` | ${q.impressions} | ${q.position} | ${q.ctr}% | Target with custom landing page & sample data |`).join('\n')}
 
 ### Top Organic Landing Pages
 | Page | Clicks | Impressions | CTR | Position |
 | :--- | :--- | :--- | :--- | :--- |
-${gsc.topPages.slice(0, 10).map(p => `| [${p.page}](https://jsonexport.com${p.page}) | ${p.clicks} | ${p.impressions} | ${p.ctr}% | ${p.position.toFixed(1)} |`).join('\n')}
+${gsc.topPages.slice(0, 10).map(p => `| [${p.page}](${p.page.startsWith('http') ? p.page : `https://jsonexport.com${p.page}`}) | ${p.clicks} | ${p.impressions} | ${p.ctr}% | ${p.position} |`).join('\n')}
 
 ---
 
@@ -282,8 +284,8 @@ ${gsc.topPages.slice(0, 10).map(p => `| [${p.page}](https://jsonexport.com${p.pa
 - **Funnel Conversion Rate**: ${telemetry.conversionRate}%
 - **Output Satisfaction**: ${telemetry.satisfactionRate}% (${telemetry.positiveFeedback} positive, ${telemetry.negativeFeedback} negative)
 
-### User Output Feedback
-${telemetry.recentFeedback.length === 0 ? '_No user feedback submissions yet._' : telemetry.recentFeedback.map(f => `- **${f.rating === 'positive' ? '👍' : '👎'} [${f.platform || 'general'}]**: "${f.comment || 'No comment provided'}" _(${new Date(f.timestamp).toLocaleDateString()})_`).join('\n')}
+${telemetry.recentFeedback.length > 0 ? `### User Output Feedback
+${telemetry.recentFeedback.map(f => `- **${f.rating === 'positive' ? '👍' : '👎'} [${f.platform || 'general'}]**: "${f.comment || 'No comment'}" _(${new Date(f.timestamp).toLocaleDateString()})_`).join('\n')}` : ''}
 
 ---
 
@@ -293,6 +295,72 @@ ${recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n\n')}
 `;
 }
 
+function printTerminalDashboard(data: UnifiedReportData): void {
+    const { gsc, telemetry, recommendations } = data;
+
+    console.log('======================================================================');
+    console.log('🚀 JSONEXPORT.COM — UNIFIED SEARCH & CONVERSION INTELLIGENCE DASHBOARD');
+    console.log('======================================================================');
+    console.log(`Generated: ${new Date().toLocaleString()}\n`);
+
+    console.log('┌───────────────────────────────────────────────────────────────────┐');
+    console.log('│ 1. GOOGLE SEARCH CONSOLE — ORGANIC SEARCH PERFORMANCE              │');
+    console.log('└───────────────────────────────────────────────────────────────────┘');
+    console.log(`• Total Organic Clicks:      ${gsc.totalClicks}`);
+    console.log(`• Total Search Impressions:  ${gsc.totalImpressions}`);
+    console.log(`• Average Search CTR:        ${gsc.avgCtr}%`);
+    console.log(`• Date Window:               ${gsc.dateRange || 'Last 28 Days'}\n`);
+
+    console.log('Top High-Intent Search Queries:');
+    gsc.topQueries.slice(0, 6).forEach((q, i) => {
+        console.log(`  ${i + 1}. "${q.query.padEnd(30)}" | Clicks: ${String(q.clicks).padStart(3)} | Impr: ${String(q.impressions).padStart(4)} | Pos: ${q.position}`);
+    });
+
+    if (gsc.opportunityQueries.length > 0) {
+        console.log('\n🌟 Low-Hanging SEO Opportunities (Pos 3-25, High Impressions):');
+        gsc.opportunityQueries.slice(0, 4).forEach((q) => {
+            console.log(`  ⭐ "${q.query.padEnd(30)}" | Impr: ${String(q.impressions).padStart(4)} | Current Pos: ${q.position} | CTR: ${q.ctr}%`);
+        });
+    }
+
+    console.log('\n┌───────────────────────────────────────────────────────────────────┐');
+    console.log('│ 2. CLOUDFLARE D1 — APP USAGE & CONVERSION FUNNEL                  │');
+    console.log('└───────────────────────────────────────────────────────────────────┘');
+    console.log(`• Total Tracked Events:      ${telemetry.totalEvents}`);
+    console.log(`• Parses Completed:          ${telemetry.parseSuccess}`);
+    console.log(`• Spreadsheets Exported:     ${telemetry.exportComplete} (${telemetry.conversionRate}% conversion rate)`);
+    console.log(`• User Output Satisfaction:  ${telemetry.satisfactionRate}% (👍 ${telemetry.positiveFeedback} | 👎 ${telemetry.negativeFeedback})\n`);
+
+    if (Object.keys(telemetry.platformCounts).length > 0) {
+        console.log('Active Platform Transformations:');
+        Object.entries(telemetry.platformCounts).forEach(([platform, counts]) => {
+            console.log(`  • ${platform.padEnd(16)} | Parses: ${counts.parses} | Exports: ${counts.exports}`);
+        });
+    }
+
+    if (telemetry.recentFeedback.length > 0) {
+        console.log('\nRecent User Output Feedback:');
+        telemetry.recentFeedback.forEach(f => {
+            console.log(`  ${f.rating === 'positive' ? '👍' : '👎'} [${f.platform || 'general'}] "${f.comment || 'No comment'}"`);
+        });
+    }
+
+    if (recommendations.length > 0) {
+        console.log('\n┌───────────────────────────────────────────────────────────────────┐');
+        console.log('│ 3. STRATEGIC ACTION ITEMS FOR REPO & PROGRAMMATIC SEO             │');
+        console.log('└───────────────────────────────────────────────────────────────────┘');
+        recommendations.forEach((r, i) => console.log(`  ${i + 1}. ${r}`));
+    }
+
+    console.log('======================================================================\n');
+    console.log('📄 Intelligence Report Saved: performance_data/unified_analytics_latest.md');
+    console.log('📁 Machine JSON Saved:       performance_data/unified_analytics_latest.json\n');
+}
+
+// Auto-run if executed directly via CLI
 if (require.main === module) {
-    generateUnifiedAnalyticsReport();
+    generateUnifiedAnalyticsReport().catch(err => {
+        console.error('Fatal error running unified analytics report:', err);
+        process.exit(1);
+    });
 }
