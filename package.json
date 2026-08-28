@@ -44,6 +44,7 @@
     "optimize-images": "node scripts/optimize-images.js",
     "telemetry:pull": "npx tsx scripts/pull-telemetry.ts",
     "telemetry:stats": "npx tsx scripts/analyze-telemetry.ts",
+    "gsc:pull": "npx tsx scripts/analytics/gsc-fetcher.ts",
     "analytics": "npx tsx scripts/analytics/unified-report.ts",
     "analytics:report": "npx tsx scripts/analytics/unified-report.ts",
     "trend-research": "node scripts/trend-research/index.js",
