@@ -3,6 +3,9 @@ import {
     getTrackedConversionEvents,
     clearTrackedConversionEvents,
     sendUserFeedback,
+    getTelemetryEndpoint,
+    DEFAULT_TELEMETRY_URL,
+    flushPendingTelemetry,
 } from './conversion-events';
 
 describe('Telemetry Conversion Events', () => {
@@ -22,6 +25,11 @@ describe('Telemetry Conversion Events', () => {
 
     afterEach(() => {
         global.fetch = originalFetch;
+    });
+
+    it('resolves to DEFAULT_TELEMETRY_URL when environment variable is absent', () => {
+        const endpoint = getTelemetryEndpoint('/api/telemetry');
+        expect(endpoint).toBe(`${DEFAULT_TELEMETRY_URL}/api/telemetry`);
     });
 
     it('tracks conversion event in localStorage and dispatches custom DOM event', () => {
@@ -44,12 +52,28 @@ describe('Telemetry Conversion Events', () => {
         window.removeEventListener('jsonexport:conversion-event', eventListener);
     });
 
+    it('tracks page_view event correctly', () => {
+        trackConversionEvent('page_view', { path: '/converters/trello-json-to-csv' });
+        const tracked = getTrackedConversionEvents();
+        expect(tracked.length).toBe(1);
+        expect(tracked[0].name).toBe('page_view');
+        expect(tracked[0].payload.path).toBe('/converters/trello-json-to-csv');
+    });
+
     it('limits stored events to MAX_EVENTS to avoid storage overflow', () => {
         for (let i = 0; i < 210; i++) {
             trackConversionEvent('parse_success', { index: i });
         }
         const tracked = getTrackedConversionEvents();
         expect(tracked.length).toBeLessThanOrEqual(200);
+    });
+
+    it('buffers pending events and flushes them in batch', async () => {
+        trackConversionEvent('parse_start', { platform: 'shopify' });
+        trackConversionEvent('parse_success', { platform: 'shopify' });
+
+        await flushPendingTelemetry();
+        expect(global.fetch).toHaveBeenCalled();
     });
 
     it('sends feedback payload without throwing', async () => {

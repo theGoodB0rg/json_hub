@@ -72,7 +72,32 @@ export async function pullTelemetryData(options: PullOptions = {}) {
         fs.mkdirSync(outDir, { recursive: true });
     }
 
-    console.log(`[Telemetry Pull] Fetching latest events from ${endpoint}...`);
+    // Load existing cached data for incremental merge
+    let existingEvents: any[] = [];
+    let existingFeedback: any[] = [];
+    let latestTimestamp = 0;
+
+    if (fs.existsSync(outFile)) {
+        try {
+            const rawCache = JSON.parse(fs.readFileSync(outFile, 'utf-8'));
+            if (Array.isArray(rawCache.events)) existingEvents = rawCache.events;
+            if (Array.isArray(rawCache.feedback)) existingFeedback = rawCache.feedback;
+
+            for (const e of existingEvents) {
+                if (e.timestamp && e.timestamp > latestTimestamp) latestTimestamp = e.timestamp;
+            }
+            for (const f of existingFeedback) {
+                if (f.timestamp && f.timestamp > latestTimestamp) latestTimestamp = f.timestamp;
+            }
+        } catch {
+            // ignore cache parse error
+        }
+    }
+
+    const isIncremental = latestTimestamp > 0;
+    console.log(
+        `[Telemetry Pull] Fetching ${isIncremental ? `incremental (since ${new Date(latestTimestamp).toISOString()})` : 'full'} events from ${endpoint}...`
+    );
 
     try {
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
@@ -80,21 +105,52 @@ export async function pullTelemetryData(options: PullOptions = {}) {
             headers['Authorization'] = `Bearer ${adminSecret}`;
         }
 
-        const url = `${endpoint}?limit=${limit}`;
+        const url = `${endpoint}?limit=${limit}${isIncremental ? `&since=${latestTimestamp}` : ''}`;
         const data = await fetchHttps(url, headers);
 
-        fs.writeFileSync(outFile, JSON.stringify(data, null, 2), 'utf-8');
+        // Merge incoming delta with existing cache
+        const eventMap = new Map<string, any>();
+        for (const e of existingEvents) {
+            if (e.id) eventMap.set(e.id, e);
+        }
+        for (const e of (data.events || [])) {
+            if (e.id) eventMap.set(e.id, e);
+        }
+
+        const feedbackMap = new Map<string, any>();
+        for (const f of existingFeedback) {
+            if (f.id) feedbackMap.set(f.id, f);
+        }
+        for (const f of (data.feedback || [])) {
+            if (f.id) feedbackMap.set(f.id, f);
+        }
+
+        const mergedEvents = Array.from(eventMap.values()).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        const mergedFeedback = Array.from(feedbackMap.values()).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        const result = {
+            events: mergedEvents,
+            feedback: mergedFeedback,
+            count: {
+                events: mergedEvents.length,
+                feedback: mergedFeedback.length,
+            },
+            new_events_received: data.events?.length ?? 0,
+            fetched_at: Date.now(),
+        };
+
+        fs.writeFileSync(outFile, JSON.stringify(result, null, 2), 'utf-8');
 
         console.log(
-            `[Telemetry Pull] Successfully saved ${data.count?.events ?? 0} events and ${data.count?.feedback ?? 0} feedback items to ${outFile}`
+            `[Telemetry Pull] Successfully synced ${result.count.events} total events (+${result.new_events_received} new) and ${result.count.feedback} feedback records to ${outFile}`
         );
-        return data;
+        return result;
     } catch (error: any) {
-        console.warn(`[Telemetry Pull] Note: Remote fetch failed (${error.message}). Creating fallback.`);
+        console.warn(`[Telemetry Pull] Note: Remote fetch failed (${error.message}). Using local cache.`);
         const fallback = {
-            events: [],
-            feedback: [],
-            count: { events: 0, feedback: 0 },
+            events: existingEvents,
+            feedback: existingFeedback,
+            count: { events: existingEvents.length, feedback: existingFeedback.length },
             fetched_at: Date.now(),
             offline_fallback: true,
         };
