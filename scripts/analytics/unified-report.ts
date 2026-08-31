@@ -33,6 +33,7 @@ interface UnifiedReportData {
     gsc: GscSummary;
     telemetry: {
         totalEvents: number;
+        pageViews: number;
         parseAttempts: number;
         parseSuccess: number;
         exportComplete: number;
@@ -43,6 +44,7 @@ interface UnifiedReportData {
         negativeFeedback: number;
         satisfactionRate: number;
         platformCounts: Record<string, { parses: number; exports: number }>;
+        topCountries: Array<{ country: string; count: number }>;
         topErrors: Array<{ error: string; count: number; samplePath?: string }>;
         recentFeedback: TelemetryFeedback[];
     };
@@ -137,19 +139,31 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     const events: TelemetryEvent[] = telemetryRaw.events || [];
     const feedback: TelemetryFeedback[] = telemetryRaw.feedback || [];
 
+    const pageViews = events.filter(e => e.event_name === 'page_view').length;
     const parseAttempts = events.filter(e => e.event_name === 'parse_start' || e.event_name === 'parse_success' || e.event_name === 'parse_error').length;
     const parseSuccess = events.filter(e => e.event_name === 'parse_success').length;
     const parseErrors = events.filter(e => e.event_name === 'parse_error').length;
-    const exportComplete = events.filter(e => e.event_name === 'export_complete').length;
+    const exportComplete = events.filter(e => e.event_name === 'export_complete' || e.event_name === 'export_success').length;
     const exportErrors = events.filter(e => e.event_name === 'export_error').length;
 
     const platformCounts: Record<string, { parses: number; exports: number }> = {};
+    const countryMap: Record<string, number> = {};
+
     for (const e of events) {
         const p = (e.platform || 'general').toLowerCase();
         if (!platformCounts[p]) platformCounts[p] = { parses: 0, exports: 0 };
         if (e.event_name === 'parse_success') platformCounts[p].parses++;
-        if (e.event_name === 'export_complete') platformCounts[p].exports++;
+        if (e.event_name === 'export_complete' || e.event_name === 'export_success') platformCounts[p].exports++;
+
+        if (e.country && e.country !== 'Unknown') {
+            countryMap[e.country] = (countryMap[e.country] || 0) + 1;
+        }
     }
+
+    const topCountries = Object.entries(countryMap)
+        .map(([country, count]) => ({ country, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
 
     const posFeedback = feedback.filter(f => f.rating === 'positive').length;
     const negFeedback = feedback.filter(f => f.rating === 'negative').length;
@@ -205,6 +219,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
         gsc: gscSummary,
         telemetry: {
             totalEvents: events.length,
+            pageViews,
             parseAttempts,
             parseSuccess,
             exportComplete,
@@ -215,6 +230,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
             negativeFeedback: negFeedback,
             satisfactionRate,
             platformCounts,
+            topCountries,
             topErrors,
             recentFeedback: feedback.slice(0, 5),
         },
@@ -248,6 +264,7 @@ function formatMarkdownReport(data: UnifiedReportData): string {
 | **Total Organic Search Clicks** | **${gsc.totalClicks.toLocaleString()}** |
 | **Total Search Impressions** | **${gsc.totalImpressions.toLocaleString()}** |
 | **Average Organic CTR** | **${gsc.avgCtr}%** |
+| **Tracked Page Views** | **${telemetry.pageViews}** |
 | **Successful Data Parses** | **${telemetry.parseSuccess}** |
 | **Spreadsheets Exported** | **${telemetry.exportComplete}** |
 | **User Output Satisfaction** | **${telemetry.satisfactionRate}%** (👍 ${telemetry.positiveFeedback} / 👎 ${telemetry.negativeFeedback}) |
@@ -278,10 +295,17 @@ ${gsc.topPages.slice(0, 10).map(p => `| [${p.page}](${p.page.startsWith('http') 
 
 ## 3. In-App Conversion & Satisfaction Telemetry
 
+- **Page Views**: ${telemetry.pageViews}
 - **Parse Successes**: ${telemetry.parseSuccess}
 - **Exports Completed**: ${telemetry.exportComplete}
 - **Funnel Conversion Rate**: ${telemetry.conversionRate}%
 - **Output Satisfaction**: ${telemetry.satisfactionRate}% (${telemetry.positiveFeedback} positive, ${telemetry.negativeFeedback} negative)
+
+${telemetry.topCountries.length > 0 ? `### Geographic Breakdown
+| Country | Events |
+| :--- | :--- |
+${telemetry.topCountries.map(c => `| ${c.country} | ${c.count} |`).join('\n')}
+` : ''}
 
 ${telemetry.recentFeedback.length > 0 ? `### User Output Feedback
 ${telemetry.recentFeedback.map(f => `- **${f.rating === 'positive' ? '👍' : '👎'} [${f.platform || 'general'}]**: "${f.comment || 'No comment'}" _(${new Date(f.timestamp).toLocaleDateString()})_`).join('\n')}` : ''}
@@ -326,6 +350,7 @@ function printTerminalDashboard(data: UnifiedReportData): void {
     console.log('│ 2. CLOUDFLARE D1 — APP USAGE & CONVERSION FUNNEL                  │');
     console.log('└───────────────────────────────────────────────────────────────────┘');
     console.log(`• Total Tracked Events:      ${telemetry.totalEvents}`);
+    console.log(`• Page Views Logged:         ${telemetry.pageViews}`);
     console.log(`• Parses Completed:          ${telemetry.parseSuccess}`);
     console.log(`• Spreadsheets Exported:     ${telemetry.exportComplete} (${telemetry.conversionRate}% conversion rate)`);
     console.log(`• User Output Satisfaction:  ${telemetry.satisfactionRate}% (👍 ${telemetry.positiveFeedback} | 👎 ${telemetry.negativeFeedback})\n`);
@@ -334,6 +359,13 @@ function printTerminalDashboard(data: UnifiedReportData): void {
         console.log('Active Platform Transformations:');
         Object.entries(telemetry.platformCounts).forEach(([platform, counts]) => {
             console.log(`  • ${platform.padEnd(16)} | Parses: ${counts.parses} | Exports: ${counts.exports}`);
+        });
+    }
+
+    if (telemetry.topCountries.length > 0) {
+        console.log('\nTop Visitor Countries (D1 Edge):');
+        telemetry.topCountries.forEach(c => {
+            console.log(`  🌍 ${c.country.padEnd(6)} | ${c.count} event(s)`);
         });
     }
 

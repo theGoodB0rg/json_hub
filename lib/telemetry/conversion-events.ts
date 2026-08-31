@@ -1,4 +1,7 @@
 export type ConversionEventName =
+    | 'page_view'
+    | 'funnel_step'
+    | 'parse_start'
     | 'parse_success'
     | 'parse_error'
     | 'export_success'
@@ -16,33 +19,116 @@ export interface ConversionEventPayload {
 }
 
 export interface ConversionEvent {
+    id: string;
     name: ConversionEventName;
     timestamp: number;
     payload: ConversionEventPayload;
 }
 
 export interface UserFeedbackPayload {
-    rating: 'positive' | 'negative';
+    id?: string;
+    rating: 'positive' | 'negative' | 'neutral';
     comment?: string;
     platform?: string;
     format?: string;
     path?: string;
 }
 
+export const DEFAULT_TELEMETRY_URL = 'https://jsonexport-telemetry.idowue93.workers.dev';
 const STORAGE_KEY = 'jsonexport:conversion-events';
+const PENDING_QUEUE_KEY = 'jsonexport:telemetry-pending';
 const FEEDBACK_STORAGE_KEY = 'jsonexport:user-feedback';
 const MAX_EVENTS = 200;
+const MAX_PENDING = 100;
 
 function isBrowser() {
     return typeof window !== 'undefined';
 }
 
-function getTelemetryEndpoint(subpath: string): string {
-    const baseUrl = process.env.NEXT_PUBLIC_TELEMETRY_URL || '';
-    if (baseUrl) {
-        return `${baseUrl.replace(/\/$/, '')}${subpath}`;
+function generateId(): string {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        try {
+            return crypto.randomUUID();
+        } catch {
+            // fallback
+        }
     }
-    return subpath;
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+export function getTelemetryEndpoint(subpath: string): string {
+    const baseUrl = process.env.NEXT_PUBLIC_TELEMETRY_URL || DEFAULT_TELEMETRY_URL;
+    return `${baseUrl.replace(/\/$/, '')}${subpath}`;
+}
+
+function getPendingQueue(): any[] {
+    if (!isBrowser()) return [];
+    try {
+        const raw = window.localStorage.getItem(PENDING_QUEUE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        return [];
+    }
+}
+
+function savePendingQueue(queue: any[]) {
+    if (!isBrowser()) return;
+    try {
+        window.localStorage.setItem(PENDING_QUEUE_KEY, JSON.stringify(queue.slice(-MAX_PENDING)));
+    } catch {
+        // Local storage error
+    }
+}
+
+let isFlushing = false;
+export async function flushPendingTelemetry() {
+    if (!isBrowser() || isFlushing) return;
+    const queue = getPendingQueue();
+    if (queue.length === 0) return;
+
+    isFlushing = true;
+    const batch = queue.slice(0, 50);
+    const endpoint = getTelemetryEndpoint('/api/telemetry/batch');
+
+    try {
+        const body = JSON.stringify({ events: batch });
+        let sent = false;
+
+        if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+            const blob = new Blob([body], { type: 'application/json' });
+            sent = navigator.sendBeacon(endpoint, blob);
+        }
+
+        if (!sent) {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body,
+                keepalive: true,
+            });
+            sent = res.ok;
+        }
+
+        if (sent) {
+            const remaining = queue.slice(batch.length);
+            savePendingQueue(remaining);
+        }
+    } catch {
+        // Will retry on next activity or online event
+    } finally {
+        isFlushing = false;
+    }
+}
+
+// Auto-flush on window online event
+if (isBrowser()) {
+    try {
+        window.addEventListener('online', () => {
+            flushPendingTelemetry().catch(() => {});
+        });
+    } catch {
+        // Ignore listener error
+    }
 }
 
 function sendRemotePayload(url: string, data: any) {
@@ -62,7 +148,7 @@ function sendRemotePayload(url: string, data: any) {
             body,
             keepalive: true,
         }).catch(() => {
-            // Fails silently to protect user experience
+            // Fails silently, already queued in pending storage if critical
         });
     } catch {
         // Suppress telemetry errors
@@ -76,15 +162,17 @@ export function trackConversionEvent(
     if (!isBrowser()) return;
 
     const event: ConversionEvent = {
+        id: generateId(),
         name,
         timestamp: Date.now(),
         payload: {
-            ...payload,
             path: typeof window !== 'undefined' ? window.location.pathname : undefined,
             referrer: typeof document !== 'undefined' ? document.referrer || '(direct)' : undefined,
+            ...payload,
         },
     };
 
+    // Store in local history for diagnostics
     try {
         const raw = window.localStorage.getItem(STORAGE_KEY);
         const existing: ConversionEvent[] = raw ? JSON.parse(raw) : [];
@@ -102,16 +190,32 @@ export function trackConversionEvent(
 
     // Transmit to Cloudflare D1 worker
     const endpoint = getTelemetryEndpoint('/api/telemetry');
-    sendRemotePayload(endpoint, {
+    const flatEvent = {
+        id: event.id,
         event_name: name,
+        timestamp: event.timestamp,
         ...event.payload,
-    });
+    };
+
+    // Add to pending queue and attempt transmission
+    const pending = getPendingQueue();
+    savePendingQueue([...pending, flatEvent]);
+
+    sendRemotePayload(endpoint, flatEvent);
+
+    // If there's an accumulated queue, flush in background
+    if (pending.length > 0) {
+        setTimeout(() => {
+            flushPendingTelemetry().catch(() => {});
+        }, 100);
+    }
 }
 
 export async function sendUserFeedback(feedback: UserFeedbackPayload): Promise<void> {
     if (!isBrowser()) return;
 
     const record = {
+        id: feedback.id || generateId(),
         ...feedback,
         path: feedback.path || (typeof window !== 'undefined' ? window.location.pathname : ''),
         timestamp: Date.now(),
@@ -160,6 +264,7 @@ export function clearTrackedConversionEvents() {
     if (!isBrowser()) return;
     try {
         window.localStorage.removeItem(STORAGE_KEY);
+        window.localStorage.removeItem(PENDING_QUEUE_KEY);
         window.localStorage.removeItem(FEEDBACK_STORAGE_KEY);
     } catch {
         // Ignore localStorage errors.
