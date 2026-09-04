@@ -8,8 +8,8 @@ import { ROUTES, converterPath } from '@/lib/routes';
 import { BrandIcon } from '@/components/ui/BrandIcon';
 
 export const metadata: Metadata = buildPageMetadata({
-    title: 'JSON Export — Convert & Flatten JSON to Excel (XLSX) & CSV Online',
-    description: 'Convert and export JSON to Excel (.xlsx) or CSV in 1 click. Auto-flattens nested arrays, eliminates [object Object] errors, and handles large 100MB+ files online.',
+    title: 'JSON to Excel (XLSX) Converter — Free, Instant & No Sign-up',
+    description: 'Convert JSON to Excel (.xlsx) or CSV in 1 click. Auto-flattens nested arrays, fixes [object Object] errors, and processes 100MB+ files with zero sign-up.',
     canonicalPath: ROUTES.home,
 });
 
