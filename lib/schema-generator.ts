@@ -18,13 +18,6 @@ export function generateSoftwareApplicationSchema(pageConfig: ConverterPageConfi
             "availability": "https://schema.org/InStock"
         },
         "description": pageConfig.description,
-        "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.9",
-            "ratingCount": "1480",
-            "bestRating": "5",
-            "worstRating": "1"
-        },
         "featureList": [
             "1-Click Auto-Flattening",
             "Fixes [object Object] Errors",

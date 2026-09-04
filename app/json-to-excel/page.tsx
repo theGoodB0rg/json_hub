@@ -6,8 +6,8 @@ import { FAQSchema } from '@/components/FAQSchema';
 import Link from 'next/link';
 
 export const metadata: Metadata = buildPageMetadata({
-    title: 'JSON to Excel (XLSX) Converter — 1-Click Online Tool (Auto-Flatten)',
-    description: 'Convert JSON to Excel (.xlsx) spreadsheets instantly. Auto-flattens nested arrays, eliminates [object Object] errors, and handles 100MB+ files online.',
+    title: 'JSON to Excel Converter — Auto-Flatten Nested JSON to XLSX',
+    description: 'Convert nested JSON to formatted Excel (.xlsx) spreadsheets instantly. Automatically unwinds arrays into rows and fixes [object Object] errors online.',
     canonicalPath: ROUTES.jsonToExcel,
 });
 

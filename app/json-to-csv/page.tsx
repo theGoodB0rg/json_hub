@@ -4,8 +4,8 @@ import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES } from '@/lib/routes';
 
 export const metadata: Metadata = buildPageMetadata({
-    title: 'JSON to CSV Converter Online — Auto-Flatten Nested Data (Free)',
-    description: 'Convert JSON to CSV files instantly in 1 click. Automatically unwinds nested arrays and hierarchical objects into clean columns for Excel and databases.',
+    title: 'JSON to CSV Converter — Flatten Nested Data Instantly',
+    description: 'Convert JSON to CSV files instantly in 1 click. Automatically unwinds nested arrays and hierarchical objects into clean columns with zero sign-up.',
     canonicalPath: ROUTES.jsonToCsv,
 });
 

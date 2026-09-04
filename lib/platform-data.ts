@@ -22,8 +22,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'hubspot-json-to-excel',
         platformName: 'HubSpot',
-        title: 'Convert HubSpot JSON to Excel (XLSX) — Flatten Contacts, Deals & Properties',
-        description: 'Export HubSpot CRM data to Excel spreadsheets in 1 click. Automatically unwinds nested contact properties, deal pipelines, and company association IDs.',
+        title: 'Export HubSpot to Excel / JSON — Free & Instant Tool',
+        description: 'Export and convert HubSpot CRM contacts, deals, and company properties to Excel (.xlsx) or JSON in 1 click. Auto-flattens nested fields.',
         h1: 'HubSpot to Excel (XLSX) Converter',
         subheading: 'Auto-flatten HubSpot CRM contacts, deals, and custom properties into clean Excel tables.',
         tldr: "To fix nested HubSpot data in Excel, paste your JSON export below. We automatically flatten the deeply nested objects into a clean table, processing everything locally in your browser so your CRM data stays private.",
@@ -54,7 +54,7 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'salesforce-json-to-excel',
         platformName: 'Salesforce',
-        title: 'Salesforce JSON to Excel Converter — Fix [object Object] Columns',
+        title: 'Salesforce JSON to Excel Converter — Fix Object Columns',
         description: 'Convert Salesforce JSON exports to clean Excel spreadsheets. Fixes [object Object] columns from Data Loader, Workbench, or REST API in seconds.',
         h1: 'Salesforce to Excel Converter',
         subheading: 'Salesforce export showing `[object Object]` columns? Fix it instantly without cloud uploads.',
@@ -86,8 +86,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'stripe-json-to-excel',
         platformName: 'Stripe',
-        title: 'Convert Stripe JSON to Excel (XLSX) — Flatten Charges & Metadata',
-        description: 'Convert Stripe JSON exports to Excel spreadsheets. Auto-flattens nested metadata, customer line items, and invoice charges for fast reconciliation.',
+        title: 'Export Stripe to Excel / JSON — Flatten Charges & Metadata',
+        description: 'Convert Stripe logs and API JSON to clean Excel spreadsheets. Auto-flattens nested metadata, customer line items, and invoice charges in 1 click.',
         h1: 'Stripe to Excel Converter',
         subheading: 'Stripe metadata columns unreadable in Excel? Flatten them instantly.',
         tldr: "To fix Stripe JSON in Excel, simply copy the full JSON response from your Stripe Developer Dashboard logs and paste it into the converter below. The tool automatically flattens nested metadata and line items into separate, usable columns.",
@@ -154,7 +154,7 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'nested-arrays-to-excel',
         platformName: 'Generic JSON',
-        title: 'Nested JSON to Excel Converter — Auto-Flatten Deep Arrays & Objects',
+        title: 'Nested JSON to Excel Converter — Auto-Flatten Deep Arrays',
         description: 'Fix [object Object] errors in Excel. Convert deeply nested JSON arrays and hierarchical objects into clean spreadsheet rows and columns instantly.',
         h1: 'Nested Arrays JSON to Excel Repair Tool',
         subheading: 'Nested arrays breaking your export? Flatten them into clean Excel rows instantly.',
@@ -182,7 +182,7 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'jira-json-to-excel',
         platformName: 'Jira',
-        title: 'Convert Jira JSON to Excel (XLSX) — Unwind Issues & Sprints',
+        title: 'Jira JSON to Excel Converter — Unwind Issues & Sprints',
         description: 'Convert Jira API JSON dumps to Excel spreadsheets. Extracts custom fields, sprint histories, changelogs, and issue properties into separate columns.',
         h1: 'Jira JSON to Excel Converter',
         subheading: 'Analyze your team\'s velocity by converting Jira JSON dumps to Excel.',
@@ -210,8 +210,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'trello-json-to-csv',
         platformName: 'Trello',
-        title: 'Convert Trello JSON to CSV Online — Auto-Flatten Cards & Lists',
-        description: 'Convert Trello JSON exports to CSV or Excel. Automatically extracts cards, lists, checklists, custom fields, and labels into clean tabular columns.',
+        title: 'Trello JSON to CSV / Excel Converter — Clean Cards & Lists',
+        description: 'Convert Trello board JSON exports into clean CSV or Excel files. Extracts cards, lists, labels, and checklists into tabular columns.',
         h1: 'Trello JSON to CSV/Excel Converter',
         subheading: 'Prepare your Trello data for import into other systems or archive it for safekeeping.',
         tldr: "Need to import Trello data into another tool or Excel? Simply add '.json' to your Board URL, copy the code, and paste it here. We generate a clean CSV perfect for importing into Jira, Monday.com, or Excel.",
@@ -270,7 +270,7 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'slack-json-to-csv',
         platformName: 'Slack',
-        title: 'Convert Slack JSON to CSV — Export Message History & Threads',
+        title: 'Slack JSON to CSV Converter — Export Channel & Message Logs',
         description: 'Convert Slack workspace JSON dumps to CSV or Excel. Merges daily JSON files, resolves user IDs, formats timestamps, and archives threads cleanly.',
         h1: 'Slack to CSV/Excel Converter',
         subheading: 'Turn your Slack data export into a readable message archive.',
@@ -502,8 +502,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'harvest-json-to-excel',
         platformName: 'Harvest',
-        title: 'Convert Harvest JSON to Excel (XLSX) — Flatten Timesheets & Tasks',
-        description: 'Convert Harvest time tracking JSON exports to clean Excel spreadsheets. Flattens billable hours, project codes, client records, and user entries.',
+        title: 'Harvest to Excel (XLSX) Converter — Free & Instant',
+        description: 'Convert Harvest time tracking JSON to clean Excel spreadsheets. Flattens billable hours, project tasks, and client records in 1 click.',
         h1: 'Harvest to Excel (XLSX) Converter',
         subheading: 'Unwind Harvest time entries and project logs into clean Excel spreadsheets instantly.',
         content: {
@@ -566,8 +566,8 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'typeform-json-to-excel',
         platformName: 'Typeform',
-        title: 'Convert Typeform JSON to Excel (XLSX) — Unwind Survey Answers & Fields',
-        description: 'Convert Typeform JSON exports and webhook responses to Excel spreadsheets. Unwinds nested survey questions, choices, ratings, and respondent metadata.',
+        title: 'Export Typeform to Excel / JSON — Auto-Flatten Responses',
+        description: 'Convert Typeform JSON exports and webhook responses to Excel spreadsheets. Unwinds nested survey questions, choices, and respondent metadata.',
         h1: 'Typeform to Excel (XLSX) Converter',
         subheading: 'Transform raw Typeform survey JSON into structured Excel spreadsheets in 1 click.',
         content: {
