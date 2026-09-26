@@ -13,7 +13,7 @@ export interface PlatformSample {
 export const PLATFORM_SAMPLES: Record<string, PlatformSample> = {
     trello: {
         platform: 'Trello',
-        description: 'Trello Board Export with cards, lists, checklists, and members',
+        description: 'Trello Board Export with cards, lists, checklists, custom fields, and power-up plugins',
         sampleJson: JSON.stringify({
             id: "64f1a2b3c4d5e6f7a8b9c0d1",
             name: "Product Sprint 2026",
@@ -23,6 +23,17 @@ export const PLATFORM_SAMPLES: Record<string, PlatformSample> = {
                 { id: "list_01", name: "In Progress", closed: false, pos: 1 },
                 { id: "list_02", name: "Ready for QA", closed: false, pos: 2 },
                 { id: "list_03", name: "Done", closed: false, pos: 3 }
+            ],
+            customFields: [
+                {
+                    id: "cf_tier",
+                    name: "Client Tier",
+                    type: "list",
+                    options: [
+                        { id: "opt_ent", value: { text: "Enterprise" } },
+                        { id: "opt_std", value: { text: "Standard" } }
+                    ]
+                }
             ],
             cards: [
                 {
@@ -45,7 +56,18 @@ export const PLATFORM_SAMPLES: Record<string, PlatformSample> = {
                             ]
                         }
                     ],
-                    members: [{ id: "mem_1", fullName: "Alex Developer", username: "alexdev" }]
+                    members: [{ id: "mem_1", fullName: "Alex Developer", username: "alexdev" }],
+                    customFieldItems: [
+                        { idCustomField: "cf_tier", idValue: "opt_ent" }
+                    ],
+                    pluginData: [
+                        {
+                            id: "pd_01",
+                            idPlugin: "github_sync",
+                            scope: "card",
+                            value: JSON.stringify({ prNumber: 42, branch: "feature/telemetry" })
+                        }
+                    ]
                 },
                 {
                     id: "card_102",

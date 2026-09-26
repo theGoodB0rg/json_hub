@@ -429,15 +429,19 @@ export const useAppStore = create<AppState>()(
                     },
 
                     exportData: async (format: ExportFormat) => {
-                        const { parsedData, exportSettings, rawInput, sourceFilename, columnOrder, excludedColumns, flatData } = get();
+                        const { parsedData, exportSettings, rawInput, sourceFilename, columnOrder, excludedColumns, flatData, activePluginId } = get();
 
                         if (!parsedData) {
                             set({ parseErrors: [{ message: 'No data to export' }] });
                             return;
                         }
 
+                        const exportStartTime = Date.now();
+                        const fileSizeBytes = rawInput ? new Blob([rawInput]).size : 0;
+                        const platform = activePluginId || 'general';
+
                         set({ isLoading: true, downloadProgress: 0 });
-                        trackFunnelStep('export_initiated', { format });
+                        trackFunnelStep('export_initiated', { format, platform });
 
                         try {
                             const now = new Date();
@@ -534,13 +538,18 @@ export const useAppStore = create<AppState>()(
                                 console.error('Failed to save to history:', e);
                             }
 
+                            const durationMs = Date.now() - exportStartTime;
                             trackConversionEvent('export_success', {
+                                platform,
                                 format,
                                 structure: exportSettings.structure,
                                 rowCount: rows.length,
                                 schemaCount: effectiveSchema.length,
+                                file_size_bytes: fileSizeBytes,
+                                duration_ms: durationMs,
                             });
                             trackFunnelStep('export_complete', {
+                                platform,
                                 format,
                                 structure: exportSettings.structure,
                                 rowCount: rows.length,
@@ -548,9 +557,10 @@ export const useAppStore = create<AppState>()(
                             set({ isLoading: false, downloadProgress: 100 });
                         } catch (error) {
                             trackConversionEvent('export_error', {
+                                platform,
                                 format,
                                 structure: exportSettings.structure,
-                                message: error instanceof Error ? error.message : 'Unknown error',
+                                error_message: error instanceof Error ? error.message : 'Unknown error',
                             });
                             set({
                                 isLoading: false,
@@ -671,3 +681,7 @@ export const useAppStore = create<AppState>()(
         }
     )
 );
+
+if (typeof window !== 'undefined') {
+    (window as any).__APP_STORE__ = useAppStore;
+}

@@ -1,4 +1,5 @@
 import type { FlattenResult } from '@/types/parser.types';
+import { isTrelloBoard, transformTrelloBoard } from '@/lib/parsers/platform/trello';
 
 // Maximum depth for array expansion to prevent column explosion
 const MAX_ARRAY_EXPANSION_DEPTH = 1;
@@ -63,6 +64,11 @@ export function flattenJSON(data: any, options: { mode: 'flat' | 'relational' } 
     // Handle null or undefined
     if (data === null || data === undefined) {
         return { rows: [], schema: [] };
+    }
+
+    // Domain-aware Trello board preprocessing to avoid card row duplication
+    if (isTrelloBoard(data)) {
+        return flattenJSON(transformTrelloBoard(data), options);
     }
 
     // Convert single object to array for consistent processing
@@ -134,6 +140,7 @@ function flattenRelational(obj: any, prefix: string = '', context: Record<string
 
     // It's an object
     let currentRows: Record<string, any>[] = [{ ...context }];
+    let hasExpandedArray = false;
 
     for (const [key, value] of Object.entries(obj)) {
         const newKey = prefix ? `${prefix}.${key}` : key;
@@ -145,13 +152,20 @@ function flattenRelational(obj: any, prefix: string = '', context: Record<string
             const arrayType = detectArrayType(value);
 
             if (arrayType === 'objects' && value.length > 0) {
-                // Expand logic
-                const nextRows: Record<string, any>[] = [];
-                currentRows.forEach(row => {
-                    const expanded = flattenRelational(value, newKey, row);
-                    nextRows.push(...expanded);
-                });
-                currentRows = nextRows;
+                if (!hasExpandedArray) {
+                    // Primary relation expansion
+                    const nextRows: Record<string, any>[] = [];
+                    currentRows.forEach(row => {
+                        const expanded = flattenRelational(value, newKey, row);
+                        nextRows.push(...expanded);
+                    });
+                    currentRows = nextRows;
+                    hasExpandedArray = true;
+                } else {
+                    // Secondary sibling object array: avoid combinatorial row explosion (e.g. checklists x labels x members)
+                    const serialized = JSON.stringify(value);
+                    currentRows.forEach(row => { row[newKey] = serialized; });
+                }
             } else {
                 // Serialize logic
                 const serialized = JSON.stringify(value);
