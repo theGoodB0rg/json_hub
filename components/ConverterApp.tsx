@@ -11,13 +11,14 @@ import {
 } from '@/components/ui/resizable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Zap, Code2 } from "lucide-react";
+import { Zap, Code2, FileSpreadsheet, FileText } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { AffiliateSidebar } from "@/components/AffiliateSidebar";
 import { Testimonials } from "@/components/Testimonials";
 import { UsageStats } from "@/components/UsageStats";
 import { FAQ } from "@/components/FAQ";
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
 import AppUpdater from '@/components/AppUpdater';
 import { useAppStore } from '@/lib/store/store';
 import { SecurityBadges } from "@/components/SecurityBadges";
@@ -38,12 +39,23 @@ interface ConverterAppProps {
 
 export function ConverterApp({ heading, subheading, platform, pluginId, initialSample }: ConverterAppProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
-    const { setRawInput, parseInput, initWorker, activePluginId, setPluginId, outputMode } = useAppStore();
+    const { flatData, exportData, setRawInput, parseInput, initWorker, activePluginId, setPluginId, outputMode } = useAppStore();
+    const [mobileTab, setMobileTab] = useState<'input' | 'preview'>('input');
     const currentPlugin = pluginRegistry.getOrDefault(pluginId || activePluginId);
+
+    // Auto-switch to preview tab on mobile once rows are parsed
+    useEffect(() => {
+        if (!isDesktop && flatData.length > 0) {
+            setMobileTab('preview');
+        }
+    }, [flatData.length, isDesktop]);
 
     // Initialize worker on mount
     useEffect(() => {
         initWorker();
+        if (typeof window !== 'undefined') {
+            (window as any).__APP_STORE__ = useAppStore;
+        }
     }, [initWorker]);
 
     // Initialize plugin when pluginId prop is provided
@@ -194,13 +206,13 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                                                     )}
                                                 </div>
                                                 <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
-                                                    <ExportMenu />
+                                                    <ExportMenu platform={platform} />
                                                 </div>
                                             </div>
                                         </ResizablePanel>
                                     </ResizablePanelGroup>
                                 ) : (
-                                    <Tabs defaultValue="input" className="h-full flex flex-col">
+                                    <Tabs value={mobileTab} onValueChange={(val) => setMobileTab(val as 'input' | 'preview')} className="h-full flex flex-col">
                                         <div className="px-4 pt-4 bg-muted/10 border-b border-border/40">
                                             <TabsList className="grid w-full grid-cols-2">
                                                 <TabsTrigger value="input" className="gap-2">
@@ -210,6 +222,11 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                                                 <TabsTrigger value="preview" className="gap-2">
                                                     <Zap className="h-4 w-4" />
                                                     Preview
+                                                    {flatData.length > 0 && (
+                                                        <span className="ml-1 text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full font-bold">
+                                                            {flatData.length}
+                                                        </span>
+                                                    )}
                                                 </TabsTrigger>
                                             </TabsList>
                                         </div>
@@ -229,7 +246,7 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                                                 )}
                                             </div>
                                             <div className="p-4 border-t border-border/50 bg-muted/10 backdrop-blur-sm">
-                                                <ExportMenu />
+                                                <ExportMenu platform={platform} />
                                             </div>
                                         </TabsContent>
                                     </Tabs>
@@ -248,6 +265,42 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                 {/* FAQ Section */}
                 <FAQ />
             </main>
+
+            {/* Sticky CRO Export Bar */}
+            {flatData.length > 0 && (
+                <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/80 shadow-[0_-4px_24px_rgba(0,0,0,0.18)] p-3 px-4 md:px-8 flex items-center justify-between gap-4 animate-in slide-in-from-bottom duration-300">
+                    <div className="flex items-center gap-3">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <div>
+                            <span className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                                ✓ {flatData.length.toLocaleString()} {flatData.length === 1 ? 'row' : 'rows'} converted
+                            </span>
+                            <span className="text-xs text-muted-foreground hidden sm:inline">100% private in-browser conversion • Zero server uploads</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            size="sm"
+                            onClick={() => exportData('xlsx')}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-600/20 px-4"
+                            data-testid="sticky-download-xlsx"
+                        >
+                            <FileSpreadsheet className="w-4 h-4 mr-1.5" />
+                            Download Excel
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => exportData('csv')}
+                            className="font-semibold px-4 border-border/60 hover:bg-muted"
+                            data-testid="sticky-download-csv"
+                        >
+                            <FileText className="w-4 h-4 mr-1.5" />
+                            CSV
+                        </Button>
+                    </div>
+                </div>
+            )}
 
             {/* Logic Components */}
             <ContextualAffiliateToast platform={platform} />

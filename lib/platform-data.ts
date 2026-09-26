@@ -22,28 +22,32 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'hubspot-json-to-excel',
         platformName: 'HubSpot',
-        title: 'Export HubSpot to Excel / JSON — Free & Instant Tool',
-        description: 'Export and convert HubSpot CRM contacts, deals, and company properties to Excel (.xlsx) or JSON in 1 click. Auto-flattens nested fields.',
-        h1: 'HubSpot to Excel (XLSX) Converter',
-        subheading: 'Auto-flatten HubSpot CRM contacts, deals, and custom properties into clean Excel tables.',
-        tldr: "To fix nested HubSpot data in Excel, paste your JSON export below. We automatically flatten the deeply nested objects into a clean table, processing everything locally in your browser so your CRM data stays private.",
+        title: 'HubSpot to JSON & Excel Converter — Export HubSpot CRM Data',
+        description: 'Convert HubSpot CRM data to JSON or Excel (.xlsx/.csv) in 1 click. Easily export HubSpot contacts, deals, and company properties without [object Object] errors.',
+        h1: 'HubSpot to JSON & Excel (XLSX) Converter',
+        subheading: 'Auto-flatten HubSpot CRM contacts, deals, and custom properties into clean Excel tables or formatted JSON.',
+        tldr: "To fix nested HubSpot data in Excel or convert HubSpot exports to clean JSON, paste your data below. We automatically unpack deeply nested CRM properties into clean columns, processing everything 100% locally in your browser.",
         content: {
-            intro: 'HubSpot data exports often contain complex, deeply nested JSON properties. Traditional online converters just output `[object Object]` for these fields. JsonExport solves this by thoroughly flattening your HubSpot data 100% in your browser.',
+            intro: 'HubSpot data exports and API payloads often contain complex, deeply nested JSON properties. Traditional online converters just output `[object Object]` for these fields. JsonExport solves this by thoroughly flattening your HubSpot data 100% in your browser.',
             features: [
                 'Fixes `[object Object]` columns instantly',
-                'Smart Flattening for complex nested properties',
-                '100% Client-Side Processing (GDPR/Compliance Safe)',
-                'Perfect for analyzing HubSpot API dumps'
+                'Smart Flattening for complex nested CRM properties',
+                '100% Client-Side Processing (GDPR & Enterprise Safe)',
+                'Perfect for analyzing HubSpot API dumps and webhooks'
             ]
         },
         faqs: [
             {
+                question: "How do I convert HubSpot to JSON or Excel?",
+                answer: "You can fetch your CRM objects using HubSpot's REST API (`/crm/v3/objects/contacts` or `/deals`) or download API payloads from HubSpot workflow webhooks. Paste the raw data here for instant 1-click conversion to clean Excel or formatted JSON."
+            },
+            {
                 question: "How do I export JSON from HubSpot?",
-                answer: "You can fetch your CRM objects using HubSpot's REST API (`/crm/v3/objects/contacts` or `/deals`) or download API payloads from HubSpot workflow webhooks. Paste the raw JSON response here for instant conversion."
+                answer: "Query the HubSpot v3 API endpoint or download your workflow webhook execution logs. Then paste the payload into JsonExport to inspect, clean, or transform into Excel spreadsheets."
             },
             {
                 question: "Is it safe to paste HubSpot customer lists here?",
-                answer: "Yes, absolutely. Unlike other converters, we do NOT upload your file to any server. All processing happens locally in your browser's memory."
+                answer: "Yes, absolutely. Unlike other converters, we do NOT upload your file to any server. All processing happens locally in your browser's Web Worker memory."
             },
             {
                 question: "How does it handle nested properties?",

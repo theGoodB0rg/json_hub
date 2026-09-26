@@ -6,8 +6,8 @@ import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES, testDataPath } from '@/lib/routes';
 
 export const metadata: Metadata = buildPageMetadata({
-    title: "Dummy JSON: Free Mock Datasets & API Payloads (Raw/Copy)",
-    description: "Free realistic mock JSON payloads for Stripe, Shopify, HubSpot & Users. Copy raw JSON arrays or download formatted sample datasets with zero sign-up.",
+    title: "Free Dummy JSON Data & Files (Download or Convert to Excel/CSV)",
+    description: "Free realistic dummy JSON files & sample datasets for testing APIs, ETL pipelines, and mock apps. Instant 1-click download, copy raw JSON, or convert to Excel/CSV online.",
     canonicalPath: ROUTES.testData,
 });
 

@@ -5,6 +5,8 @@
  * and extracts that array for better tabular visualization.
  */
 
+import { isTrelloBoard, transformTrelloBoard } from '@/lib/parsers/platform/trello';
+
 interface UnwrapResult {
     data: any | any[];
     isUnwrapped: boolean;
@@ -24,6 +26,14 @@ const COMMON_DATA_KEYS = new Set([
 ]);
 
 export function smartUnwrap(data: any): UnwrapResult {
+    // Check for specialized platform exports
+    if (isTrelloBoard(data)) {
+        return {
+            data: transformTrelloBoard(data),
+            isUnwrapped: true,
+        };
+    }
+
     // Handle single-element arrays containing wrapper objects
     // This handles cases where data is wrapped like [{ records: [...] }]
     if (Array.isArray(data) && data.length === 1) {

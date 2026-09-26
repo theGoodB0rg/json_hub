@@ -374,4 +374,117 @@ describe('flattener', () => {
             expect(unflattened).toEqual(expected);
         });
     });
+
+    describe('Trello & Sibling Array Deduplication', () => {
+        it('should transform a Trello board with multiple cards, checklists, and labels without duplicating rows', () => {
+            const trelloBoard = {
+                id: 'board_123',
+                name: 'Product Roadmap',
+                lists: [
+                    { id: 'list_backlog', name: 'Backlog' },
+                    { id: 'list_in_progress', name: 'In Progress' }
+                ],
+                customFields: [
+                    {
+                        id: 'cf_priority',
+                        name: 'Priority Level',
+                        type: 'text'
+                    }
+                ],
+                cards: [
+                    {
+                        id: 'card_1',
+                        name: 'Setup CI/CD Pipeline',
+                        idList: 'list_in_progress',
+                        labels: [
+                            { id: 'l1', name: 'DevOps', color: 'blue' },
+                            { id: 'l2', name: 'High Priority', color: 'red' }
+                        ],
+                        checklists: [
+                            {
+                                id: 'chk_1',
+                                name: 'Steps',
+                                checkItems: [
+                                    { id: 'i1', name: 'Dockerize app', state: 'complete' },
+                                    { id: 'i2', name: 'Setup GitHub Actions', state: 'complete' }
+                                ]
+                            },
+                            {
+                                id: 'chk_2',
+                                name: 'Testing',
+                                checkItems: [
+                                    { id: 'i3', name: 'Run E2E tests', state: 'incomplete' }
+                                ]
+                            }
+                        ],
+                        members: [
+                            { id: 'm1', fullName: 'Sarah Connor' },
+                            { id: 'm2', fullName: 'John Doe' }
+                        ],
+                        customFieldItems: [
+                            { idCustomField: 'cf_priority', value: { text: 'Critical' } }
+                        ],
+                        pluginData: [
+                            {
+                                id: 'pd_1',
+                                idPlugin: 'time_tracker',
+                                value: JSON.stringify({ estimateHours: 16, spentHours: 8 })
+                            }
+                        ]
+                    },
+                    {
+                        id: 'card_2',
+                        name: 'Write Documentation',
+                        idList: 'list_backlog',
+                        labels: [],
+                        checklists: [],
+                        members: []
+                    }
+                ]
+            };
+
+            const result = flattenJSON(trelloBoard);
+
+            // Exactly 2 cards must result in exactly 2 rows (Zero duplication)
+            expect(result.rows).toHaveLength(2);
+
+            const card1 = result.rows.find(r => r.name === 'Setup CI/CD Pipeline');
+            expect(card1).toBeDefined();
+            // List name resolved
+            expect(card1.listName).toBe('In Progress');
+            // Custom field resolved as first-class column
+            expect(card1.custom_Priority_Level).toBe('Critical');
+            // Plugin data parsed
+            expect(card1.plugin_time_tracker_estimateHours).toBe(16);
+            expect(card1.plugin_time_tracker_spentHours).toBe(8);
+            // Checklists summarized
+            expect(card1.checklistProgress).toBe('2/3');
+            // Members joined
+            expect(card1.assignedMembers).toContain('Sarah Connor');
+            expect(card1.assignedMembers).toContain('John Doe');
+        });
+
+        it('should prevent combinatorial row explosion when an object has multiple sibling object arrays in relational mode', () => {
+            const data = {
+                id: 'entity_1',
+                name: 'Parent Entity',
+                items: [
+                    { id: 'item_1', val: 10 },
+                    { id: 'item_2', val: 20 },
+                    { id: 'item_3', val: 30 }
+                ],
+                tags: [
+                    { tagId: 't1', label: 'Tag 1' },
+                    { tagId: 't2', label: 'Tag 2' }
+                ]
+            };
+
+            // In relational mode, expanding sibling arrays geometrically would yield 3 * 2 = 6 rows.
+            // With combinatorial safeguard, the primary array (items) expands into 3 rows,
+            // while sibling tags array is cleanly serialized without creating phantom duplicate parent rows.
+            const result = flattenJSON(data, { mode: 'relational' });
+            expect(result.rows).toHaveLength(3);
+        });
+    });
 });
+

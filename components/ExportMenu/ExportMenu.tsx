@@ -13,7 +13,11 @@ import { LicenseModal } from '../LicenseModal';
 import { pluginRegistry } from '@/lib/plugins/registry';
 import { ConversionFeedback } from '@/components/FeedbackWidget/ConversionFeedback';
 
-export function ExportMenu() {
+interface ExportMenuProps {
+    platform?: string;
+}
+
+export function ExportMenu({ platform }: ExportMenuProps = {}) {
     const {
         flatData,
         selectedFormat,
@@ -123,17 +127,18 @@ export function ExportMenu() {
 
             <Button
                 onClick={handleExportClick}
-                className="w-full font-bold shadow-lg shadow-primary/20 relative group overflow-hidden"
+                className="w-full font-bold shadow-lg shadow-primary/25 relative group overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all text-sm md:text-base py-6"
                 size="lg"
                 data-testid="export-download-button"
             >
-                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                Download {formats.find((f) => f.value === selectedFormat)?.label}
+                <div className="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                <Download className="w-5 h-5 mr-2 shrink-0 animate-bounce" />
+                <span className="truncate">Download {formats.find((f) => f.value === selectedFormat)?.label || 'File'} ({flatData.length.toLocaleString()} {flatData.length === 1 ? 'row' : 'rows'})</span>
             </Button>
 
             {hasExported && (
                 <ConversionFeedback
-                    platform={activePluginId}
+                    platform={platform || activePluginId}
                     format={selectedFormat}
                     onDismiss={() => setHasExported(false)}
                 />
