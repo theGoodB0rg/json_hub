@@ -30,8 +30,13 @@ npm run analytics
 ### Cloudflare Edge & D1 Database
 - **Worker Endpoint**: `https://jsonexport-telemetry.idowue93.workers.dev`
 - **Cloudflare D1 Database**: `jsonexport-db` (`1a1816f6-ef4f-418a-b441-279ae39cc3f2`)
+- **Endpoints**:
+  - `POST /api/telemetry`: Single event ingestion.
+  - `POST /api/telemetry/batch`: Batch event flush (up to 100 events) from client pending queue.
+  - `POST /api/feedback`: User output rating and bug reports.
+  - `GET /api/telemetry/pull`: Pulls remote D1 records locally for analysis.
 - **Tables**:
-  - `events`: Tracks `parse_start`, `parse_success`, `parse_error`, `export_complete`, `export_error`, `duration_ms`, `file_size_bytes`, `platform`, `format`, `country`, `path`.
+  - `events`: Tracks `id`, `event_name` (`page_view`, `parse_start`, `parse_success`, `parse_error`, `export_complete`, `export_success`, `export_error`), `platform`, `format`, `file_size_bytes`, `duration_ms`, `error_type`, `error_message`, `country`, `referrer`, `path`, `user_agent`, `timestamp`, and `is_sample` (`1` = automated crawler / demo template preview, `0` = genuine user upload/paste).
   - `user_feedback`: Tracks 1-click output ratings (`positive` / `negative` / `neutral`) and actionable user bug comments from the export menu.
 
 ### Local CLI Commands:
