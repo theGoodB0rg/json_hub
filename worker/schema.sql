@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS events (
     referrer TEXT,
     path TEXT,
     user_agent TEXT,
-    timestamp INTEGER NOT NULL
+    timestamp INTEGER NOT NULL,
+    is_sample INTEGER DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(timestamp);

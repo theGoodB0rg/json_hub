@@ -49,8 +49,8 @@ export function DemoPreview({ pageConfig }: Props) {
     };
 
     const handleLoadIntoEditor = () => {
-        setRawInput(sampleSnippet);
-        setTimeout(() => parseInput(), 100);
+        setRawInput(sampleSnippet, { isSample: true });
+        setTimeout(() => parseInput({ isSample: true }), 100);
         window.scrollTo({ top: 100, behavior: 'smooth' });
     };
 

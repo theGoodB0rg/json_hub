@@ -20,9 +20,9 @@ export function TemplateSelector({ platform }: { platform?: string }) {
     const { setRawInput, parseInput } = useAppStore();
 
     const handleSelectTemplate = (templateData: string) => {
-        setRawInput(templateData);
+        setRawInput(templateData, { isSample: true });
         // Auto-parse after loading template
-        setTimeout(() => parseInput(), 100);
+        setTimeout(() => parseInput({ isSample: true }), 100);
     };
 
     const categories: Record<string, string> = {

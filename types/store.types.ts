@@ -13,6 +13,7 @@ export interface AppState {
     isParsed: boolean;
     parseErrors: ParseError[];
     sourceFilename: string | null;
+    isSample?: boolean;
 
     // Processed Data
     parsedData: any;
@@ -56,9 +57,9 @@ export interface AppState {
     initWorker: () => void;
     setPluginId: (pluginId: string) => void;
     setOutputMode: (mode: OutputViewMode) => void;
-    setRawInput: (input: string) => void;
+    setRawInput: (input: string, options?: { isSample?: boolean }) => void;
     setSourceFilename: (name: string | null) => void;
-    parseInput: () => void;
+    parseInput: (options?: { isSample?: boolean }) => void;
     parseInputStreaming: (file: File) => void;
     flattenData: () => void;
     updateCell: (rowIndex: number, column: string, value: any) => void;

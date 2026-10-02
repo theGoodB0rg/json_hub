@@ -36,6 +36,8 @@ interface UnifiedReportData {
         pageViews: number;
         parseAttempts: number;
         parseSuccess: number;
+        userParses: number;
+        sampleParses: number;
         exportComplete: number;
         parseErrors: number;
         exportErrors: number;
@@ -141,7 +143,10 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
 
     const pageViews = events.filter(e => e.event_name === 'page_view').length;
     const parseAttempts = events.filter(e => e.event_name === 'parse_start' || e.event_name === 'parse_success' || e.event_name === 'parse_error').length;
+    const isSampleEvent = (e: any) => e.is_sample === 1 || e.is_sample === true || e.is_sample === 'true';
     const parseSuccess = events.filter(e => e.event_name === 'parse_success').length;
+    const sampleParses = events.filter(e => e.event_name === 'parse_success' && isSampleEvent(e)).length;
+    const userParses = events.filter(e => e.event_name === 'parse_success' && !isSampleEvent(e)).length;
     const parseErrors = events.filter(e => e.event_name === 'parse_error').length;
     const exportComplete = events.filter(e => e.event_name === 'export_complete' || e.event_name === 'export_success').length;
     const exportErrors = events.filter(e => e.event_name === 'export_error').length;
@@ -222,6 +227,8 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
             pageViews,
             parseAttempts,
             parseSuccess,
+            userParses,
+            sampleParses,
             exportComplete,
             parseErrors,
             exportErrors,
@@ -296,7 +303,7 @@ ${gsc.topPages.slice(0, 10).map(p => `| [${p.page}](${p.page.startsWith('http') 
 ## 3. In-App Conversion & Satisfaction Telemetry
 
 - **Page Views**: ${telemetry.pageViews}
-- **Parse Successes**: ${telemetry.parseSuccess}
+- **Parse Successes**: ${telemetry.parseSuccess} (${telemetry.userParses} user uploads, ${telemetry.sampleParses} sample previews)
 - **Exports Completed**: ${telemetry.exportComplete}
 - **Funnel Conversion Rate**: ${telemetry.conversionRate}%
 - **Output Satisfaction**: ${telemetry.satisfactionRate}% (${telemetry.positiveFeedback} positive, ${telemetry.negativeFeedback} negative)
@@ -351,7 +358,7 @@ function printTerminalDashboard(data: UnifiedReportData): void {
     console.log('└───────────────────────────────────────────────────────────────────┘');
     console.log(`• Total Tracked Events:      ${telemetry.totalEvents}`);
     console.log(`• Page Views Logged:         ${telemetry.pageViews}`);
-    console.log(`• Parses Completed:          ${telemetry.parseSuccess}`);
+    console.log(`• Parses Completed:          ${telemetry.parseSuccess} (${telemetry.userParses} user uploads, ${telemetry.sampleParses} sample previews)`);
     console.log(`• Spreadsheets Exported:     ${telemetry.exportComplete} (${telemetry.conversionRate}% conversion rate)`);
     console.log(`• User Output Satisfaction:  ${telemetry.satisfactionRate}% (👍 ${telemetry.positiveFeedback} | 👎 ${telemetry.negativeFeedback})\n`);
 

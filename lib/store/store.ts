@@ -16,6 +16,7 @@ const initialState = {
     isParsed: false,
     parseErrors: [] as ParseError[],
     sourceFilename: null as string | null,
+    isSample: false,
 
     // Processed Data
     parsedData: null,
@@ -93,6 +94,7 @@ export const useAppStore = create<AppState>()(
 
                             if (type === 'PARSE_SUCCESS') {
                                 const currentRawInput = get().rawInput;
+                                const isSample = get().isSample ?? false;
                                 set({
                                     parsedData: payload,
                                     isParsed: true,
@@ -102,8 +104,9 @@ export const useAppStore = create<AppState>()(
                                 trackConversionEvent('parse_success', {
                                     source: 'worker',
                                     inputBytes: currentRawInput.length,
+                                    is_sample: isSample,
                                 });
-                                trackFunnelStep('parse_success');
+                                trackFunnelStep('parse_success', { is_sample: isSample });
                                 get().flattenData();
                             } else if (type === 'PARSE_ERROR') {
                                 set({
@@ -142,18 +145,19 @@ export const useAppStore = create<AppState>()(
                         set({ worker });
                     },
 
-                    setRawInput: (input: string) => {
-                        set({ rawInput: input, isParsed: false, parseErrors: [] });
+                    setRawInput: (input: string, options?: { isSample?: boolean }) => {
+                        set({ rawInput: input, isParsed: false, parseErrors: [], isSample: options?.isSample ?? false });
                     },
 
                     setSourceFilename: (name: string | null) => {
                         set({ sourceFilename: name });
                     },
 
-                    parseInput: async () => {
+                    parseInput: async (options?: { isSample?: boolean }) => {
                         const { rawInput, worker, activePluginId } = get();
-                        set({ isLoading: true });
-                        trackFunnelStep('parse_initiated');
+                        const isSample = options?.isSample ?? get().isSample ?? false;
+                        set({ isLoading: true, isSample });
+                        trackFunnelStep('parse_initiated', { is_sample: isSample });
 
                         const isStandardJsonPlugin = activePluginId === 'json-to-excel' || activePluginId === 'json-to-csv';
 
@@ -180,8 +184,9 @@ export const useAppStore = create<AppState>()(
                                     trackConversionEvent('parse_success', {
                                         source: 'plugin',
                                         inputBytes: rawInput.length,
+                                        is_sample: isSample,
                                     });
-                                    trackFunnelStep('parse_success', { source: 'plugin' });
+                                    trackFunnelStep('parse_success', { source: 'plugin', is_sample: isSample });
                                 } else {
                                     set({
                                         parsedData: null,
@@ -539,6 +544,7 @@ export const useAppStore = create<AppState>()(
                             }
 
                             const durationMs = Date.now() - exportStartTime;
+                            const isSample = get().isSample ?? false;
                             trackConversionEvent('export_success', {
                                 platform,
                                 format,
@@ -547,12 +553,14 @@ export const useAppStore = create<AppState>()(
                                 schemaCount: effectiveSchema.length,
                                 file_size_bytes: fileSizeBytes,
                                 duration_ms: durationMs,
+                                is_sample: isSample,
                             });
                             trackFunnelStep('export_complete', {
                                 platform,
                                 format,
                                 structure: exportSettings.structure,
                                 rowCount: rows.length,
+                                is_sample: isSample,
                             });
                             set({ isLoading: false, downloadProgress: 100 });
                         } catch (error) {
