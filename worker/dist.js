@@ -49,12 +49,13 @@ var telemetry_worker_default = {
           const eventTime = (typeof e.timestamp === "number" && e.timestamp > 0 && e.timestamp <= timestamp + 86400000)
             ? e.timestamp
             : timestamp;
+          const isSample = (e.is_sample === true || e.is_sample === 1 || e.is_sample === 'true') ? 1 : 0;
           return env.DB.prepare(
             `INSERT INTO events (
                             id, event_name, platform, format, file_size_bytes, 
                             duration_ms, error_type, error_message, country, 
-                            referrer, path, user_agent, timestamp
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                            referrer, path, user_agent, timestamp, is_sample
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
           ).bind(
             id,
             safeString(e.event_name, 64) || "unknown",
@@ -68,7 +69,8 @@ var telemetry_worker_default = {
             safeString(e.referrer, 300),
             safeString(e.path, 300),
             userAgent,
-            eventTime
+            eventTime,
+            isSample
           );
         });
 

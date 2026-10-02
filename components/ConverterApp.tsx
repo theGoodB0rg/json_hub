@@ -88,8 +88,8 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                 setRawInput(seededData);
                 setTimeout(() => parseInput(), 100);
             } else if (initialSample) {
-                setRawInput(initialSample);
-                setTimeout(() => parseInput(), 100);
+                setRawInput(initialSample, { isSample: true });
+                setTimeout(() => parseInput({ isSample: true }), 100);
             }
         };
 
