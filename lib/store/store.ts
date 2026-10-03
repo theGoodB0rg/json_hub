@@ -101,12 +101,20 @@ export const useAppStore = create<AppState>()(
                                     parseErrors: [],
                                     isLoading: false,
                                 });
-                                trackConversionEvent('parse_success', {
-                                    source: 'worker',
-                                    inputBytes: currentRawInput.length,
-                                    is_sample: isSample,
-                                });
-                                trackFunnelStep('parse_success', { is_sample: isSample });
+                                if (isSample) {
+                                    trackConversionEvent('sample_preview', {
+                                        source: 'worker',
+                                        inputBytes: currentRawInput.length,
+                                        is_sample: true,
+                                    });
+                                } else {
+                                    trackConversionEvent('parse_success', {
+                                        source: 'worker',
+                                        inputBytes: currentRawInput.length,
+                                        is_sample: false,
+                                    });
+                                    trackFunnelStep('parse_success', { is_sample: false });
+                                }
                                 get().flattenData();
                             } else if (type === 'PARSE_ERROR') {
                                 set({
@@ -157,7 +165,9 @@ export const useAppStore = create<AppState>()(
                         const { rawInput, worker, activePluginId } = get();
                         const isSample = options?.isSample ?? get().isSample ?? false;
                         set({ isLoading: true, isSample });
-                        trackFunnelStep('parse_initiated', { is_sample: isSample });
+                        if (!isSample) {
+                            trackFunnelStep('parse_initiated', { is_sample: false });
+                        }
 
                         const isStandardJsonPlugin = activePluginId === 'json-to-excel' || activePluginId === 'json-to-csv';
 
@@ -181,12 +191,20 @@ export const useAppStore = create<AppState>()(
                                         isLoading: false,
                                         outputMode: plugin.uiConfig.outputMode,
                                     });
-                                    trackConversionEvent('parse_success', {
-                                        source: 'plugin',
-                                        inputBytes: rawInput.length,
-                                        is_sample: isSample,
-                                    });
-                                    trackFunnelStep('parse_success', { source: 'plugin', is_sample: isSample });
+                                    if (isSample) {
+                                        trackConversionEvent('sample_preview', {
+                                            source: 'plugin',
+                                            inputBytes: rawInput.length,
+                                            is_sample: true,
+                                        });
+                                    } else {
+                                        trackConversionEvent('parse_success', {
+                                            source: 'plugin',
+                                            inputBytes: rawInput.length,
+                                            is_sample: false,
+                                        });
+                                        trackFunnelStep('parse_success', { source: 'plugin', is_sample: false });
+                                    }
                                 } else {
                                     set({
                                         parsedData: null,

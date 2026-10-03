@@ -3,6 +3,7 @@ export type ConversionEventName =
     | 'funnel_step'
     | 'parse_start'
     | 'parse_success'
+    | 'sample_preview'
     | 'parse_error'
     | 'export_success'
     | 'export_error'
@@ -155,11 +156,25 @@ function sendRemotePayload(url: string, data: any) {
     }
 }
 
+export const BOT_USER_AGENT_REGEX =
+    /bot|crawler|spider|crawling|headless|meta-externalagent|facebookexternalhit|bingbot|googlebot|yandex|baidu|slurp|duckduckbot/i;
+
+export function isBotOrCrawler(): boolean {
+    if (!isBrowser()) return false;
+    try {
+        if (navigator.webdriver) return true;
+        if (typeof navigator.userAgent === 'string' && BOT_USER_AGENT_REGEX.test(navigator.userAgent)) return true;
+    } catch {
+        // ignore
+    }
+    return false;
+}
+
 export function trackConversionEvent(
     name: ConversionEventName,
     payload: ConversionEventPayload = {}
 ) {
-    if (!isBrowser()) return;
+    if (!isBrowser() || isBotOrCrawler()) return;
 
     const event: ConversionEvent = {
         id: generateId(),
