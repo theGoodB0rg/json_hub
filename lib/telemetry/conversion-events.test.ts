@@ -102,4 +102,31 @@ describe('Telemetry Conversion Events', () => {
             })
         ).resolves.not.toThrow();
     });
+
+    it('filters out bot/crawler user agents from tracking conversion events', () => {
+        const originalUserAgent = window.navigator.userAgent;
+        try {
+            Object.defineProperty(window.navigator, 'userAgent', {
+                value: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
+                configurable: true,
+            });
+
+            trackConversionEvent('parse_success', { platform: 'shopify' });
+            const tracked = getTrackedConversionEvents();
+            expect(tracked.length).toBe(0);
+        } finally {
+            Object.defineProperty(window.navigator, 'userAgent', {
+                value: originalUserAgent,
+                configurable: true,
+            });
+        }
+    });
+
+    it('records sample_preview event for human users', () => {
+        trackConversionEvent('sample_preview', { platform: 'shopify', is_sample: true });
+        const tracked = getTrackedConversionEvents();
+        expect(tracked.length).toBe(1);
+        expect(tracked[0].name).toBe('sample_preview');
+        expect(tracked[0].payload.is_sample).toBe(true);
+    });
 });

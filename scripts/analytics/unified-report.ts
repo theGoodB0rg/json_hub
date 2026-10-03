@@ -143,10 +143,10 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
 
     const pageViews = events.filter(e => e.event_name === 'page_view').length;
     const parseAttempts = events.filter(e => e.event_name === 'parse_start' || e.event_name === 'parse_success' || e.event_name === 'parse_error').length;
-    const isSampleEvent = (e: any) => e.is_sample === 1 || e.is_sample === true || e.is_sample === 'true';
-    const parseSuccess = events.filter(e => e.event_name === 'parse_success').length;
-    const sampleParses = events.filter(e => e.event_name === 'parse_success' && isSampleEvent(e)).length;
+    const isSampleEvent = (e: any) => e.is_sample === 1 || e.is_sample === true || e.is_sample === 'true' || e.event_name === 'sample_preview';
+    const sampleParses = events.filter(e => (e.event_name === 'sample_preview' || e.event_name === 'parse_success') && isSampleEvent(e)).length;
     const userParses = events.filter(e => e.event_name === 'parse_success' && !isSampleEvent(e)).length;
+    const parseSuccess = userParses;
     const parseErrors = events.filter(e => e.event_name === 'parse_error').length;
     const exportComplete = events.filter(e => e.event_name === 'export_complete' || e.event_name === 'export_success').length;
     const exportErrors = events.filter(e => e.event_name === 'export_error').length;
@@ -157,7 +157,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     for (const e of events) {
         const p = (e.platform || 'general').toLowerCase();
         if (!platformCounts[p]) platformCounts[p] = { parses: 0, exports: 0 };
-        if (e.event_name === 'parse_success') platformCounts[p].parses++;
+        if (e.event_name === 'parse_success' && !isSampleEvent(e)) platformCounts[p].parses++;
         if (e.event_name === 'export_complete' || e.event_name === 'export_success') platformCounts[p].exports++;
 
         if (e.country && e.country !== 'Unknown') {
@@ -174,7 +174,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     const negFeedback = feedback.filter(f => f.rating === 'negative').length;
     const totalRated = posFeedback + negFeedback;
     const satisfactionRate = totalRated > 0 ? Number(((posFeedback / totalRated) * 100).toFixed(1)) : 100;
-    const conversionRate = parseSuccess > 0 ? Number(((exportComplete / parseSuccess) * 100).toFixed(1)) : 0;
+    const conversionRate = userParses > 0 ? Number(((exportComplete / userParses) * 100).toFixed(1)) : 0;
 
     const errorMap: Record<string, { count: number; samplePath?: string }> = {};
     for (const e of events) {
@@ -303,9 +303,10 @@ ${gsc.topPages.slice(0, 10).map(p => `| [${p.page}](${p.page.startsWith('http') 
 ## 3. In-App Conversion & Satisfaction Telemetry
 
 - **Page Views**: ${telemetry.pageViews}
-- **Parse Successes**: ${telemetry.parseSuccess} (${telemetry.userParses} user uploads, ${telemetry.sampleParses} sample previews)
+- **User Uploads Parsed**: ${telemetry.userParses}
+- **Demo Previews Loaded**: ${telemetry.sampleParses}
 - **Exports Completed**: ${telemetry.exportComplete}
-- **Funnel Conversion Rate**: ${telemetry.conversionRate}%
+- **User Conversion Rate**: ${telemetry.conversionRate}%
 - **Output Satisfaction**: ${telemetry.satisfactionRate}% (${telemetry.positiveFeedback} positive, ${telemetry.negativeFeedback} negative)
 
 ${telemetry.topCountries.length > 0 ? `### Geographic Breakdown
@@ -358,8 +359,9 @@ function printTerminalDashboard(data: UnifiedReportData): void {
     console.log('└───────────────────────────────────────────────────────────────────┘');
     console.log(`• Total Tracked Events:      ${telemetry.totalEvents}`);
     console.log(`• Page Views Logged:         ${telemetry.pageViews}`);
-    console.log(`• Parses Completed:          ${telemetry.parseSuccess} (${telemetry.userParses} user uploads, ${telemetry.sampleParses} sample previews)`);
-    console.log(`• Spreadsheets Exported:     ${telemetry.exportComplete} (${telemetry.conversionRate}% conversion rate)`);
+    console.log(`• User Uploads Parsed:       ${telemetry.userParses}`);
+    console.log(`• Demo Previews Loaded:      ${telemetry.sampleParses}`);
+    console.log(`• Spreadsheets Exported:     ${telemetry.exportComplete} (${telemetry.conversionRate}% user conversion rate)`);
     console.log(`• User Output Satisfaction:  ${telemetry.satisfactionRate}% (👍 ${telemetry.positiveFeedback} | 👎 ${telemetry.negativeFeedback})\n`);
 
     if (Object.keys(telemetry.platformCounts).length > 0) {
