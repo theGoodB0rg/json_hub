@@ -56,12 +56,14 @@ app/*/INSTRUCTIONS.md
 scratch/
 
 # Docs/Temp Artifacts
-docs/project_status.md
-docs/task.md
-docs/implementation_plan.md
-docs/phase1_walkthrough.md
-docs/GROWTH_AND_REVENUE_PROJECTIONS.md
-docs/PRODUCT_HUNT_STRATEGY.md
+docs/
+# ↑ everything in docs/ is internal planning / architecture notes.
+# If a doc truly needs to be public, host it under app/ or content/ so
+# it goes through the normal review surface instead of docs/.
+
+# Internal strategy / infra documentation that was accidentally tracked
+AGENTS.md
+CHANGELOG.md
 
 # Raw Data Dumps
 docs/gsc_data/
