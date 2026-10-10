@@ -1,6 +1,6 @@
 {
   "name": "json-hub",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "private": true,
   "description": "Convert complex JSON to Excel/CSV with auto-unescape and smart flattening. 100% client-side, privacy-first JSON to spreadsheet converter.",
   "keywords": [
