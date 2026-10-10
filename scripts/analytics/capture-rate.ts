@@ -27,11 +27,19 @@ export interface CaptureRateReport {
     window: { startIso: string; endIso: string; hours: number };
     sources: {
         cfWebAnalytics: { pageviews: number | null; error?: string };
-        analyticsEngine: { pageviews: number | null; error?: string };
+        // Analytics Engine returns both the raw count (all HTML HTTP GETs
+        // the edge worker saw, including bots + prefetches + link previews)
+        // and a "human-looking" subset (bot and automated UA classes filtered
+        // out). Only the human-looking number is comparable to CF RUM.
+        analyticsEngine: {
+            pageviews: number | null;
+            pageviewsRawAllHtml?: number | null;
+            error?: string;
+        };
         d1Client: { pageviews: number | null; error?: string };
     };
     ratios: {
-        pillar1_vs_cf: number | null;  // should be ~1.0 (server-side vs RUM)
+        pillar1_vs_cf: number | null;  // human-filtered AE / CF RUM — should be ~1.0
         pillar2_vs_cf: number | null;  // the capture rate we care about
     };
     verdict: 'healthy' | 'degraded' | 'unknown';
@@ -93,12 +101,32 @@ async function fetchCfWebAnalytics(env: Env, startIso: string, endIso: string): 
     return groups.reduce((sum: number, g: any) => sum + (g.count || 0), 0);
 }
 
-async function fetchAnalyticsEnginePageviews(env: Env, startIso: string, endIso: string): Promise<number> {
+interface AePageviewCounts {
+    /** Raw count — all HTML HTTP GETs the edge worker saw. */
+    raw: number;
+    /** blob4 (uaClass) NOT IN ('bot','automated') — approximates real users. */
+    humanLike: number;
+}
+
+async function fetchAnalyticsEnginePageviews(
+    env: Env,
+    startIso: string,
+    endIso: string
+): Promise<AePageviewCounts> {
+    // edge-worker.ts writes uaClass to blob4 ('bot' | 'automated' | 'mobile'
+    // | 'desktop' | 'other' | 'unknown'). Filter the bot classes out to get a
+    // human-looking count comparable to CF RUM. We query both numbers in one
+    // SQL round-trip so the raw-vs-filtered gap is visible in the report —
+    // if bot traffic suddenly spikes we want to see it, not have it masked.
+    const tsFrom = startIso.replace('T', ' ').replace(/\.\d+Z$/, '');
+    const tsTo = endIso.replace('T', ' ').replace(/\.\d+Z$/, '');
     const sql = `
-      SELECT SUM(_sample_interval) AS pageviews
+      SELECT
+        SUM(_sample_interval) AS raw,
+        SUMIf(_sample_interval, blob4 NOT IN ('bot', 'automated')) AS human_like
       FROM ${AE_DATASET}
-      WHERE timestamp >= toDateTime('${startIso.replace('T', ' ').replace(/\.\d+Z$/, '')}')
-        AND timestamp <  toDateTime('${endIso.replace('T', ' ').replace(/\.\d+Z$/, '')}')
+      WHERE timestamp >= toDateTime('${tsFrom}')
+        AND timestamp <  toDateTime('${tsTo}')
       FORMAT JSON
     `.trim();
     const res = await fetch(
@@ -114,9 +142,13 @@ async function fetchAnalyticsEnginePageviews(env: Env, startIso: string, endIso:
     );
     if (!res.ok) throw new Error(`Analytics Engine HTTP ${res.status}`);
     const body: any = await res.json();
-    const n = Number(body?.data?.[0]?.pageviews || 0);
-    if (!Number.isFinite(n)) throw new Error('Analytics Engine returned non-numeric');
-    return n;
+    const row = body?.data?.[0] || {};
+    const raw = Number(row.raw || 0);
+    const humanLike = Number(row.human_like || 0);
+    if (!Number.isFinite(raw) || !Number.isFinite(humanLike)) {
+        throw new Error('Analytics Engine returned non-numeric');
+    }
+    return { raw, humanLike };
 }
 
 async function fetchD1Pageviews(startMs: number, endMs: number): Promise<number> {
@@ -164,8 +196,8 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
         ? { pageviews: cfRes.value }
         : { pageviews: null, error: String(cfRes.reason).slice(0, 200) };
     const ae = aeRes.status === 'fulfilled'
-        ? { pageviews: aeRes.value }
-        : { pageviews: null, error: String(aeRes.reason).slice(0, 200) };
+        ? { pageviews: aeRes.value.humanLike, pageviewsRawAllHtml: aeRes.value.raw }
+        : { pageviews: null, pageviewsRawAllHtml: null, error: String(aeRes.reason).slice(0, 200) };
     const d1 = d1Res.status === 'fulfilled'
         ? { pageviews: d1Res.value }
         : { pageviews: null, error: String(d1Res.reason).slice(0, 200) };
@@ -173,6 +205,9 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
     const ratio = (num: number | null, denom: number | null) =>
         (num == null || denom == null || denom === 0) ? null : num / denom;
 
+    // Pillar 1 ratio uses the human-filtered AE count. The raw count
+    // (bots + prefetch + previews included) is shown separately in the
+    // report so bot-traffic spikes stay visible.
     const pillar1 = ratio(ae.pageviews, cf.pageviews);
     const pillar2 = ratio(d1.pageviews, cf.pageviews);
 
@@ -182,11 +217,36 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
         else verdict = 'degraded';
     }
 
-    if (cf.pageviews != null && ae.pageviews != null && pillar1 != null && pillar1 < 0.85) {
-        notes.push(`Pillar 1 (AE) capture is ${(pillar1 * 100).toFixed(1)}% of CF Web Analytics — expected ~100%. Investigate edge worker route health.`);
+    // Alert thresholds tightened to avoid noise in low-traffic windows:
+    //   - Pillar 1 must be <0.5x or >2x CF RUM AND volume > 50 to warn
+    //   - Bot share > 60% is its own warning
+    if (
+        cf.pageviews != null &&
+        ae.pageviews != null &&
+        cf.pageviews > 50 &&
+        pillar1 != null &&
+        (pillar1 < 0.5 || pillar1 > 2.0)
+    ) {
+        notes.push(
+            `Pillar 1 (human-filtered AE) is ${(pillar1 * 100).toFixed(1)}% of CF RUM — expected 70-130%. Check edge worker's isHtmlPageRequest heuristic.`
+        );
+    }
+    if (
+        ae.pageviewsRawAllHtml != null &&
+        ae.pageviews != null &&
+        ae.pageviewsRawAllHtml > 100
+    ) {
+        const botShare = 1 - ae.pageviews / ae.pageviewsRawAllHtml;
+        if (botShare > 0.6) {
+            notes.push(
+                `Bot/automated traffic is ${(botShare * 100).toFixed(0)}% of edge HTML requests. Not a bug — informational.`
+            );
+        }
     }
     if (pillar2 != null && pillar2 < 0.70) {
-        notes.push(`Pillar 2 (D1 client) capture is ${(pillar2 * 100).toFixed(1)}% — below the 70% SLO. Blockers are leaking events.`);
+        notes.push(
+            `Pillar 2 (D1 client) capture is ${(pillar2 * 100).toFixed(1)}% — below the 70% SLO. Content blockers (uBlock, Brave Shields, iOS ITP) are suppressing client beacons. Options: (a) accept, this is the trade-off of client-side telemetry; (b) have the edge worker write pageviews directly to D1 to catch blocked users, deduped by cf-ray.`
+        );
     }
     if (cf.pageviews === 0) {
         notes.push('CF Web Analytics returned 0 pageviews for this window — may indicate a reporting lag; retry later.');
@@ -210,8 +270,12 @@ export function formatCaptureRateSection(report: CaptureRateReport): string {
     lines.push('│ 4. CAPTURE-RATE RECONCILIATION — telemetry health check            │');
     lines.push('└───────────────────────────────────────────────────────────────────┘');
     lines.push(`• Window:  ${report.window.hours}h  (${report.window.startIso} → ${report.window.endIso})`);
-    lines.push(`• CF Web Analytics (RUM):      ${fmtNum(report.sources.cfWebAnalytics.pageviews)} pageviews`);
-    lines.push(`• Pillar 1 (Analytics Engine): ${fmtNum(report.sources.analyticsEngine.pageviews)} pageviews  (${fmtPct(report.ratios.pillar1_vs_cf)} of CF)`);
+    lines.push(`• CF Web Analytics (RUM):      ${fmtNum(report.sources.cfWebAnalytics.pageviews)} pageviews (JS-only, real users)`);
+    const rawAllHtml = report.sources.analyticsEngine.pageviewsRawAllHtml;
+    lines.push(`• Pillar 1 (Analytics Engine): ${fmtNum(report.sources.analyticsEngine.pageviews)} human-looking pageviews  (${fmtPct(report.ratios.pillar1_vs_cf)} of CF)`);
+    if (rawAllHtml != null) {
+        lines.push(`    ↳ ${fmtNum(rawAllHtml)} raw HTML requests total (incl. bots, prefetch, link previews)`);
+    }
     lines.push(`• Pillar 2 (D1 client):        ${fmtNum(report.sources.d1Client.pageviews)} pageviews  (${fmtPct(report.ratios.pillar2_vs_cf)} of CF)`);
     lines.push(`• Verdict: ${report.verdict.toUpperCase()}`);
     for (const n of report.notes) lines.push(`  ⚠ ${n}`);
