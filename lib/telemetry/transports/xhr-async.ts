@@ -34,7 +34,11 @@ export const xhrAsyncTransport: Transport = {
                 xhr.onerror = () => resolve({ delivered: false, reason: 'xhr_error' });
                 xhr.ontimeout = () => resolve({ delivered: false, reason: 'xhr_timeout' });
                 xhr.onabort = () => resolve({ delivered: false, reason: 'xhr_abort' });
-                xhr.send(body);
+                // Wrap in Blob — XHR.send() accepts BodyInit which excludes raw
+                // Uint8Array under strict TS lib types. The `as BlobPart` cast
+                // sidesteps TS's ArrayBuffer-vs-ArrayBufferLike pedantry; the
+                // runtime value is always a browser-friendly byte view.
+                xhr.send(new Blob([body as BlobPart], { type: contentType }));
             } catch (err) {
                 const name = err instanceof Error ? err.name : 'unknown';
                 resolve({ delivered: false, reason: `xhr_throw_${name}` });
