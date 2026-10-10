@@ -20,7 +20,11 @@ export type ConversionEventName =
     | 'affiliate_toast_shown'
     | 'affiliate_toast_click'
     | 'github_star_click'
-    | 'github_issues_click';
+    | 'github_issues_click'
+    // Post-export Pro upsell (M1 in MONETIZATION_ROADMAP_2026-10-10.md)
+    | 'upsell_shown'
+    | 'upsell_dismissed'
+    | 'upsell_clicked';
 
 export interface ConversionEventPayload {
     [key: string]: string | number | boolean | null | undefined;

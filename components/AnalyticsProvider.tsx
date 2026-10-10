@@ -9,6 +9,7 @@ import {
     trackFunnelStep,
 } from '@/lib/analytics';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
+import { PostExportUpsell } from './PostExportUpsell';
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -28,5 +29,15 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
         trackConversionEvent('page_view', { path: pathname });
     }, [pathname]);
 
-    return <>{children}</>;
+    return (
+        <>
+            {children}
+            {/*
+              Mounted globally so any surface that fires `export_success` via
+              `trackConversionEvent` triggers the toast. The component gates
+              itself on isPro, sample status, and a 24h cooldown.
+            */}
+            <PostExportUpsell />
+        </>
+    );
 }
