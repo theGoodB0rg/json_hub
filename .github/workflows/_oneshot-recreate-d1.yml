@@ -1,0 +1,40 @@
+name: _ONESHOT recreate license D1
+
+# One-shot workflow to delete + recreate jsonexport-license-db using
+# the CI token. The current DB is visible to local wrangler but not
+# accessible via the CI token's /query or /import endpoints, suggesting
+# a CF-side ownership/propagation glitch between the token that created
+# the DB (my local OAuth) and the API token used by CI.
+#
+# Creating the DB via the CI token itself eliminates that mismatch.
+# Delete this file once the DB UUID is captured + wrangler-license.toml
+# is updated.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  recreate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: whoami + delete + create
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "=== whoami ==="
+          npx -y wrangler@4.73.0 whoami || true
+          echo
+          echo "=== Existing D1 DBs the CI token can see ==="
+          npx -y wrangler@4.73.0 d1 list || true
+          echo
+          echo "=== Delete old DB (ignore errors if it doesn't exist from this token) ==="
+          npx -y wrangler@4.73.0 d1 delete jsonexport-license-db --skip-confirmation || true
+          echo
+          echo "=== Create fresh DB ==="
+          npx -y wrangler@4.73.0 d1 create jsonexport-license-db
+          echo
+          echo "=== Re-list to confirm ==="
+          npx -y wrangler@4.73.0 d1 list
