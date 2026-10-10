@@ -35,6 +35,9 @@ tauri-plugin-process = "2"
 # Native Save As dialog (user picks destination) + reveal-in-folder so people
 # can actually find exports. M3 remainder — real users complained "I can't
 # tell where my file went" because the webview default-downloads silently.
-tauri-plugin-dialog = "2"
-tauri-plugin-opener = "2"
+# Pinned to match the npm minors (@tauri-apps/plugin-dialog 2.8.x,
+# plugin-opener 2.7.x) — tauri-action refuses to build on a minor mismatch,
+# and a bare "2" was pulling the older 2.7.3 / 2.5.5 from crates.io.
+tauri-plugin-dialog = "2.8"
+tauri-plugin-opener = "2.7"
 tokio = { version = "1.37", features = ["full"] }
