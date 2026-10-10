@@ -70,19 +70,17 @@ export function Navbar() {
                             Recommended Tools
                         </Link>
                         {/*
-                          M1: direct link to Gumroad until the /desktop landing
-                          page ships in M2. Opens in new tab so the user doesn't
-                          lose their in-progress conversion.
+                          M2: links to the /desktop landing page, which has
+                          the comparison table + dynamic OS download picker.
+                          Keeps the user in-site instead of punting to Gumroad.
                         */}
-                        <a
-                            href="https://gumroad.com/l/json_hub?src=navbar"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link
+                            href={ROUTES.desktop}
                             className="hidden xl:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:opacity-80 transition-opacity whitespace-nowrap px-2 py-0.5 rounded border border-primary/30 bg-primary/5"
                         >
                             Pro
                             <span className="text-[10px] font-normal text-primary/70">$9</span>
-                        </a>
+                        </Link>
                         <ShareButton />
                         <BatchProcessor />
                         <ProjectManager />
