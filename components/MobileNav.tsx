@@ -58,6 +58,13 @@ export function MobileNav() {
                         </span>
                         <ArrowRight className="w-4 h-4 opacity-70" />
                     </Link>
+                    <Link
+                        href={ROUTES.activate}
+                        onClick={() => setOpen(false)}
+                        className="-mt-2 text-xs text-muted-foreground hover:text-primary px-3"
+                    >
+                        Already have a license? Activate →
+                    </Link>
 
                     {/* Converters Directory CTA */}
                     <Button

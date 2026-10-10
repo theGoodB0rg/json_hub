@@ -85,6 +85,14 @@ export function Navbar() {
                             Get Pro
                             <span className="text-[10px] font-semibold text-amber-900/80 border-l border-amber-700/40 pl-1.5 ml-0.5">$9</span>
                         </Link>
+                        {/* M3: entry point for buyers with a key but no obvious path */}
+                        <Link
+                            href={ROUTES.activate}
+                            className="hidden xl:inline-block text-xs text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
+                            aria-label="Activate an existing JsonExport Pro license"
+                        >
+                            Activate
+                        </Link>
                         <ShareButton />
                         <BatchProcessor />
                         <ProjectManager />

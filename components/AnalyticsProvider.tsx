@@ -10,6 +10,7 @@ import {
 } from '@/lib/analytics';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { PostExportUpsell } from './PostExportUpsell';
+import { verifyCachedLicense } from '@/lib/license/activation';
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -18,6 +19,10 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         ensureClientInfo();
         ensureSession();
+        // Re-verify any cached license on boot so returning Pro users don't
+        // see "Free" state flash on page load, and refunded buyers lose
+        // access automatically within one session.
+        void verifyCachedLicense();
     }, []);
 
     useEffect(() => {

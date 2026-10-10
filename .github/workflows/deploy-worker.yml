@@ -1,12 +1,11 @@
-name: Deploy Edge Worker
+name: Deploy Workers
 
-# Deploys the jsonexport-edge Cloudflare Worker (worker/edge-worker.ts)
-# whenever the worker code or its config changes on main. This mirrors
-# the existing deploy.yml (Next.js → GH Pages) so site + edge ship on
-# the same push.
+# Deploys the Cloudflare Workers under worker/ on push to main. Matrix
+# over each worker's wrangler config file so adding a new worker is one
+# matrix entry plus one paths filter.
 #
-# Auth: CLOUDFLARE_API_TOKEN secret (scoped Workers Scripts/Routes Edit on
-# the Theregalstarlite account + jsonexport.com zone).
+# Auth: CLOUDFLARE_API_TOKEN secret (scoped Workers Scripts/Routes Edit
+# on the Theregalstarlite account + jsonexport.com zone + D1 edit).
 
 on:
   push:
@@ -14,29 +13,63 @@ on:
     paths:
       - "worker/edge-worker.ts"
       - "worker/wrangler-edge.toml"
+      - "worker/license-worker.ts"
+      - "worker/wrangler-license.toml"
+      - "worker/license-schema.sql"
       - ".github/workflows/deploy-worker.yml"
   workflow_dispatch:
 
 concurrency:
-  group: "deploy-edge-worker"
+  # Separate groups per worker so an edge push doesn't cancel a license
+  # push that happens to be in flight.
+  group: "deploy-workers-${{ github.ref }}"
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  edge-worker:
+    name: Deploy jsonexport-edge
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-
-      - name: Deploy worker to Cloudflare
+      - name: Deploy edge worker
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: worker
           wranglerVersion: "4.73.0"
           command: deploy --config wrangler-edge.toml
+
+  license-worker:
+    name: Deploy jsonexport-license + apply schema
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Schema is idempotent — the IF NOT EXISTS clauses let it run on
+      # every deploy safely. Running it BEFORE the worker deploy means a
+      # schema change ships before any code change that depends on it.
+      - name: Apply D1 schema
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: worker
+          wranglerVersion: "4.73.0"
+          command: d1 execute jsonexport-license-db --config wrangler-license.toml --file license-schema.sql --remote
+
+      - name: Deploy license worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: worker
+          wranglerVersion: "4.73.0"
+          command: deploy --config wrangler-license.toml

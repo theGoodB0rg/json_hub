@@ -15,6 +15,7 @@ export const ROUTES = {
     sitemap: '/sitemap.xml',
     shopifyGuide: '/blog/shopify-line-items-excel-export-fix',
     desktop: '/desktop',
+    activate: '/activate',
 } as const;
 
 function normalizePath(pathname: string): string {

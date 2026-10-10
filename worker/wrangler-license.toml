@@ -1,0 +1,28 @@
+# jsonexport-license — Pro license activation + verification worker
+# Deployed to the Theregalstarlite account so Worker routes bind to the
+# jsonexport.com zone. Shipped in M3 (MONETIZATION_ROADMAP_2026-10-10.md).
+
+name = "jsonexport-license"
+main = "license-worker.ts"
+compatibility_date = "2024-09-01"
+account_id = "ea158eac6035716195ee97831b85562c"
+workers_dev = false
+
+# Separate D1 database for license activations — keeping it apart from
+# the telemetry DB so a bad migration on one can't take out the other.
+[[d1_databases]]
+binding = "DB"
+database_name = "jsonexport-license-db"
+database_id = "dc7e399a-0d5f-461f-9b0f-1f4772d299df"
+
+[vars]
+# Gumroad short-link permalink for the Pro product. Must match the
+# product's actual permalink in Gumroad settings.
+GUMROAD_PRODUCT_PERMALINK = "json_hub"
+# How many devices one license may be active on. Server-side enforced.
+MAX_USES_PER_LICENSE = "3"
+
+# LICENSE_SIGNING_SECRET is a Worker secret (not committed) — set via
+#   wrangler secret put LICENSE_SIGNING_SECRET --config wrangler-license.toml
+# with 32+ bytes of random. Rotating it invalidates all issued JWTs
+# (buyers would have to re-activate), so rotate sparingly.
