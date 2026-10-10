@@ -23,6 +23,10 @@ jobs:
       - name: whoami + delete + create
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Token has access to BOTH user accounts (Idowue93 + Theregalstarlite).
+          # Explicit CLOUDFLARE_ACCOUNT_ID picks the one the DB lives on,
+          # so wrangler stops rejecting with "more than one account".
+          CLOUDFLARE_ACCOUNT_ID: ea158eac6035716195ee97831b85562c
         run: |
           echo "=== whoami ==="
           npx -y wrangler@4.73.0 whoami || true
