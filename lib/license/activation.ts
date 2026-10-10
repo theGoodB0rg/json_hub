@@ -20,9 +20,14 @@
 
 import { useProStore } from '@/lib/store/proStore';
 
+// Served from a Worker route on jsonexport.com/_l/* — same-origin so the
+// client POST isn't tagged cross-origin by blockers and no new domain is
+// in play. NEXT_PUBLIC_LICENSE_URL overrides for local dev / staging.
 const LICENSE_ENDPOINT =
     process.env.NEXT_PUBLIC_LICENSE_URL ||
-    'https://jsonexport-license.theregalstarlite.workers.dev';
+    (typeof window !== 'undefined'
+        ? `${window.location.origin}/_l`
+        : 'https://jsonexport.com/_l');
 
 const JWT_STORAGE_KEY = 'jsonexport:license-jwt';
 const DEVICE_STORAGE_KEY = 'jsonexport:device-id';

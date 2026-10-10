@@ -8,6 +8,14 @@ compatibility_date = "2024-09-01"
 account_id = "ea158eac6035716195ee97831b85562c"
 workers_dev = false
 
+# Mount on jsonexport.com/_l/* so the client sees a same-origin endpoint
+# (blocker-resistant, no cross-origin preflight) and no new subdomain to
+# brand. The handler reads only the final path segment (/activate,
+# /verify, /deactivate) so the /_l/ prefix is transparent.
+[[routes]]
+pattern = "jsonexport.com/_l/*"
+zone_name = "jsonexport.com"
+
 # Separate D1 database for license activations — keeping it apart from
 # the telemetry DB so a bad migration on one can't take out the other.
 [[d1_databases]]
