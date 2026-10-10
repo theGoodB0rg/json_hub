@@ -194,9 +194,14 @@ export const PLATFORM_SAMPLES: Record<string, PlatformSample> = {
 
     jira: {
         platform: 'Jira',
-        description: 'Jira Cloud / Server Issue Search Export',
+        // Includes a changelog block — users with ?expand=changelog in their Jira
+        // REST query were complaining it "went missing" in the export. It didn't;
+        // the generic flattener was serialising it as a single JSON-string column
+        // because nested-array depth exceeds the default expansion limit. Showing
+        // it here means the output they get matches what the sample previews.
+        description: 'Jira Cloud / Server Issue Search Export (with ?expand=changelog)',
         sampleJson: JSON.stringify({
-            expand: "schema,names",
+            expand: "schema,names,changelog",
             startAt: 0,
             maxResults: 50,
             total: 2,
@@ -211,10 +216,39 @@ export const PLATFORM_SAMPLES: Record<string, PlatformSample> = {
                         issuetype: { name: "Bug" },
                         assignee: { displayName: "Sarah Chen", emailAddress: "sarah@company.com" },
                         reporter: { displayName: "DevOps Bot" },
+                        labels: ["prod-incident", "eu-cluster"],
                         created: "2026-08-25T08:14:22.000+0000",
                         updated: "2026-08-28T09:30:00.000+0000",
                         customfield_10015: "Sprint 42",
                         customfield_10020: 5.0
+                    },
+                    changelog: {
+                        startAt: 0,
+                        maxResults: 3,
+                        total: 3,
+                        histories: [
+                            {
+                                id: "100201",
+                                author: { displayName: "DevOps Bot", emailAddress: "ops@company.com" },
+                                created: "2026-08-25T08:14:30.000+0000",
+                                items: [{ field: "status", fieldtype: "jira", fromString: "Open", toString: "To Do" }]
+                            },
+                            {
+                                id: "100210",
+                                author: { displayName: "Sarah Chen", emailAddress: "sarah@company.com" },
+                                created: "2026-08-26T10:02:11.000+0000",
+                                items: [
+                                    { field: "assignee", fieldtype: "jira", fromString: null, toString: "Sarah Chen" },
+                                    { field: "status", fieldtype: "jira", fromString: "To Do", toString: "In Progress" }
+                                ]
+                            },
+                            {
+                                id: "100228",
+                                author: { displayName: "Sarah Chen", emailAddress: "sarah@company.com" },
+                                created: "2026-08-28T09:29:55.000+0000",
+                                items: [{ field: "priority", fieldtype: "jira", fromString: "Medium", toString: "High" }]
+                            }
+                        ]
                     }
                 },
                 {
@@ -227,15 +261,35 @@ export const PLATFORM_SAMPLES: Record<string, PlatformSample> = {
                         issuetype: { name: "Task" },
                         assignee: { displayName: "Alex Developer", emailAddress: "alex@company.com" },
                         reporter: { displayName: "Sarah Chen" },
+                        labels: ["desktop", "security"],
                         created: "2026-08-26T11:00:00.000+0000",
                         updated: "2026-08-28T10:15:00.000+0000",
                         customfield_10015: "Sprint 42",
                         customfield_10020: 3.0
+                    },
+                    changelog: {
+                        startAt: 0,
+                        maxResults: 2,
+                        total: 2,
+                        histories: [
+                            {
+                                id: "100300",
+                                author: { displayName: "Alex Developer", emailAddress: "alex@company.com" },
+                                created: "2026-08-27T14:45:00.000+0000",
+                                items: [{ field: "status", fieldtype: "jira", fromString: "To Do", toString: "In Progress" }]
+                            },
+                            {
+                                id: "100331",
+                                author: { displayName: "Alex Developer", emailAddress: "alex@company.com" },
+                                created: "2026-08-28T10:14:12.000+0000",
+                                items: [{ field: "status", fieldtype: "jira", fromString: "In Progress", toString: "Done" }]
+                            }
+                        ]
                     }
                 }
             ]
         }, null, 2),
-        expectedColumns: ['id', 'key', 'fields.summary', 'fields.status.name', 'fields.priority.name', 'fields.assignee.displayName']
+        expectedColumns: ['id', 'key', 'fields.summary', 'fields.status.name', 'fields.priority.name', 'fields.assignee.displayName', 'changelog.histories']
     },
 
     discord: {

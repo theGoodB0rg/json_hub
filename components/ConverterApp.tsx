@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/resizable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Zap, Code2, FileSpreadsheet, FileText } from "lucide-react";
+import { Zap, Code2, FileSpreadsheet, FileText, ShieldCheck, UserX, Github, HardDrive } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { AffiliateSidebar } from "@/components/AffiliateSidebar";
 import { Testimonials } from "@/components/Testimonials";
@@ -145,6 +145,39 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
                             {subheading || "Stop struggling with nested JSON. Visualize, flatten, and clean your data instantly—100% locally."}
                         </p>
+
+                        {/*
+                          Trust strip — small, high-contrast guarantees aimed at
+                          the four most common hesitations we see in telemetry
+                          and reviews: "is my data uploaded?", "do I need to
+                          sign up?", "is this a scam?", "will it handle my big
+                          file?". Low ink, visible above the fold, no CTA shift.
+                        */}
+                        <ul className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
+                            <li className="inline-flex items-center gap-1.5">
+                                <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                                <span>100% in your browser — nothing uploaded</span>
+                            </li>
+                            <li className="inline-flex items-center gap-1.5">
+                                <UserX className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                                <span>No sign-up, no email</span>
+                            </li>
+                            <li className="inline-flex items-center gap-1.5">
+                                <HardDrive className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                                <span>Handles 100 MB+ files</span>
+                            </li>
+                            <li className="inline-flex items-center gap-1.5">
+                                <Github className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                                <a
+                                    href="https://github.com/theGoodB0rg/json_hub"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-foreground hover:underline"
+                                >
+                                    Open source
+                                </a>
+                            </li>
+                        </ul>
 
                         <div className="pt-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
                             <HeroAnimation />

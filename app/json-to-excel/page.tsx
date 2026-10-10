@@ -6,8 +6,11 @@ import { FAQSchema } from '@/components/FAQSchema';
 import Link from 'next/link';
 
 export const metadata: Metadata = buildPageMetadata({
-    title: 'JSON to Excel Converter — Auto-Flatten Nested JSON to XLSX',
-    description: 'Convert nested JSON to formatted Excel (.xlsx) spreadsheets instantly. Automatically unwinds arrays into rows and fixes [object Object] errors online.',
+    // "json to xlsx" sits at pos 7.2 with 222 impressions in GSC — moving
+    // it into the title (not just the body) is the cheapest lever to lift
+    // CTR on that spelling without affecting the "json to excel" ranking.
+    title: 'JSON to XLSX / Excel Converter — Free, Private, No Upload',
+    description: 'Convert JSON to Excel (.xlsx) in one click. Auto-flattens nested arrays, fixes [object Object] errors, handles 100 MB+ files. 100% in your browser, no sign-up, no upload.',
     canonicalPath: ROUTES.jsonToExcel,
 });
 
