@@ -41,6 +41,35 @@ export function isTauriRuntime(): boolean {
     return !!window.__TAURI_INTERNALS__;
 }
 
+/**
+ * Strip characters Windows (and some macOS/Linux shells) reject in file
+ * names: < > : " | ? * / \ and ASCII control chars. Also trims trailing
+ * dots and spaces (Windows strips them silently and the Save dialog can
+ * reject names that end up empty). Falls back to 'export' when the input
+ * sanitises to nothing. Preserves the extension if present.
+ *
+ * This is what fixes the Save As "File not found" dialog bug observed on
+ * v0.1.2 when sourceFilename came from an input like `api?v=2.json` and
+ * we passed `api?v=2.csv` straight into the dialog's defaultPath.
+ */
+export function sanitizeFilename(name: string): string {
+    if (!name) return 'export';
+    const lastDot = name.lastIndexOf('.');
+    const stem = lastDot > 0 ? name.slice(0, lastDot) : name;
+    const ext = lastDot > 0 ? name.slice(lastDot) : '';
+    const cleanedStem = stem
+        .replace(/[<>:"|?*\\/\u0000-\u001f]/g, '_')
+        .replace(/[.\s]+$/g, '')
+        .trim();
+    const cleanedExt = ext
+        .replace(/[<>:"|?*\\/\u0000-\u001f]/g, '_')
+        .replace(/[.\s]+$/g, '');
+    // Hard-cap at 240 chars so even with a long parent path we stay under
+    // Windows' default 260-char MAX_PATH limit.
+    const combined = (cleanedStem || 'export') + cleanedExt;
+    return combined.length > 240 ? combined.slice(0, 240) : combined;
+}
+
 function filterForExtension(filename: string): SaveFilter[] {
     const dot = filename.lastIndexOf('.');
     if (dot === -1) return [];
@@ -103,6 +132,7 @@ async function saveViaTauriDialog(
     data: Blob | ArrayBuffer | Uint8Array | string,
     filename: string,
 ): Promise<SaveResult> {
+    const safeName = sanitizeFilename(filename);
     try {
         // Dynamic imports so the browser bundle never pulls Tauri modules
         // (they'd fail to resolve on the public site).
@@ -111,8 +141,8 @@ async function saveViaTauriDialog(
             import('@tauri-apps/api/core'),
         ]);
         const chosen = await save({
-            defaultPath: filename,
-            filters: filterForExtension(filename),
+            defaultPath: safeName,
+            filters: filterForExtension(safeName),
         });
         if (!chosen) return { platform: 'desktop', cancelled: true };
         const bytes = await toBytes(data);
