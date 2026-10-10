@@ -50,14 +50,20 @@ export interface CaptureRateReport {
             pageviews: number | null;
             pageviewsClientBeacon?: number | null;
             pageviewsEdgeFallback?: number | null;
+            /** Deduped by (hour, path, country). Kept for reference only —
+             *  it collapses genuine repeat visits, so it is a lower bound and
+             *  not comparable to CF RUM's undeduped count. */
+            pageviewsDedupedUnion?: number | null;
             error?: string;
         };
     };
     ratios: {
         pillar1_vs_cf: number | null;  // human-filtered AE / CF RUM — should be ~1.0
         pillar2_vs_cf: number | null;  // D1 union-estimate / CF RUM
-        /** Share of real users whose client-side beacon was blocked.
-         *  Only meaningful when both client and edge rows are present. */
+        /** Share of captured pageviews that came from the edge fallback
+         *  rather than a client beacon — a floor on blocker suppression, not
+         *  an exact rate. See the derivation for why an exact figure is not
+         *  available without a shared request id. */
         clientBlockerSuppression: number | null;
     };
     verdict: 'healthy' | 'degraded' | 'unknown';
@@ -280,11 +286,20 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
         : { pageviews: null, pageviewsRawAllHtml: null, pageviewsSchemaV2: null, error: String(aeRes.reason).slice(0, 200) };
     const d1 = d1Res.status === 'fulfilled'
         ? {
-            pageviews: d1Res.value.unionEstimate,
+            // Pillar 2 is reported as the CLIENT BEACON rate, because that is
+            // what the 70% SLO is about and what CF RUM is comparable to:
+            // both count individual pageloads.
+            //
+            // The old headline was `unionEstimate`, deduped by
+            // (hour, path, country). That collapses genuine repeat visits —
+            // 53 client beacons plus 9 edge writes reported as 27 — so it was
+            // compared against CF's undeduped count and understated capture.
+            pageviews: d1Res.value.client,
             pageviewsClientBeacon: d1Res.value.client,
             pageviewsEdgeFallback: d1Res.value.edge,
+            pageviewsDedupedUnion: d1Res.value.unionEstimate,
         }
-        : { pageviews: null, pageviewsClientBeacon: null, pageviewsEdgeFallback: null, error: String(d1Res.reason).slice(0, 200) };
+        : { pageviews: null, pageviewsClientBeacon: null, pageviewsEdgeFallback: null, pageviewsDedupedUnion: null, error: String(d1Res.reason).slice(0, 200) };
 
     const ratio = (num: number | null, denom: number | null) =>
         (num == null || denom == null || denom === 0) ? null : num / denom;
@@ -298,11 +313,22 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
     // Blocker suppression: 1 - (client / edge). Only meaningful once edge
     // writes have accumulated — if edge == 0 we don't have the fallback
     // signal yet (either worker not deployed or the window is too fresh).
+    // Share of captured pageviews that only the edge fallback saw.
+    //
+    // The previous formula was `1 - client / edge`, which assumes the edge
+    // observed a superset of what the client did. It does not: the edge only
+    // writes for human-looking requests and only since it was deployed, while
+    // client beacons accumulate across the whole window. With 53 client
+    // beacons against 9 edge writes that produced "-488.9% suppression".
+    //
+    // This cannot be an exact blocked-user rate without a shared request id —
+    // edge rows carry no beacon id to join on. It is an honest floor: the
+    // proportion of what we captured that came from the fallback path.
+    const totalCaptured =
+        (d1.pageviewsClientBeacon ?? 0) + (d1.pageviewsEdgeFallback ?? 0);
     const clientBlockerSuppression =
-        d1.pageviewsEdgeFallback != null &&
-            d1.pageviewsClientBeacon != null &&
-            d1.pageviewsEdgeFallback > 0
-            ? 1 - d1.pageviewsClientBeacon / d1.pageviewsEdgeFallback
+        d1.pageviewsEdgeFallback != null && d1.pageviewsEdgeFallback > 0 && totalCaptured > 0
+            ? d1.pageviewsEdgeFallback / totalCaptured
             : null;
 
     let verdict: CaptureRateReport['verdict'] = 'unknown';
@@ -356,7 +382,10 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
     }
     if (pillar2 != null && pillar2 < 0.70) {
         notes.push(
-            `Pillar 2 (D1 client) capture is ${(pillar2 * 100).toFixed(1)}% — below the 70% SLO. Content blockers (uBlock, Brave Shields, iOS ITP) are suppressing client beacons. Options: (a) accept, this is the trade-off of client-side telemetry; (b) have the edge worker write pageviews directly to D1 to catch blocked users, deduped by cf-ray.`
+            `Pillar 2 (client beacons) is ${(pillar2 * 100).toFixed(1)}% of CF RUM — below the 70% SLO. ` +
+            (d1.pageviewsEdgeFallback && d1.pageviewsEdgeFallback > 0
+                ? `The edge fallback is live and already recovering ${d1.pageviewsEdgeFallback} pageview(s) the client beacon missed. Remaining gap is content blockers (uBlock, Brave Shields, iOS ITP) on requests the edge also could not attribute.`
+                : `The edge fallback has written nothing in this window — check that the worker is deployed and that looksHuman() is not rejecting real traffic, which is exactly what the 2026-10-10 bot-score defect did.`)
         );
     }
     if (cf.pageviews === 0) {
@@ -399,8 +428,11 @@ export function formatCaptureRateSection(report: CaptureRateReport): string {
     lines.push(`• Pillar 2 (D1 union):         ${fmtNum(d1.pageviews)} pageviews  (${fmtPct(report.ratios.pillar2_vs_cf)} of CF)`);
     if (d1.pageviewsClientBeacon != null || d1.pageviewsEdgeFallback != null) {
         lines.push(`    ↳ ${fmtNum(d1.pageviewsClientBeacon ?? null)} client beacons, ${fmtNum(d1.pageviewsEdgeFallback ?? null)} edge fallback writes`);
+        if (d1.pageviewsDedupedUnion != null) {
+            lines.push(`    ↳ ${fmtNum(d1.pageviewsDedupedUnion)} after dedupe by hour+path+country (lower bound; collapses repeat visits)`);
+        }
         if (report.ratios.clientBlockerSuppression != null) {
-            lines.push(`    ↳ Client-beacon blocker suppression: ${fmtPct(report.ratios.clientBlockerSuppression)}`);
+            lines.push(`    ↳ ${fmtPct(report.ratios.clientBlockerSuppression)} of captured pageviews came via the edge fallback (floor on blocker suppression)`);
         }
     }
     lines.push(`• Verdict: ${report.verdict.toUpperCase()}`);
