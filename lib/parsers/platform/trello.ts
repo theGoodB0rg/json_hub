@@ -1,3 +1,5 @@
+import { dropEmptyColumns, joinCell } from './types';
+
 /**
  * Specialized Trello Board JSON Pre-Processor
  * 
@@ -6,6 +8,12 @@
  * 2. Missing list names (Trello cards store idList, not list name).
  * 3. Missing pluginData / Custom Fields (Trello stores customFields definitions at board root
  *    and values in customFieldItems or pluginData as JSON strings).
+ * 4. Silently dropped attachments. Found by the LOSSLESS invariant against
+ *    Trello's own public "Trello Development Roadmap" board (2.4MB): 208
+ *    attachment names and 208 URLs were present in the input and reachable
+ *    from no output cell. Attachments are often where the actual deliverable
+ *    lives, so losing them is the same class of defect as the "plugin data
+ *    was missing" report that prompted the original Trello work.
  */
 
 export interface TrelloBoard {
@@ -99,8 +107,9 @@ export function transformTrelloBoard(board: TrelloBoard): Record<string, any>[] 
     }
 
     // 5. Transform each card into a canonical 1-card = 1-row representation
-    return board.cards.map((card) => {
+    const rows = board.cards.map((card) => {
         const row: Record<string, any> = {
+            boardName: board.name || '',
             id: card.id,
             name: card.name || '',
             desc: card.desc || '',
@@ -227,6 +236,28 @@ export function transformTrelloBoard(board: TrelloBoard): Record<string, any>[] 
             });
         }
 
+        // Attachments: keep names and URLs reachable. One row per card is the
+        // right grain, so they are joined rather than exploded into rows.
+        if (Array.isArray(card.attachments) && card.attachments.length > 0) {
+            row['attachments.count'] = card.attachments.length;
+            row['attachments.names'] = joinCell(
+                card.attachments.map((a: any) => a?.name || a?.fileName || '')
+            );
+            row['attachments.urls'] = joinCell(
+                card.attachments.map((a: any) => a?.url || '')
+            );
+        } else {
+            row['attachments.count'] = 0;
+            row['attachments.names'] = '';
+            row['attachments.urls'] = '';
+        }
+
+        // Vote tally. The raw idMembersVoted array is 6,800+ opaque ids on a
+        // busy board — the count is the part a spreadsheet can use.
+        if (Array.isArray(card.idMembersVoted)) {
+            row['votes'] = card.idMembersVoted.length;
+        }
+
         // Retain any extra simple properties not yet mapped
         for (const [key, value] of Object.entries(card)) {
             if (!(key in row) && (typeof value !== 'object' || value === null)) {
@@ -236,4 +267,9 @@ export function transformTrelloBoard(board: TrelloBoard): Record<string, any>[] 
 
         return row;
     });
+
+    // Real boards carry card properties that are null on every card (address,
+    // coordinates, aiMetadata, ...). Keeping them produced a 33%-full sheet;
+    // a column empty in every row carries no information by construction.
+    return dropEmptyColumns(rows);
 }

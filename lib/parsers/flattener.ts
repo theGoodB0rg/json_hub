@@ -1,5 +1,5 @@
 import type { FlattenResult } from '@/types/parser.types';
-import { isTrelloBoard, transformTrelloBoard } from '@/lib/parsers/platform/trello';
+import { matchPlatform } from '@/lib/parsers/platform';
 
 // Maximum depth for array expansion to prevent column explosion
 const MAX_ARRAY_EXPANSION_DEPTH = 1;
@@ -66,9 +66,16 @@ export function flattenJSON(data: any, options: { mode: 'flat' | 'relational' } 
         return { rows: [], schema: [] };
     }
 
-    // Domain-aware Trello board preprocessing to avoid card row duplication
-    if (isTrelloBoard(data)) {
-        return flattenJSON(transformTrelloBoard(data), options);
+    // Domain-aware preprocessing. A registered platform parser picks the
+    // right grain (1 Trello card = 1 row; 1 Jira issue = 1 row, or 1 changelog
+    // entry per row in relational mode) before the generic flattener runs.
+    // Without it the generic path is faithful but unusable: a 5-issue Jira
+    // export flattens to 851 sparse columns.
+    const platform = matchPlatform(data, options.mode);
+    if (platform) {
+        // The parser has already chosen the row grain, so the generic pass
+        // over its output must not expand arrays into rows again.
+        return flattenJSON(platform.rows, { mode: 'flat' });
     }
 
     // Convert single object to array for consistent processing

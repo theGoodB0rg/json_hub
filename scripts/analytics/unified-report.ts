@@ -126,6 +126,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
             countries: [],
             devices: [],
             source: `Live Google Search Console API (${liveGsc.startDate} to ${liveGsc.endDate})`,
+            queryCoverage: liveGsc.queryCoverage,
         };
 
         // Save live snapshot
@@ -272,6 +273,8 @@ function formatMarkdownReport(data: UnifiedReportData): string {
 | **Total Organic Search Clicks** | **${gsc.totalClicks.toLocaleString()}** |
 | **Total Search Impressions** | **${gsc.totalImpressions.toLocaleString()}** |
 | **Average Organic CTR** | **${gsc.avgCtr}%** |
+| **Average Position** (impression-weighted) | **${gsc.avgPosition}** |${gsc.queryCoverage ? `
+| Query-level coverage | ${(gsc.queryCoverage.clickShare * 100).toFixed(0)}% of clicks, ${(gsc.queryCoverage.impressionShare * 100).toFixed(0)}% of impressions (Google withholds rare queries) |` : ''}
 | **Tracked Page Views** | **${telemetry.pageViews}** |
 | **Successful Data Parses** | **${telemetry.parseSuccess}** |
 | **Spreadsheets Exported** | **${telemetry.exportComplete}** |
@@ -341,7 +344,18 @@ async function printTerminalDashboard(data: UnifiedReportData): Promise<void> {
     console.log(`• Total Organic Clicks:      ${gsc.totalClicks}`);
     console.log(`• Total Search Impressions:  ${gsc.totalImpressions}`);
     console.log(`• Average Search CTR:        ${gsc.avgCtr}%`);
-    console.log(`• Source / Date Window:      ${gsc.source || 'Last 28 Days'}\n`);
+    console.log(`• Average Position:          ${gsc.avgPosition} (impression-weighted)`);
+    console.log(`• Source / Date Window:      ${gsc.source || 'Last 28 Days'}`);
+    if (gsc.queryCoverage) {
+        const qc = gsc.queryCoverage;
+        console.log(
+            `• Query-level coverage:      ${qc.clicks}/${gsc.totalClicks} clicks ` +
+            `(${(qc.clickShare * 100).toFixed(0)}%), ${qc.impressions}/${gsc.totalImpressions} impressions ` +
+            `(${(qc.impressionShare * 100).toFixed(0)}%)`
+        );
+        console.log(`  ↳ Google withholds rare queries, so the per-query table below cannot sum to the totals above.`);
+    }
+    console.log('');
 
     console.log('Top High-Intent Search Queries:');
     gsc.topQueries.slice(0, 6).forEach((q, i) => {

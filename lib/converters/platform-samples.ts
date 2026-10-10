@@ -194,17 +194,33 @@ export const PLATFORM_SAMPLES: Record<string, PlatformSample> = {
 
     jira: {
         platform: 'Jira',
-        // Includes a changelog block — users with ?expand=changelog in their Jira
-        // REST query were complaining it "went missing" in the export. It didn't;
-        // the generic flattener was serialising it as a single JSON-string column
-        // because nested-array depth exceeds the default expansion limit. Showing
-        // it here means the output they get matches what the sample previews.
+        // Includes a changelog block. Four users reported it "went missing" from
+        // their exports. It was never dropped — the generic flattener emitted it
+        // as one column per history index (575 columns for 5 real Apache Kafka
+        // issues, 41% filled), which is indistinguishable from missing when you
+        // are scrolling a spreadsheet. lib/parsers/platform/jira.ts now condenses
+        // it to readable status/assignee paths plus cycle and lead time, and the
+        // relational grain emits the full audit trail one row per change.
         description: 'Jira Cloud / Server Issue Search Export (with ?expand=changelog)',
         sampleJson: JSON.stringify({
             expand: "schema,names,changelog",
             startAt: 0,
             maxResults: 50,
             total: 2,
+            // Jira returns this map with ?expand=names. The converter uses it to
+            // turn customfield_10020 into "Story Points", so the sample carries
+            // one — without it the preview would show opaque ids and understate
+            // what the tool actually does.
+            names: {
+                summary: "Summary",
+                status: "Status",
+                priority: "Priority",
+                assignee: "Assignee",
+                reporter: "Reporter",
+                labels: "Labels",
+                customfield_10015: "Sprint",
+                customfield_10020: "Story Points",
+            },
             issues: [
                 {
                     id: "10024",
@@ -289,7 +305,7 @@ export const PLATFORM_SAMPLES: Record<string, PlatformSample> = {
                 }
             ]
         }, null, 2),
-        expectedColumns: ['id', 'key', 'fields.summary', 'fields.status.name', 'fields.priority.name', 'fields.assignee.displayName', 'changelog.histories']
+        expectedColumns: ['key', 'summary', 'status', 'statusCategory', 'priority', 'assignee', 'Story Points', 'Sprint', 'changelog.statusPath', 'changelog.log', 'changelog.leadTimeDays']
     },
 
     discord: {

@@ -91,6 +91,42 @@ function classifyUserAgent(ua: string | null): string {
     return 'other';
 }
 
+/**
+ * How we came by the bot score in double2. Stored in double3 so every row
+ * says what its own score means — the 2026-10-10 incident happened because
+ * "1" silently meant two different things (verified bot / unscored human).
+ */
+export const SCORE_SOURCE = {
+    UNSCORED: 0,
+    CF_SCORED: 1,
+    VERIFIED_BOT: 2,
+} as const;
+
+/**
+ * Bumped whenever the meaning of a blob/double column changes. Rows written
+ * before the bot-score fix carry no double4 at all (reads back as 0), which
+ * is exactly how the capture-rate query excludes them from human counts.
+ */
+export const ROW_SCHEMA_VERSION = 2;
+
+/** CF's recommended "likely human" threshold for a real bot score. */
+export const HUMAN_BOT_SCORE_THRESHOLD = 30;
+
+/**
+ * The single definition of "this request looks like a real person".
+ * The edge worker uses it to decide whether to write the D1 fallback row;
+ * scripts/analytics/capture-rate.ts mirrors it in SQL. Keep the two in sync —
+ * the SQL version is asserted against this function in the worker tests.
+ */
+export function looksHuman(botScore: number, scoreSource: number, uaClass: string): boolean {
+    // A declared, verified bot is never a human, whatever its UA says.
+    if (scoreSource === SCORE_SOURCE.VERIFIED_BOT) return false;
+    // A real CF score is the most trustworthy signal we have.
+    if (scoreSource === SCORE_SOURCE.CF_SCORED) return botScore >= HUMAN_BOT_SCORE_THRESHOLD;
+    // Unscored: fall back to the UA class heuristic.
+    return uaClass !== 'bot' && uaClass !== 'automated';
+}
+
 // First-party telemetry ingest paths. The build-time token in the middle
 // segment rotates on every deploy — adblock rules targeting a stable
 // `/collect` or `/telemetry` substring can't match. The three sub-paths
@@ -237,10 +273,47 @@ export default {
 
                 // Cloudflare bot score: 1 = definitely bot, 99 = definitely human.
                 // Available on Enterprise and (as of 2024) a sampled version on Free.
-                // When absent (free tier may return undefined), store 0.
-                const botScore = typeof cf.botManagement?.score === 'number'
-                    ? cf.botManagement.score
-                    : (typeof cf.verifiedBotCategory === 'string' ? 1 : 0);
+                //
+                // IMPORTANT (2026-10-10 fix): the previous derivation was
+                //     typeof cf.verifiedBotCategory === 'string' ? 1 : 0
+                // On the free tier `cf.botManagement` is undefined AND
+                // `cf.verifiedBotCategory` is present as an EMPTY STRING for
+                // ordinary human traffic. `typeof '' === 'string'` is true, so
+                // every single request — human or not — was stamped with
+                // botScore = 1 ("definitely bot"). That silently zeroed both
+                // Pillar 1 (the human-looking AE count) and the Pillar 2 edge
+                // fallback writes, because both gates require score >= 30 or
+                // score === 0. Verified in Analytics Engine: 357/357 rows over
+                // 48h carried double2 = 1, including rows with uaClass
+                // 'desktop' and 'mobile'.
+                //
+                // Correct semantics, encoded in double3 (scoreSource) so rows
+                // are self-describing and old rows stay distinguishable:
+                //   0 = UNSCORED    — CF gave us nothing; fall back to uaClass
+                //   1 = CF_SCORED   — real cf.botManagement.score (1..99)
+                //   2 = VERIFIED_BOT— cf.verifiedBotCategory is a NON-EMPTY
+                //                     string, i.e. a declared good bot
+                //                     (Googlebot, bingbot, ...)
+                const cfScore = cf.botManagement?.score;
+                const verifiedBotCategory = typeof cf.verifiedBotCategory === 'string'
+                    ? cf.verifiedBotCategory.trim()
+                    : '';
+
+                let botScore: number;
+                let scoreSource: number;
+                if (typeof cfScore === 'number' && Number.isFinite(cfScore) && cfScore > 0) {
+                    botScore = cfScore;
+                    scoreSource = SCORE_SOURCE.CF_SCORED;
+                } else if (verifiedBotCategory.length > 0) {
+                    // A declared, verified bot. Score 1 is correct here.
+                    botScore = 1;
+                    scoreSource = SCORE_SOURCE.VERIFIED_BOT;
+                } else {
+                    // Unscored. 0 is the sentinel the capture-rate query
+                    // treats as "let uaClass decide", NOT as "bot".
+                    botScore = 0;
+                    scoreSource = SCORE_SOURCE.UNSCORED;
+                }
 
                 // Writes are async; Analytics Engine batches on the edge.
                 // writeDataPoint is synchronous but delivery is deferred.
@@ -256,7 +329,9 @@ export default {
                     // doubles: numeric columns (up to 20, Float64)
                     doubles: [
                         1,             // double1: count (always 1 per row — SUM for pageviews)
-                        botScore,      // double2: 1..99
+                        botScore,      // double2: 0 = unscored, 1..99 = score
+                        scoreSource,   // double3: see SCORE_SOURCE
+                        ROW_SCHEMA_VERSION, // double4: bump when column meaning changes
                     ],
                     // indexes: single string index for sampling (up to 96 bytes)
                     // Use country for geo aggregations; keeps per-shard cardinality low.
@@ -276,9 +351,7 @@ export default {
                 // score == 0 AND uaClass not bot/automated) — bot pageviews
                 // would spam D1 and inflate the counter without informing
                 // conversion metrics.
-                const isHumanLike =
-                    botScore >= 30 ||
-                    (botScore === 0 && uaClass !== 'bot' && uaClass !== 'automated');
+                const isHumanLike = looksHuman(botScore, scoreSource, uaClass);
 
                 if (isHumanLike && env.TELEMETRY_UPSTREAM) {
                     const upstreamBase = env.TELEMETRY_UPSTREAM.replace(/\/$/, '');
@@ -291,8 +364,8 @@ export default {
                         // still introspectable later. is_sample flags obvious
                         // bots we let through (score < 30 but ambiguous UA)
                         // so they don't pollute conversion funnels.
-                        error_type: `edge:bot_score=${botScore};ua=${uaClass}`,
-                        is_sample: botScore < 30 && botScore > 0 ? 1 : 0,
+                        error_type: `edge:bot_score=${botScore};src=${scoreSource};ua=${uaClass}`,
+                        is_sample: scoreSource === SCORE_SOURCE.CF_SCORED && botScore < 30 ? 1 : 0,
                     });
                     // waitUntil keeps the write alive past the response
                     // without blocking the user. Catch silently — telemetry

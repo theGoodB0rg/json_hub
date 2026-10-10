@@ -14,10 +14,22 @@ export interface GscLiveReport {
     siteUrl: string;
     startDate: string;
     endDate: string;
+    /** Site-wide totals from the DATE dimension — the only dimension Google
+     *  does not truncate. See the comment in fetchLiveGscData. */
     totalClicks: number;
     totalImpressions: number;
     avgCtr: number;
+    /** Impression-weighted mean position. A plain mean over query rows
+     *  over-weights long-tail terms with a single impression. */
     avgPosition: number;
+    /** What the query dimension alone accounts for, and therefore how much of
+     *  the site's traffic the per-query breakdown can explain. */
+    queryCoverage: {
+        clicks: number;
+        impressions: number;
+        clickShare: number;
+        impressionShare: number;
+    };
     queries: Array<{ query: string; clicks: number; impressions: number; ctr: number; position: number }>;
     pages: Array<{ page: string; clicks: number; impressions: number; ctr: number; position: number }>;
 }
@@ -240,11 +252,52 @@ export async function fetchLiveGscData(): Promise<GscLiveReport> {
         position: r.position,
     }));
 
-    const totalClicks = queries.reduce((sum, r) => sum + r.clicks, 0);
-    const totalImpressions = queries.reduce((sum, r) => sum + r.impressions, 0);
+    // 3. Fetch site-wide totals from the DATE dimension.
+    //
+    // Why this exists: summing the `query` dimension under-reports badly.
+    // Google withholds queries that are rare enough to identify a user, so
+    // those clicks and impressions are simply absent from the query rows —
+    // they are not redistributed. Measured on 2026-10-10 over a 28-day window,
+    // the query dimension accounted for 49 of 125 real clicks and 3,356 of
+    // 5,029 real impressions: a 61% under-report of clicks. The date dimension
+    // is never truncated this way, so it is the correct source for totals.
+    const dateRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            startDate,
+            endDate,
+            dimensions: ['date'],
+            rowLimit: 1000,
+        }),
+    });
+
+    if (!dateRes.ok) {
+        const errText = await dateRes.text();
+        throw new Error(`Google Search Console API error (totals): ${dateRes.status} ${errText}`);
+    }
+
+    const dateData = (await dateRes.json()) as { rows?: GscApiRow[] };
+    const dateRows = dateData.rows || [];
+
+    const totalClicks = dateRows.reduce((sum, r) => sum + r.clicks, 0);
+    const totalImpressions = dateRows.reduce((sum, r) => sum + r.impressions, 0);
     const avgCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
+
+    // Impression-weighted position. GSC's own "average position" is weighted
+    // this way; an unweighted mean over query rows is dominated by long-tail
+    // terms with one impression apiece and reads far worse than reality.
+    const weightedImpressions = queries.reduce((sum, r) => sum + r.impressions, 0);
     const avgPosition =
-        queries.length > 0 ? queries.reduce((sum, r) => sum + r.position, 0) / queries.length : 0;
+        weightedImpressions > 0
+            ? queries.reduce((sum, r) => sum + r.position * r.impressions, 0) / weightedImpressions
+            : 0;
+
+    const queryClicks = queries.reduce((sum, r) => sum + r.clicks, 0);
+    const queryImpressions = weightedImpressions;
 
     return {
         siteUrl: creds.siteUrl,
@@ -254,6 +307,12 @@ export async function fetchLiveGscData(): Promise<GscLiveReport> {
         totalImpressions,
         avgCtr,
         avgPosition,
+        queryCoverage: {
+            clicks: queryClicks,
+            impressions: queryImpressions,
+            clickShare: totalClicks > 0 ? queryClicks / totalClicks : 0,
+            impressionShare: totalImpressions > 0 ? queryImpressions / totalImpressions : 0,
+        },
         queries,
         pages,
     };

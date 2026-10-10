@@ -40,7 +40,7 @@ export const jsonToCsvPlugin: ConverterPlugin = {
             };
         }
 
-        const unwrapped = smartUnwrap(parseRes.data);
+        const unwrapped = smartUnwrap(parseRes.data, options?.mode);
         const flattened = flattenJSON(unwrapped.data, options);
 
         return {

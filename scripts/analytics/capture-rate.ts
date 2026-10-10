@@ -21,6 +21,9 @@
 
 const ACCOUNT_ID = 'ea158eac6035716195ee97831b85562c';
 const AE_DATASET = 'jsonexport_pageviews';
+
+/** Mirrors HUMAN_BOT_SCORE_THRESHOLD in worker/edge-worker.ts. */
+const HUMAN_BOT_SCORE_THRESHOLD = 30;
 const WEB_ANALYTICS_SITE_TAG = 'cf7c385cfd434867b78284cb63af585a';
 
 export interface CaptureRateReport {
@@ -34,6 +37,9 @@ export interface CaptureRateReport {
         analyticsEngine: {
             pageviews: number | null;
             pageviewsRawAllHtml?: number | null;
+            /** Rows carrying the fixed (v2) column semantics. Only these are
+             *  classifiable; see the SQL comment for why. */
+            pageviewsSchemaV2?: number | null;
             error?: string;
         };
         // D1 now carries two kinds of page_view events:
@@ -116,7 +122,10 @@ async function fetchCfWebAnalytics(env: Env, startIso: string, endIso: string): 
 interface AePageviewCounts {
     /** Raw count — all HTML HTTP GETs the edge worker saw. */
     raw: number;
-    /** blob4 (uaClass) NOT IN ('bot','automated') — approximates real users. */
+    /** Rows written with the fixed (v2) column semantics. Only these can be
+     *  classified; pre-fix rows had a hardcoded bot score. */
+    schemaV2: number;
+    /** Human-looking subset of the v2 rows — mirrors looksHuman(). */
     humanLike: number;
 }
 
@@ -125,33 +134,39 @@ async function fetchAnalyticsEnginePageviews(
     startIso: string,
     endIso: string
 ): Promise<AePageviewCounts> {
-    // Bot filtering uses two signals, in order of trust:
-    //   1. cf.botManagement.score (double2): CF's own classifier.
-    //      Scale is 1 (definitely bot) → 99 (definitely human).
-    //      Score >= 30 is the standard "likely human" threshold —
-    //      Cloudflare docs recommend it for most sites.
-    //      Falls back to 0 when the free tier doesn't score the request;
-    //      we treat 0 as "unscored" and let the UA class decide.
-    //   2. uaClass (blob4): regex-based classifier in edge-worker.ts.
-    //      Catches obvious strings like "bot", "crawl", "facebookexternalhit".
-    //      Weaker signal — most sophisticated bots use real-browser UAs.
+    // Bot filtering mirrors `looksHuman()` in worker/edge-worker.ts. Keep the
+    // two in sync — worker/edge-worker.test.ts asserts they agree.
     //
-    // A row counts as "human-looking" when either (score == 0 AND uaClass
-    // not in bot/automated) OR (score >= 30). This is strictly more accurate
-    // than UA alone — switching from UA-only to bot-score alone would be
-    // worse because the free tier doesn't score everything.
+    // Column meanings (schema v2, double4 = 2):
+    //   double2 = bot score: 0 = unscored, 1..99 = score (1 bot, 99 human)
+    //   double3 = scoreSource: 0 UNSCORED | 1 CF_SCORED | 2 VERIFIED_BOT
+    //   double4 = row schema version
+    //   blob4   = uaClass from the UA regex
     //
-    // We query raw + human-looking in one SQL round-trip so a bot spike
-    // can't be silently masked by the filter.
+    // A row is human-looking when:
+    //   scoreSource = 1 (CF_SCORED)   AND double2 >= 30
+    //   scoreSource = 0 (UNSCORED)    AND blob4 NOT IN ('bot','automated')
+    //   scoreSource = 2 (VERIFIED_BOT) -> never human
+    //
+    // Rows written before 2026-10-10 carry no double3/double4 (both read back
+    // as 0) and a double2 that was hardcoded to 1 for EVERY request by the
+    // verifiedBotCategory bug. Those rows cannot be reclassified after the
+    // fact — double2 = 1 is indistinguishable from a genuine "definitely bot".
+    // We therefore exclude pre-v2 rows from the human count entirely and
+    // report them separately rather than silently scoring them as bots.
     const tsFrom = startIso.replace('T', ' ').replace(/\.\d+Z$/, '');
     const tsTo = endIso.replace('T', ' ').replace(/\.\d+Z$/, '');
     const sql = `
       SELECT
         SUM(_sample_interval) AS raw,
+        SUMIf(_sample_interval, double4 >= 2) AS schema_v2,
         SUMIf(
           _sample_interval,
-          double2 >= 30
-          OR (double2 = 0 AND blob4 NOT IN ('bot', 'automated'))
+          double4 >= 2
+          AND (
+            (double3 = 1 AND double2 >= ${HUMAN_BOT_SCORE_THRESHOLD})
+            OR (double3 = 0 AND blob4 NOT IN ('bot', 'automated'))
+          )
         ) AS human_like
       FROM ${AE_DATASET}
       WHERE timestamp >= toDateTime('${tsFrom}')
@@ -173,11 +188,12 @@ async function fetchAnalyticsEnginePageviews(
     const body: any = await res.json();
     const row = body?.data?.[0] || {};
     const raw = Number(row.raw || 0);
+    const schemaV2 = Number(row.schema_v2 || 0);
     const humanLike = Number(row.human_like || 0);
-    if (!Number.isFinite(raw) || !Number.isFinite(humanLike)) {
+    if (!Number.isFinite(raw) || !Number.isFinite(humanLike) || !Number.isFinite(schemaV2)) {
         throw new Error('Analytics Engine returned non-numeric');
     }
-    return { raw, humanLike };
+    return { raw, schemaV2, humanLike };
 }
 
 interface D1PageviewCounts {
@@ -256,8 +272,12 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
         ? { pageviews: cfRes.value }
         : { pageviews: null, error: String(cfRes.reason).slice(0, 200) };
     const ae = aeRes.status === 'fulfilled'
-        ? { pageviews: aeRes.value.humanLike, pageviewsRawAllHtml: aeRes.value.raw }
-        : { pageviews: null, pageviewsRawAllHtml: null, error: String(aeRes.reason).slice(0, 200) };
+        ? {
+            pageviews: aeRes.value.humanLike,
+            pageviewsRawAllHtml: aeRes.value.raw,
+            pageviewsSchemaV2: aeRes.value.schemaV2,
+        }
+        : { pageviews: null, pageviewsRawAllHtml: null, pageviewsSchemaV2: null, error: String(aeRes.reason).slice(0, 200) };
     const d1 = d1Res.status === 'fulfilled'
         ? {
             pageviews: d1Res.value.unionEstimate,
@@ -294,7 +314,23 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
     // Alert thresholds tightened to avoid noise in low-traffic windows:
     //   - Pillar 1 must be <0.5x or >2x CF RUM AND volume > 50 to warn
     //   - Bot share > 60% is its own warning
+    // Pre-fix rows are unclassifiable (see the SQL comment). While they still
+    // dominate the window, a low Pillar 1 says nothing about the worker — it
+    // just means the fixed worker has not been live long enough. Report that
+    // plainly instead of raising a false alarm about isHtmlPageRequest.
+    const v2Share =
+        ae.pageviewsRawAllHtml != null && ae.pageviewsRawAllHtml > 0 && ae.pageviewsSchemaV2 != null
+            ? ae.pageviewsSchemaV2 / ae.pageviewsRawAllHtml
+            : null;
+    const v2Dominant = v2Share != null && v2Share >= 0.8;
+
+    if (v2Share != null && v2Share < 0.8) {
+        notes.push(
+            `${((1 - v2Share) * 100).toFixed(0)}% of Analytics Engine rows in this window predate the 2026-10-10 bot-score fix and carry a hardcoded score of 1. They are excluded from the human count rather than miscounted as bots, so Pillar 1 reads low until the window rolls forward. Not a live defect.`
+        );
+    }
     if (
+        v2Dominant &&
         cf.pageviews != null &&
         ae.pageviews != null &&
         cf.pageviews > 50 &&
@@ -306,6 +342,7 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
         );
     }
     if (
+        v2Dominant &&
         ae.pageviewsRawAllHtml != null &&
         ae.pageviews != null &&
         ae.pageviewsRawAllHtml > 100
@@ -353,6 +390,10 @@ export function formatCaptureRateSection(report: CaptureRateReport): string {
     lines.push(`• Pillar 1 (Analytics Engine): ${fmtNum(report.sources.analyticsEngine.pageviews)} human-looking pageviews  (${fmtPct(report.ratios.pillar1_vs_cf)} of CF)`);
     if (rawAllHtml != null) {
         lines.push(`    ↳ ${fmtNum(rawAllHtml)} raw HTML requests total (incl. bots, prefetch, link previews)`);
+    }
+    const v2 = report.sources.analyticsEngine.pageviewsSchemaV2;
+    if (v2 != null && rawAllHtml != null) {
+        lines.push(`    ↳ ${fmtNum(v2)} rows classifiable (schema v2); ${fmtNum(rawAllHtml - v2)} predate the bot-score fix`);
     }
     const d1 = report.sources.d1Client;
     lines.push(`• Pillar 2 (D1 union):         ${fmtNum(d1.pageviews)} pageviews  (${fmtPct(report.ratios.pillar2_vs_cf)} of CF)`);

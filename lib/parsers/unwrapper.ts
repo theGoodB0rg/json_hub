@@ -5,7 +5,8 @@
  * and extracts that array for better tabular visualization.
  */
 
-import { isTrelloBoard, transformTrelloBoard } from '@/lib/parsers/platform/trello';
+import { matchPlatform } from '@/lib/parsers/platform';
+import type { FlattenMode } from '@/lib/parsers/platform/types';
 
 interface UnwrapResult {
     data: any | any[];
@@ -25,11 +26,22 @@ const COMMON_DATA_KEYS = new Set([
     'payload'
 ]);
 
-export function smartUnwrap(data: any): UnwrapResult {
-    // Check for specialized platform exports
-    if (isTrelloBoard(data)) {
+/**
+ * @param mode  Row grain to request from a platform parser. This has to be
+ *              threaded through because the canonical pipeline is
+ *              `smartUnwrap(data)` → `flattenJSON(data, { mode })`: by the
+ *              time flattenJSON sees the payload a platform parser has
+ *              already chosen the grain, so passing the mode only to
+ *              flattenJSON left the relational path unreachable.
+ */
+export function smartUnwrap(data: any, mode: FlattenMode = 'flat'): UnwrapResult {
+    // Check for specialized platform exports (Trello, Jira, ...). Registered
+    // in lib/parsers/platform — adding one there wires up both this call site
+    // and flattenJSON.
+    const platform = matchPlatform(data, mode);
+    if (platform) {
         return {
-            data: transformTrelloBoard(data),
+            data: platform.rows,
             isUnwrapped: true,
         };
     }
@@ -40,7 +52,7 @@ export function smartUnwrap(data: any): UnwrapResult {
         const singleElement = data[0];
         if (singleElement && typeof singleElement === 'object' && !Array.isArray(singleElement)) {
             // Recursively try to unwrap the single element
-            const innerResult = smartUnwrap(singleElement);
+            const innerResult = smartUnwrap(singleElement, mode);
             if (innerResult.isUnwrapped) {
                 return innerResult;
             }

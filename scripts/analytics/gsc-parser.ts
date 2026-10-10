@@ -45,6 +45,15 @@ export interface GscSummary {
     countries: GscCountry[];
     devices: GscDevice[];
     source: string;
+    /** Present only for the live-API path. Says how much of the site's traffic
+     *  the per-query breakdown below actually accounts for — Google withholds
+     *  rare queries, so the query rows never sum to the site totals. */
+    queryCoverage?: {
+        clicks: number;
+        impressions: number;
+        clickShare: number;
+        impressionShare: number;
+    };
 }
 
 function parseCsvLines(content: string): string[][] {

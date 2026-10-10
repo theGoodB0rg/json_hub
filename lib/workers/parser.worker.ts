@@ -32,7 +32,7 @@ ctx.addEventListener('message', (event) => {
 
             // Smart unwrap logic (moved from store to worker for consistency if data is huge)
             // Note: smartUnwrap is fast but if data is massive, better here.
-            const { data: dataToFlatten } = smartUnwrap(data);
+            const { data: dataToFlatten } = smartUnwrap(data, mode);
 
             const result = flattenJSON(dataToFlatten, { mode });
 

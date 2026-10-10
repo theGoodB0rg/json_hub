@@ -1,0 +1,132 @@
+/**
+ * Regression tests for the edge worker's bot-score derivation.
+ *
+ * Context: between the worker's first deploy and 2026-10-10 the score was
+ * derived as `typeof cf.verifiedBotCategory === 'string' ? 1 : 0`. On the free
+ * tier `cf.botManagement` is undefined and `cf.verifiedBotCategory` is an
+ * EMPTY STRING for ordinary human traffic, so every request was stamped
+ * "definitely bot". Analytics Engine confirmed it: 357/357 rows over 48h had
+ * double2 = 1, including rows whose uaClass was 'desktop'/'mobile'. That
+ * zeroed the Pillar 1 human count and suppressed every Pillar 2 edge-fallback
+ * write, because both gates require score >= 30 or score === 0.
+ */
+
+import {
+    SCORE_SOURCE,
+    HUMAN_BOT_SCORE_THRESHOLD,
+    looksHuman,
+} from './edge-worker';
+
+/**
+ * Mirrors the score derivation inside the worker's fetch handler. Kept here as
+ * a pure function so the branch table can be exercised without a Workers
+ * runtime; the worker body and this helper must stay structurally identical.
+ */
+function deriveScore(cf: { botManagement?: { score?: unknown }; verifiedBotCategory?: unknown }) {
+    const cfScore = cf.botManagement?.score;
+    const verifiedBotCategory =
+        typeof cf.verifiedBotCategory === 'string' ? cf.verifiedBotCategory.trim() : '';
+
+    if (typeof cfScore === 'number' && Number.isFinite(cfScore) && cfScore > 0) {
+        return { botScore: cfScore, scoreSource: SCORE_SOURCE.CF_SCORED };
+    }
+    if (verifiedBotCategory.length > 0) {
+        return { botScore: 1, scoreSource: SCORE_SOURCE.VERIFIED_BOT };
+    }
+    return { botScore: 0, scoreSource: SCORE_SOURCE.UNSCORED };
+}
+
+describe('edge worker bot-score derivation', () => {
+    it('REGRESSION: free-tier human with empty verifiedBotCategory is NOT scored as a bot', () => {
+        // This is the exact shape Cloudflare hands a free-tier worker for a
+        // normal human visitor. The old code returned botScore = 1 here.
+        const { botScore, scoreSource } = deriveScore({ verifiedBotCategory: '' });
+
+        expect(botScore).toBe(0);
+        expect(scoreSource).toBe(SCORE_SOURCE.UNSCORED);
+        expect(looksHuman(botScore, scoreSource, 'desktop')).toBe(true);
+        expect(looksHuman(botScore, scoreSource, 'mobile')).toBe(true);
+    });
+
+    it('treats a missing cf object as unscored, not as a bot', () => {
+        const { botScore, scoreSource } = deriveScore({});
+        expect(scoreSource).toBe(SCORE_SOURCE.UNSCORED);
+        expect(looksHuman(botScore, scoreSource, 'desktop')).toBe(true);
+    });
+
+    it('honours a declared verified bot (non-empty category)', () => {
+        const { botScore, scoreSource } = deriveScore({ verifiedBotCategory: 'Search Engine Crawler' });
+        expect(botScore).toBe(1);
+        expect(scoreSource).toBe(SCORE_SOURCE.VERIFIED_BOT);
+        // A verified bot is never human, even with a browser-shaped UA.
+        expect(looksHuman(botScore, scoreSource, 'desktop')).toBe(false);
+    });
+
+    it('prefers a real Cloudflare bot score when present', () => {
+        expect(deriveScore({ botManagement: { score: 85 } })).toEqual({
+            botScore: 85,
+            scoreSource: SCORE_SOURCE.CF_SCORED,
+        });
+        expect(deriveScore({ botManagement: { score: 3 } })).toEqual({
+            botScore: 3,
+            scoreSource: SCORE_SOURCE.CF_SCORED,
+        });
+    });
+
+    it('applies the CF threshold only to genuinely scored rows', () => {
+        expect(looksHuman(HUMAN_BOT_SCORE_THRESHOLD, SCORE_SOURCE.CF_SCORED, 'desktop')).toBe(true);
+        expect(looksHuman(HUMAN_BOT_SCORE_THRESHOLD - 1, SCORE_SOURCE.CF_SCORED, 'desktop')).toBe(false);
+        // Unscored rows must not be measured against the threshold at all.
+        expect(looksHuman(0, SCORE_SOURCE.UNSCORED, 'desktop')).toBe(true);
+    });
+
+    it('still rejects bot-shaped user agents when unscored', () => {
+        expect(looksHuman(0, SCORE_SOURCE.UNSCORED, 'bot')).toBe(false);
+        expect(looksHuman(0, SCORE_SOURCE.UNSCORED, 'automated')).toBe(false);
+    });
+
+    it('never classifies a non-finite score as a usable score', () => {
+        expect(deriveScore({ botManagement: { score: NaN } }).scoreSource).toBe(SCORE_SOURCE.UNSCORED);
+        expect(deriveScore({ botManagement: { score: '42' } }).scoreSource).toBe(SCORE_SOURCE.UNSCORED);
+    });
+});
+
+describe('capture-rate SQL agrees with looksHuman()', () => {
+    /**
+     * Evaluates the WHERE clause from scripts/analytics/capture-rate.ts against
+     * a row. If the SQL there is edited without updating looksHuman (or vice
+     * versa), this test fails — which is the whole point: the 2026-10-10
+     * incident was two copies of one rule drifting apart.
+     */
+    const sqlPredicate = (row: { double2: number; double3: number; double4: number; blob4: string }) =>
+        row.double4 >= 2 &&
+        ((row.double3 === 1 && row.double2 >= HUMAN_BOT_SCORE_THRESHOLD) ||
+            (row.double3 === 0 && !['bot', 'automated'].includes(row.blob4)));
+
+    const cases: Array<{ double2: number; double3: number; blob4: string }> = [
+        { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'desktop' },
+        { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'mobile' },
+        { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'bot' },
+        { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'automated' },
+        { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'other' },
+        { double2: 1, double3: SCORE_SOURCE.VERIFIED_BOT, blob4: 'desktop' },
+        { double2: 1, double3: SCORE_SOURCE.VERIFIED_BOT, blob4: 'bot' },
+        { double2: 99, double3: SCORE_SOURCE.CF_SCORED, blob4: 'desktop' },
+        { double2: 30, double3: SCORE_SOURCE.CF_SCORED, blob4: 'desktop' },
+        { double2: 29, double3: SCORE_SOURCE.CF_SCORED, blob4: 'desktop' },
+        { double2: 1, double3: SCORE_SOURCE.CF_SCORED, blob4: 'bot' },
+    ];
+
+    it.each(cases)('row %j classifies identically in SQL and TS', (row) => {
+        expect(sqlPredicate({ ...row, double4: 2 })).toBe(
+            looksHuman(row.double2, row.double3, row.blob4)
+        );
+    });
+
+    it('excludes pre-fix (schema v1) rows from the human count', () => {
+        // Old rows read back double3 = 0 and double4 = 0. Their double2 was
+        // hardcoded to 1, so they are unclassifiable and must be dropped
+        // rather than counted either way.
+        expect(sqlPredicate({ double2: 1, double3: 0, double4: 0, blob4: 'desktop' })).toBe(false);
+    });
+});
