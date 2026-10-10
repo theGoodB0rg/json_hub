@@ -10,6 +10,47 @@ export interface GscApiRow {
     position: number;
 }
 
+/** One calendar month of search performance, rolled up from the DATE
+ *  dimension. `days` is how many days of that month actually carried data,
+ *  which is what makes the current (partial) month comparable to past ones. */
+export interface GscTrendMonth {
+    month: string; // YYYY-MM
+    days: number;
+    clicks: number;
+    impressions: number;
+    ctr: number; // percent
+    clicksPerDay: number;
+    /** Impression-weighted mean position across the month's days. */
+    avgPosition: number;
+}
+
+/** Like-for-like comparison of the current partial month against the same
+ *  day-span of the previous month.
+ *
+ *  Why this exists: the current month is always partial, so comparing its
+ *  running total against a previous full month reads as a collapse even when
+ *  the site is flat. Measured on 2026-10-10, October showed 22 clicks vs
+ *  September's 151 — a false "-85%" — while the honest Oct 1-6 vs Sep 1-6
+ *  comparison was 22 vs 24, i.e. flat. Always compare equal day spans. */
+export interface GscTrendMomentum {
+    /** Number of days of the current month that carry data. */
+    daySpan: number;
+    currentMonth: string;
+    currentClicks: number;
+    previousMonth: string;
+    /** Clicks over the SAME day span of the previous month, not its total. */
+    previousClicks: number;
+    /** Percent change over the matched span. null when there is no baseline. */
+    changePct: number | null;
+}
+
+export interface GscTrend {
+    months: GscTrendMonth[];
+    momentum: GscTrendMomentum | null;
+    /** Trailing daily rows, most recent last. Used for the sparkline. */
+    recentDays: Array<{ date: string; clicks: number; impressions: number; ctr: number; position: number }>;
+}
+
 export interface GscLiveReport {
     siteUrl: string;
     startDate: string;
@@ -32,6 +73,9 @@ export interface GscLiveReport {
     };
     queries: Array<{ query: string; clicks: number; impressions: number; ctr: number; position: number }>;
     pages: Array<{ page: string; clicks: number; impressions: number; ctr: number; position: number }>;
+    /** Long-window month-over-month trend. Absent only if the trend fetch
+     *  failed — the 28-day snapshot above is still valid without it. */
+    trend?: GscTrend;
 }
 
 export interface GscCredentials {
@@ -178,6 +222,92 @@ export async function getGoogleAccessToken(clientEmail: string, privateKey: stri
 /**
  * Queries Google Search Console Search Analytics API for the last 28 days
  */
+/** How far back the trend query reaches. GSC retains ~16 months; 180 days is
+ *  enough to show the growth curve without making the report slow. */
+const TREND_WINDOW_DAYS = 180;
+
+/** Build the month-over-month trend from the DATE dimension.
+ *
+ *  Uses DATE rather than any other dimension for the same reason the totals
+ *  do: Google truncates query/page rows but never date rows, so this is the
+ *  only breakdown whose numbers reconcile with the site totals. */
+export async function fetchGscTrend(apiUrl: string, accessToken: string): Promise<GscTrend> {
+    const endDate = new Date().toISOString().split('T')[0];
+    const startObj = new Date();
+    startObj.setDate(startObj.getDate() - TREND_WINDOW_DAYS);
+    const startDate = startObj.toISOString().split('T')[0];
+
+    const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startDate, endDate, dimensions: ['date'], rowLimit: 1000 }),
+    });
+
+    if (!res.ok) {
+        throw new Error(`Google Search Console API error (trend): ${res.status} ${await res.text()}`);
+    }
+
+    const rows = ((await res.json()) as { rows?: GscApiRow[] }).rows || [];
+    const days = rows
+        .map((r) => ({
+            date: r.keys[0],
+            clicks: r.clicks,
+            impressions: r.impressions,
+            ctr: r.ctr * 100,
+            position: r.position,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Roll up into calendar months.
+    const buckets = new Map<string, { clicks: number; impressions: number; days: number; posWeighted: number }>();
+    for (const d of days) {
+        const key = d.date.slice(0, 7);
+        const b = buckets.get(key) || { clicks: 0, impressions: 0, days: 0, posWeighted: 0 };
+        b.clicks += d.clicks;
+        b.impressions += d.impressions;
+        b.days += 1;
+        b.posWeighted += d.position * d.impressions;
+        buckets.set(key, b);
+    }
+
+    const months: GscTrendMonth[] = [...buckets.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([month, b]) => ({
+            month,
+            days: b.days,
+            clicks: b.clicks,
+            impressions: b.impressions,
+            ctr: b.impressions > 0 ? (b.clicks / b.impressions) * 100 : 0,
+            clicksPerDay: b.days > 0 ? b.clicks / b.days : 0,
+            avgPosition: b.impressions > 0 ? b.posWeighted / b.impressions : 0,
+        }));
+
+    // Like-for-like momentum: current partial month vs the same day span of
+    // the month before. See GscTrendMomentum for why a whole-month baseline
+    // would be actively misleading here.
+    let momentum: GscTrendMomentum | null = null;
+    if (months.length >= 2) {
+        const current = months[months.length - 1];
+        const previous = months[months.length - 2];
+        const daySpan = current.days;
+        const previousSameSpan = days
+            .filter((d) => d.date.slice(0, 7) === previous.month)
+            .slice(0, daySpan)
+            .reduce((sum, d) => sum + d.clicks, 0);
+
+        momentum = {
+            daySpan,
+            currentMonth: current.month,
+            currentClicks: current.clicks,
+            previousMonth: previous.month,
+            previousClicks: previousSameSpan,
+            changePct: previousSameSpan > 0 ? ((current.clicks - previousSameSpan) / previousSameSpan) * 100 : null,
+        };
+    }
+
+    return { months, momentum, recentDays: days.slice(-30) };
+}
+
 export async function fetchLiveGscData(): Promise<GscLiveReport> {
     const creds = getGscCredentials();
     const accessToken = await getGoogleAccessToken(creds.clientEmail, creds.privateKey);
@@ -299,6 +429,15 @@ export async function fetchLiveGscData(): Promise<GscLiveReport> {
     const queryClicks = queries.reduce((sum, r) => sum + r.clicks, 0);
     const queryImpressions = weightedImpressions;
 
+    // 4. Long-window trend. Non-fatal: a trend failure must not take down the
+    //    28-day snapshot, which is the part the rest of the report depends on.
+    let trend: GscTrend | undefined;
+    try {
+        trend = await fetchGscTrend(apiUrl, accessToken);
+    } catch (err) {
+        console.warn(`[GSC API] Trend fetch failed, continuing without it: ${err instanceof Error ? err.message : String(err)}`);
+    }
+
     return {
         siteUrl: creds.siteUrl,
         startDate,
@@ -315,6 +454,7 @@ export async function fetchLiveGscData(): Promise<GscLiveReport> {
         },
         queries,
         pages,
+        trend,
     };
 }
 

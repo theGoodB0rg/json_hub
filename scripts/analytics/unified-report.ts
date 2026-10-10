@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { pullTelemetryData } from '../pull-telemetry';
 import { loadGscData, GscSummary, GscQuery, GscPage } from './gsc-parser';
-import { fetchLiveGscData } from './gsc-fetcher';
+import { fetchLiveGscData, GscTrend } from './gsc-fetcher';
 import { computeCaptureRate, formatCaptureRateSection } from './capture-rate';
 
 interface TelemetryEvent {
@@ -27,11 +27,23 @@ interface TelemetryFeedback {
     format?: string;
     path?: string;
     timestamp: number;
+    /** 1 when the rating came from a demo/sample conversion or an automated
+     *  test rather than a genuine user upload. Added 2026-10-10; rows written
+     *  before that carry `undefined` and are reported as unclassified rather
+     *  than silently counted as genuine. */
+    is_sample?: number | boolean;
 }
+
+/** Epoch at which `is_sample` started being written to `user_feedback`.
+ *  Ratings older than this cannot be classified as genuine or test. */
+const FEEDBACK_FLAG_EPOCH = Date.parse('2026-10-11T00:00:00Z');
 
 interface UnifiedReportData {
     generatedAt: string;
     gsc: GscSummary;
+    /** Month-over-month organic trend. Undefined when GSC is unreachable and
+     *  the report falls back to local CSV snapshots. */
+    gscTrend?: GscTrend;
     telemetry: {
         totalEvents: number;
         pageViews: number;
@@ -45,7 +57,15 @@ interface UnifiedReportData {
         conversionRate: number;
         positiveFeedback: number;
         negativeFeedback: number;
-        satisfactionRate: number;
+        /** Satisfaction across GENUINE feedback only. null when no genuine
+         *  rating has been recorded yet — reporting 100% or 0% off an empty
+         *  set is worse than reporting nothing. */
+        satisfactionRate: number | null;
+        /** Ratings excluded as demo/sample/automated-test submissions. */
+        sampleFeedback: number;
+        /** Ratings written before `is_sample` existed on the feedback table,
+         *  so they cannot be classified either way. */
+        unclassifiedFeedback: number;
         platformCounts: Record<string, { parses: number; exports: number }>;
         topCountries: Array<{ country: string; count: number }>;
         topErrors: Array<{ error: string; count: number; samplePath?: string }>;
@@ -77,6 +97,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     // 2. Fetch Live Google Search Console Organic Intelligence
     console.log('🔍 [2/3] Querying Google Search Console Live API...');
     let gscSummary: GscSummary;
+    let gscTrend: GscTrend | undefined;
     try {
         const liveGsc = await fetchLiveGscData();
         const topQueries: GscQuery[] = liveGsc.queries
@@ -128,6 +149,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
             source: `Live Google Search Console API (${liveGsc.startDate} to ${liveGsc.endDate})`,
             queryCoverage: liveGsc.queryCoverage,
         };
+        gscTrend = liveGsc.trend;
 
         // Save live snapshot
         fs.writeFileSync(path.join(outDir, 'gsc_live_latest.json'), JSON.stringify(liveGsc, null, 2), 'utf8');
@@ -172,10 +194,30 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
         .sort((a, b) => b.count - a.count)
         .slice(0, 10);
 
-    const posFeedback = feedback.filter(f => f.rating === 'positive').length;
-    const negFeedback = feedback.filter(f => f.rating === 'negative').length;
+    // Feedback hygiene.
+    //
+    // Before this filter existed the dashboard reported "9.1% satisfaction"
+    // off 11 rows, 9 of which were our own test submissions (8 identical
+    // "Missing changelog" Jira probes plus one row literally captioned
+    // "Live deployment test from assistant"). A metric that reports our own
+    // QA as user dissatisfaction is worse than no metric, because it triggers
+    // the "inspect flattening bugs" recommendation on every run.
+    //
+    // Rows written before FEEDBACK_FLAG_EPOCH predate the is_sample column on
+    // user_feedback, so they are genuinely unclassifiable. They are reported
+    // separately rather than assumed genuine — same convention Pillar 1 uses
+    // for Analytics Engine rows that predate the bot-score fix.
+    const isSampleFeedback = (f: TelemetryFeedback) =>
+        f.is_sample === 1 || f.is_sample === true;
+    const classifiedFeedback = feedback.filter(f => f.timestamp >= FEEDBACK_FLAG_EPOCH);
+    const unclassifiedFeedback = feedback.length - classifiedFeedback.length;
+    const genuineFeedback = classifiedFeedback.filter(f => !isSampleFeedback(f));
+    const sampleFeedback = classifiedFeedback.length - genuineFeedback.length;
+
+    const posFeedback = genuineFeedback.filter(f => f.rating === 'positive').length;
+    const negFeedback = genuineFeedback.filter(f => f.rating === 'negative').length;
     const totalRated = posFeedback + negFeedback;
-    const satisfactionRate = totalRated > 0 ? Number(((posFeedback / totalRated) * 100).toFixed(1)) : 100;
+    const satisfactionRate = totalRated > 0 ? Number(((posFeedback / totalRated) * 100).toFixed(1)) : null;
     const conversionRate = userParses > 0 ? Number(((exportComplete / userParses) * 100).toFixed(1)) : 0;
 
     const errorMap: Record<string, { count: number; samplePath?: string }> = {};
@@ -210,20 +252,42 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
         );
     }
 
-    // Satisfaction
-    if (satisfactionRate >= 90 && events.length > 0) {
+    // Momentum. Stated against the matched day span so a partial current
+    // month never reads as a collapse.
+    const momentum = gscTrend?.momentum;
+    if (momentum && momentum.changePct !== null) {
+        const changePct = momentum.changePct;
+        const dir = changePct > 5 ? 'ahead of' : changePct < -5 ? 'behind' : 'level with';
         recommendations.push(
-            `Output Quality: ${satisfactionRate}% satisfaction recorded across user feedback submissions. Conversion flattening engine is operating cleanly.`
+            `Organic Momentum: ${momentum.currentMonth} is ${dir} ${momentum.previousMonth} over the matched first ${momentum.daySpan} days (${momentum.currentClicks} vs ${momentum.previousClicks} clicks, ${changePct >= 0 ? '+' : ''}${changePct.toFixed(0)}%). Compare equal day spans only — the current month is still partial.`
         );
-    } else if (satisfactionRate < 80 && totalRated > 0) {
+    }
+
+    // Satisfaction. Only speaks when there is genuine feedback to speak about.
+    if (satisfactionRate === null) {
+        if (sampleFeedback > 0 || unclassifiedFeedback > 0) {
+            recommendations.push(
+                `Feedback Signal: no genuine user ratings yet (${sampleFeedback} test submission(s) excluded, ${unclassifiedFeedback} unclassifiable pre-${new Date(FEEDBACK_FLAG_EPOCH).toISOString().slice(0, 10)}). Satisfaction is unmeasured, not bad — do not act on it.`
+            );
+        }
+    } else if (totalRated < 5) {
         recommendations.push(
-            `Alert: User satisfaction is at ${satisfactionRate}%. Inspect negative feedback in performance_data/telemetry_latest.json to isolate flattening bugs.`
+            `Feedback Signal: ${satisfactionRate}% satisfaction across only ${totalRated} genuine rating(s). Too small to act on — collect more before drawing conclusions.`
+        );
+    } else if (satisfactionRate >= 90) {
+        recommendations.push(
+            `Output Quality: ${satisfactionRate}% satisfaction across ${totalRated} genuine user ratings. Conversion flattening engine is operating cleanly.`
+        );
+    } else if (satisfactionRate < 80) {
+        recommendations.push(
+            `Alert: User satisfaction is at ${satisfactionRate}% across ${totalRated} genuine ratings. Inspect negative feedback in performance_data/telemetry_latest.json to isolate flattening bugs.`
         );
     }
 
     const reportData: UnifiedReportData = {
         generatedAt: new Date().toUTCString(),
         gsc: gscSummary,
+        gscTrend,
         telemetry: {
             totalEvents: events.length,
             pageViews,
@@ -238,10 +302,14 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
             positiveFeedback: posFeedback,
             negativeFeedback: negFeedback,
             satisfactionRate,
+            sampleFeedback,
+            unclassifiedFeedback,
             platformCounts,
             topCountries,
             topErrors,
-            recentFeedback: feedback.slice(0, 5),
+            // Surface genuine ratings first so real complaints are never
+            // pushed off the list by a burst of test submissions.
+            recentFeedback: [...genuineFeedback, ...classifiedFeedback.filter(isSampleFeedback)].slice(0, 5),
         },
         recommendations,
     };
@@ -257,8 +325,79 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     return reportData;
 }
 
+/** Human-readable satisfaction cell that never invents a number. */
+function formatSatisfaction(t: UnifiedReportData['telemetry']): string {
+    const excluded: string[] = [];
+    if (t.sampleFeedback > 0) excluded.push(`${t.sampleFeedback} test`);
+    if (t.unclassifiedFeedback > 0) excluded.push(`${t.unclassifiedFeedback} unclassified`);
+    const suffix = excluded.length > 0 ? ` — ${excluded.join(', ')} excluded` : '';
+
+    if (t.satisfactionRate === null) {
+        return `no genuine ratings yet${suffix}`;
+    }
+    return `${t.satisfactionRate}% (👍 ${t.positiveFeedback} | 👎 ${t.negativeFeedback})${suffix}`;
+}
+
+function formatTrendSection(trend?: GscTrend): string {
+    if (!trend || trend.months.length === 0) return '';
+
+    const rows = trend.months
+        .map(m => `| ${m.month}${m.days < 28 ? ` *(${m.days}d, partial)*` : ''} | ${m.clicks} | ${m.impressions.toLocaleString()} | ${m.ctr.toFixed(2)}% | ${m.clicksPerDay.toFixed(2)} | ${m.avgPosition.toFixed(1)} |`)
+        .join('\n');
+
+    const m = trend.momentum;
+    const momentumLine = m && m.changePct !== null
+        ? `\n> [!NOTE]\n> **Like-for-like momentum:** ${m.currentMonth} has ${m.currentClicks} clicks over its first ${m.daySpan} days vs ${m.previousClicks} for ${m.previousMonth} over the same span — **${m.changePct >= 0 ? '+' : ''}${m.changePct.toFixed(0)}%**. The current month is partial; comparing it against a full previous month would read as a false collapse.\n`
+        : '';
+
+    return `
+---
+
+## 2. Organic Trend — Month over Month
+
+| Month | Clicks | Impressions | CTR | Clicks/day | Avg Position |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+${rows}
+${momentumLine}`;
+}
+
+/** Terminal rendering of the month-over-month trend, with an inline bar so
+ *  the shape of the curve is readable without reaching for the markdown. */
+function printTrendBlock(trend?: GscTrend): void {
+    if (!trend || trend.months.length === 0) return;
+
+    console.log('\n┌───────────────────────────────────────────────────────────────────┐');
+    console.log('│ 2. ORGANIC TREND — MONTH OVER MONTH                                │');
+    console.log('└───────────────────────────────────────────────────────────────────┘');
+    console.log('Month     Days  Clicks   Impr    CTR     Clk/day  Pos');
+
+    const peak = Math.max(...trend.months.map(m => m.clicks), 1);
+    for (const m of trend.months) {
+        const bar = '█'.repeat(Math.max(1, Math.round((m.clicks / peak) * 22)));
+        const partial = m.days < 28 ? '*' : ' ';
+        console.log(
+            `${m.month}${partial} ${String(m.days).padStart(5)} ${String(m.clicks).padStart(7)} ` +
+            `${String(m.impressions).padStart(6)} ${(m.ctr.toFixed(2) + '%').padStart(7)} ` +
+            `${m.clicksPerDay.toFixed(2).padStart(8)} ${m.avgPosition.toFixed(1).padStart(5)}  ${bar}`
+        );
+    }
+    if (trend.months.some(m => m.days < 28)) {
+        console.log('  * partial month — not comparable to a full month total');
+    }
+
+    const m = trend.momentum;
+    if (m && m.changePct !== null) {
+        const arrow = m.changePct > 5 ? '📈' : m.changePct < -5 ? '📉' : '➡️';
+        console.log(
+            `\n${arrow} Like-for-like: ${m.currentMonth} ${m.currentClicks} clicks vs ${m.previousMonth} ${m.previousClicks} ` +
+            `over the matched first ${m.daySpan} days (${m.changePct >= 0 ? '+' : ''}${m.changePct.toFixed(0)}%)`
+        );
+        console.log('  ↳ Equal day spans only. The running month is partial, so its total is not a decline.');
+    }
+}
+
 function formatMarkdownReport(data: UnifiedReportData): string {
-    const { gsc, telemetry, recommendations, generatedAt } = data;
+    const { gsc, telemetry, recommendations, generatedAt, gscTrend } = data;
 
     return `# Unified Analytics & Search Intelligence Report
 
@@ -278,11 +417,11 @@ function formatMarkdownReport(data: UnifiedReportData): string {
 | **Tracked Page Views** | **${telemetry.pageViews}** |
 | **Successful Data Parses** | **${telemetry.parseSuccess}** |
 | **Spreadsheets Exported** | **${telemetry.exportComplete}** |
-| **User Output Satisfaction** | **${telemetry.satisfactionRate}%** (👍 ${telemetry.positiveFeedback} / 👎 ${telemetry.negativeFeedback}) |
-
+| **User Output Satisfaction** | ${formatSatisfaction(telemetry)} |
+${formatTrendSection(gscTrend)}
 ---
 
-## 2. Google Search Console Organic Demand
+## 3. Google Search Console Organic Demand
 
 ### Top Driving Queries
 | Query | Clicks | Impressions | CTR | Avg Position |
@@ -304,14 +443,14 @@ ${gsc.topPages.slice(0, 10).map(p => `| [${p.page}](${p.page.startsWith('http') 
 
 ---
 
-## 3. In-App Conversion & Satisfaction Telemetry
+## 4. In-App Conversion & Satisfaction Telemetry
 
 - **Page Views**: ${telemetry.pageViews}
 - **User Uploads Parsed**: ${telemetry.userParses}
 - **Demo Previews Loaded**: ${telemetry.sampleParses}
 - **Exports Completed**: ${telemetry.exportComplete}
 - **User Conversion Rate**: ${telemetry.conversionRate}%
-- **Output Satisfaction**: ${telemetry.satisfactionRate}% (${telemetry.positiveFeedback} positive, ${telemetry.negativeFeedback} negative)
+- **Output Satisfaction**: ${formatSatisfaction(telemetry)}
 
 ${telemetry.topCountries.length > 0 ? `### Geographic Breakdown
 | Country | Events |
@@ -324,7 +463,7 @@ ${telemetry.recentFeedback.map(f => `- **${f.rating === 'positive' ? '👍' : '�
 
 ---
 
-## 4. Key Recommendations & Action Items
+## 5. Key Recommendations & Action Items
 
 ${recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n\n')}
 `;
@@ -369,15 +508,17 @@ async function printTerminalDashboard(data: UnifiedReportData): Promise<void> {
         });
     }
 
+    printTrendBlock(data.gscTrend);
+
     console.log('\n┌───────────────────────────────────────────────────────────────────┐');
-    console.log('│ 2. CLOUDFLARE D1 — APP USAGE & CONVERSION FUNNEL                  │');
+    console.log('│ 3. CLOUDFLARE D1 — APP USAGE & CONVERSION FUNNEL                  │');
     console.log('└───────────────────────────────────────────────────────────────────┘');
     console.log(`• Total Tracked Events:      ${telemetry.totalEvents}`);
     console.log(`• Page Views Logged:         ${telemetry.pageViews}`);
     console.log(`• User Uploads Parsed:       ${telemetry.userParses}`);
     console.log(`• Demo Previews Loaded:      ${telemetry.sampleParses}`);
     console.log(`• Spreadsheets Exported:     ${telemetry.exportComplete} (${telemetry.conversionRate}% user conversion rate)`);
-    console.log(`• User Output Satisfaction:  ${telemetry.satisfactionRate}% (👍 ${telemetry.positiveFeedback} | 👎 ${telemetry.negativeFeedback})\n`);
+    console.log(`• User Output Satisfaction:  ${formatSatisfaction(telemetry)}\n`);
 
     if (Object.keys(telemetry.platformCounts).length > 0) {
         console.log('Active Platform Transformations:');
@@ -402,7 +543,7 @@ async function printTerminalDashboard(data: UnifiedReportData): Promise<void> {
 
     if (recommendations.length > 0) {
         console.log('\n┌───────────────────────────────────────────────────────────────────┐');
-        console.log('│ 3. STRATEGIC ACTION ITEMS FOR REPO & PROGRAMMATIC SEO             │');
+        console.log('│ 4. STRATEGIC ACTION ITEMS FOR REPO & PROGRAMMATIC SEO             │');
         console.log('└───────────────────────────────────────────────────────────────────┘');
         recommendations.forEach((r, i) => console.log(`  ${i + 1}. ${r}`));
     }
