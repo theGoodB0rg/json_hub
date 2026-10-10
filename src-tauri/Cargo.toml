@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "0.1.0"
+version = "0.1.1"
 description = "JsonExport Desktop Pro Native App"
 authors = ["JsonExport Team"]
 license = ""
@@ -11,6 +11,13 @@ rust-version = "1.77.2"
 [lib]
 name = "app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
+
+# Produce JsonExport.exe (not app.exe) so the taskbar + Start Menu + file
+# properties all read the brand name. Keeps the Cargo package name "app"
+# so existing imports (app_lib::run) stay intact.
+[[bin]]
+name = "JsonExport"
+path = "src/main.rs"
 
 [build-dependencies]
 tauri-build = { version = "2.6.3", features = [] }

@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "JsonExport",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "identifier": "com.jsonexport.app",
   "build": {
     "frontendDist": "../out",
@@ -44,6 +44,19 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico"
+      },
+      "wix": {
+        "upgradeCode": "C8A61E3B-6E8E-4B6E-8C5C-9B3A6A0E7D21"
+      }
+    },
+    "fileAssociations": [],
+    "longDescription": "Native desktop JSON → Excel/CSV converter. Handles 1 GB+ files, batch conversions, and folder-watch.",
+    "shortDescription": "Convert any JSON file to Excel/CSV instantly.",
+    "copyright": "Copyright 2026 JsonExport",
+    "category": "DeveloperTool",
     "android": {
       "debugApplicationIdSuffix": ".debug"
     }
