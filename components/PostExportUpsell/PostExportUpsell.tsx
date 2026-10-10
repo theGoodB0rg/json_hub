@@ -122,11 +122,17 @@ export function PostExportUpsell() {
         setVisible(false);
     };
 
+    // z-[110] deliberately outranks the toast viewport's z-[100]. Both
+    // surfaces anchor bottom-right, and the affiliate toast fires at parse+3s
+    // with an 8s duration — so for anyone who exports within ~11s of parsing
+    // (both of the real users seen on 2026-10-10 did) the toast would
+    // otherwise render on top of this, burying the one CTA that earns money
+    // under one that does not.
     return (
         <div
             role="dialog"
             aria-labelledby="post-export-upsell-title"
-            className="fixed bottom-4 right-4 z-50 w-[min(360px,calc(100vw-2rem))] rounded-lg border border-neutral-200 bg-white p-4 shadow-xl dark:border-neutral-700 dark:bg-neutral-900"
+            className="fixed bottom-4 right-4 z-[110] w-[min(360px,calc(100vw-2rem))] rounded-lg border border-neutral-200 bg-white p-4 shadow-xl dark:border-neutral-700 dark:bg-neutral-900"
         >
             <button
                 type="button"
