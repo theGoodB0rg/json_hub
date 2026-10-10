@@ -15,6 +15,7 @@ const REAL_TAURI_ASSET_NAMES = [
     'JsonExport_0.1.0_aarch64.dmg',
     'json-export_0.1.0_amd64.deb',
     'json-export_0.1.0_amd64.AppImage',
+    'JsonExport-0.1.0-1.x86_64.rpm',
     'latest.json',
     'latest.json.sig',
     'JsonExport_0.1.0_x64-setup.exe.sig',
@@ -75,6 +76,7 @@ describe('DesktopDownloads', () => {
         expect(screen.getByText('macOS (Intel)')).toBeInTheDocument();
         expect(screen.getByText('Linux (AppImage)')).toBeInTheDocument();
         expect(screen.getByText('Linux (.deb)')).toBeInTheDocument();
+        expect(screen.getByText('Linux (.rpm)')).toBeInTheDocument();
 
         // Each OS has a download link pointing to a real artifact name
         expect(screen.getByText(/JsonExport_0\.1\.0_x64-setup\.exe/)).toBeInTheDocument();
@@ -82,6 +84,7 @@ describe('DesktopDownloads', () => {
         expect(screen.getByText(/JsonExport_0\.1\.0_x64\.dmg/)).toBeInTheDocument();
         expect(screen.getByText(/amd64\.AppImage/)).toBeInTheDocument();
         expect(screen.getByText(/amd64\.deb/)).toBeInTheDocument();
+        expect(screen.getByText(/x86_64\.rpm/)).toBeInTheDocument();
 
         // No "Not in this release" placeholder should appear with a full matrix
         expect(screen.queryByText(/not in this release/i)).not.toBeInTheDocument();

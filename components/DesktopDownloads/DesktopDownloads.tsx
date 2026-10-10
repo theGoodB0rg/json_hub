@@ -33,7 +33,7 @@ interface Release {
     assets: Asset[];
 }
 
-type OsKey = 'windows' | 'macos-arm' | 'macos-intel' | 'linux-deb' | 'linux-appimage';
+type OsKey = 'windows' | 'macos-arm' | 'macos-intel' | 'linux-deb' | 'linux-rpm' | 'linux-appimage';
 
 interface OsBucket {
     key: OsKey;
@@ -84,6 +84,13 @@ const BUCKETS: OsBucket[] = [
         icon: <Terminal className="h-5 w-5" aria-hidden />,
         match: (n) => /\.deb$/i.test(n),
     },
+    {
+        key: 'linux-rpm',
+        label: 'Linux (.rpm)',
+        sublabel: 'Fedora / RHEL / openSUSE',
+        icon: <Terminal className="h-5 w-5" aria-hidden />,
+        match: (n) => /\.rpm$/i.test(n),
+    },
 ];
 
 function formatSize(bytes: number): string {
@@ -132,6 +139,7 @@ export function DesktopDownloads() {
                     'macos-arm': null,
                     'macos-intel': null,
                     'linux-deb': null,
+                    'linux-rpm': null,
                     'linux-appimage': null,
                 };
                 for (const bucket of BUCKETS) {
