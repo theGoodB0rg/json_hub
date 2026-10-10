@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     ],
 };
 
-const GUMROAD_URL = 'https://gumroad.com/l/json_hub?src=desktop_landing';
+const GUMROAD_URL = 'https://pro.jsonexport.com/l/json_hub?src=desktop_landing';
 
 export default function DesktopPage() {
     return (

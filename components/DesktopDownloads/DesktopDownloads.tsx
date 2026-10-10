@@ -176,7 +176,7 @@ export function DesktopDownloads() {
                     the release ships.
                 </p>
                 <a
-                    href="https://gumroad.com/l/json_hub?src=desktop_landing_waitlist"
+                    href="https://pro.jsonexport.com/l/json_hub?src=desktop_landing_waitlist"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"

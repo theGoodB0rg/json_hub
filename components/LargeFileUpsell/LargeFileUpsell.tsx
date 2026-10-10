@@ -74,7 +74,7 @@ export function LargeFileUpsell({ isOpen, onClose, onProceedAnyway, fileSize }: 
                                     className="flex-1 font-bold shadow-md shadow-primary/20"
                                 >
                                     <a
-                                        href="https://gumroad.com/l/json_hub"
+                                        href="https://pro.jsonexport.com/l/json_hub?src=large_file_upsell"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >

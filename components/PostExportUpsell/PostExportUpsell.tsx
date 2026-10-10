@@ -28,7 +28,7 @@ import { useProStore } from '@/lib/store/proStore';
 
 const COOLDOWN_KEY = 'jsonexport:post-export-upsell-last';
 const COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24h — one impression per day max
-const GUMROAD_URL = 'https://gumroad.com/l/json_hub?src=post_export_upsell';
+const GUMROAD_URL = 'https://pro.jsonexport.com/l/json_hub?src=post_export_upsell';
 
 interface ExportDetails {
     platform?: string;

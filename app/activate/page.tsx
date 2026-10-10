@@ -65,7 +65,7 @@ export default function ActivatePage() {
                     <p>
                         Haven&apos;t bought yet?{' '}
                         <a
-                            href="https://gumroad.com/l/json_hub?src=activate_page"
+                            href="https://pro.jsonexport.com/l/json_hub?src=activate_page"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-medium text-primary hover:underline"

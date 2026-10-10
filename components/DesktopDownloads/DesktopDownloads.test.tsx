@@ -56,7 +56,7 @@ describe('DesktopDownloads', () => {
         });
         // Pre-order link is present so revenue capture isn't blocked by a missing release
         const preorderLink = screen.getByRole('link', { name: /pre-order/i });
-        expect(preorderLink.getAttribute('href')).toContain('gumroad.com/l/json_hub');
+        expect(preorderLink.getAttribute('href')).toContain('pro.jsonexport.com/l/json_hub');
     });
 
     it('classifies real Tauri artifact names into the right OS buckets', async () => {
