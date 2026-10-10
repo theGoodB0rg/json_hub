@@ -8,11 +8,19 @@ import { blogPostPath, toAbsoluteUrl } from '@/lib/routes';
 
 const guidePath = blogPostPath('how-to-convert-json-to-excel');
 
+// This page targets the same query as /blog/how-to-convert-json-to-excel-2026-guide,
+// which is the version carried in the sitemap. This one is in neither the
+// sitemap nor any internal link, so it has no equity of its own and only
+// competes with the canonical guide. Point the canonical there so the two
+// stop splitting signals, rather than leaving an unreferenced near-duplicate
+// for Google to discover and distrust.
+const CANONICAL_GUIDE = blogPostPath('how-to-convert-json-to-excel-2026-guide');
+
 export const metadata: Metadata = {
     title: 'How to Convert JSON to Excel (2026 Guide) - The Only Way That Actually Works',
     description: 'Stop struggling with Power Query. Learn the modern way to convert nested JSON data to Excel without coding. Visual guide + Free Tool.',
     alternates: {
-        canonical: guidePath,
+        canonical: CANONICAL_GUIDE,
     },
     openGraph: {
         title: 'How to Convert JSON to Excel (2026 Guide)',

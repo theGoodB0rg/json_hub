@@ -9,6 +9,9 @@ import { FeaturesGrid } from '@/components/converters/FeaturesGrid';
 import { FAQSection } from '@/components/converters/FAQSection';
 import { DemoPreview } from '@/components/converters/DemoPreview';
 import { RelatedTools } from '@/components/converters/RelatedTools';
+import { RelatedLinks } from '@/components/RelatedLinks';
+import { relatedForConverter } from '@/lib/internal-links';
+import { getSortedPostsData } from '@/lib/blog';
 import { PlatformIcon } from '@/components/converters/PlatformIcon';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { generateSoftwareApplicationSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema-generator';
@@ -120,6 +123,19 @@ export default function ConverterPage({ params }: Props) {
 
                 <RelatedTools currentSlug={pageConfig.slug} />
             </div>
+
+            {/* Cross-cluster links. RelatedTools keeps converters talking to
+                converters; without this the blog and sample-data clusters are
+                reachable only through the footer. */}
+            <RelatedLinks
+                links={relatedForConverter(pageConfig.slug, getSortedPostsData().map((p) => ({
+                    id: p.id,
+                    title: p.title,
+                    description: p.description,
+                })))}
+                heading="Guides and sample files"
+                intro="Worked examples and realistic test payloads for this workflow."
+            />
         </>
     );
 }

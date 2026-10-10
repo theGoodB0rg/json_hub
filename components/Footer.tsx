@@ -40,7 +40,12 @@ export function Footer() {
                         <h3 className="font-semibold text-sm text-foreground tracking-tight">Format Engines</h3>
                         <ul className="space-y-2 text-xs text-muted-foreground">
                             <li>
-                                <Link href="/" className="hover:text-primary transition-colors flex items-center gap-2">
+                                {/* Points at /json-to-excel, not /. The label used to
+                                    link home, which left /json-to-excel with zero
+                                    inbound internal links despite being the site's
+                                    second-biggest organic page (35 clicks, position
+                                    9.9, +27 clicks month-on-month). */}
+                                <Link href="/json-to-excel" className="hover:text-primary transition-colors flex items-center gap-2">
                                     <BrandIcon format="json" className="w-4 h-4" /> JSON to Excel
                                 </Link>
                             </li>
@@ -126,6 +131,21 @@ export function Footer() {
                             <li>
                                 <Link href="/recommended-tools" className="hover:text-primary transition-colors">
                                     Recommended Tools
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/test-data" className="hover:text-primary transition-colors">
+                                    Free Dummy JSON Data
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/alternatives/power-query" className="hover:text-primary transition-colors">
+                                    Power Query Alternative
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/alternatives/python-pandas" className="hover:text-primary transition-colors">
+                                    Python / pandas Alternative
                                 </Link>
                             </li>
                             <li>

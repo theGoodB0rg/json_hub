@@ -7,6 +7,8 @@ import { Metadata } from 'next';
 import { FAQSchema } from '@/components/FAQSchema';
 import { buildArticleMetadata } from '@/lib/seo';
 import { ROUTES, blogPostPath } from '@/lib/routes';
+import { RelatedLinks } from '@/components/RelatedLinks';
+import { relatedForBlogPost } from '@/lib/internal-links';
 
 interface Props {
     params: {
@@ -43,6 +45,12 @@ import remarkGfm from 'remark-gfm';
 
 export default async function Post({ params }: Props) {
     const postData = await getPostData(params.slug);
+    // Read at build time; this is a static export, so there is no per-request cost.
+    const allPosts = getSortedPostsData().map((p) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description,
+    }));
 
     if (!postData) {
         notFound();
@@ -81,6 +89,19 @@ export default async function Post({ params }: Props) {
                     />
                 </div>
             </article>
+
+            {/* Onward links. Before this, a crawler reaching an indexed post
+                found only "Back to Blog" and the footer, so crawl equity
+                arriving here went nowhere — 35 of 44 posts had never been
+                crawled at all. */}
+            <RelatedLinks
+                links={relatedForBlogPost(
+                    { id: postData.id, title: postData.title, description: postData.description },
+                    allPosts
+                )}
+                heading="Keep reading"
+                intro="Guides, converters and sample files covering the same ground."
+            />
 
             {/* FAQ Schema for rich snippets in Google search */}
             {postData.faqs && postData.faqs.length > 0 && (

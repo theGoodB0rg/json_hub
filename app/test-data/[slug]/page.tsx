@@ -1,4 +1,7 @@
 import { dummyDatasets } from '@/lib/dummy-data';
+import { RelatedLinks } from '@/components/RelatedLinks';
+import { relatedForDataset } from '@/lib/internal-links';
+import { getSortedPostsData } from '@/lib/blog';
 import { converterPages } from '@/lib/platform-data';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -158,6 +161,16 @@ export default function DummyDataPage({ params }: { params: { slug: string } }) 
                     </div>
                 </div>
             </main>
+
+            <RelatedLinks
+                links={relatedForDataset(params.slug, getSortedPostsData().map((p) => ({
+                    id: p.id,
+                    title: p.title,
+                    description: p.description,
+                })))}
+                heading="More sample data and converters"
+                intro="Other realistic payloads, and the tools that turn them into spreadsheets."
+            />
 
             {/* Injected Schema */}
             <script

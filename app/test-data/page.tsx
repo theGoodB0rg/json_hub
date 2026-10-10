@@ -5,9 +5,17 @@ import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES, testDataPath } from '@/lib/routes';
 
+// "dummy json" is this page's biggest query by a wide margin — 1,059
+// impressions over 90 days at position 6.9, converting at 0.57%. Expected CTR
+// at that position is roughly 3-4%, so the ranking is fine and the snippet is
+// not: the old title led with "Free Dummy JSON Data & Files" and then said
+// "Convert to Excel/CSV", which reads as a converter upsell to someone who
+// searched for sample data. The title now answers the query directly and
+// states the count, and the description leads with the two things that query
+// actually wants — copy it, or download it — before mentioning conversion.
 export const metadata: Metadata = buildPageMetadata({
-    title: "Free Dummy JSON Data & Files (Download or Convert to Excel/CSV)",
-    description: "Free realistic dummy JSON files & sample datasets for testing APIs, ETL pipelines, and mock apps. Instant 1-click download, copy raw JSON, or convert to Excel/CSV online.",
+    title: "Dummy JSON Data: 12 Free Sample Files to Copy or Download",
+    description: "Realistic dummy JSON for testing — Stripe, Shopify, Jira, Salesforce, Slack, MongoDB and more. Copy the raw JSON, download the .json file, or preview it as a table. No sign-up, nothing uploaded.",
     canonicalPath: ROUTES.testData,
 });
 
