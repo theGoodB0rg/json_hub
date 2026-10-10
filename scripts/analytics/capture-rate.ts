@@ -29,18 +29,30 @@ export interface CaptureRateReport {
         cfWebAnalytics: { pageviews: number | null; error?: string };
         // Analytics Engine returns both the raw count (all HTML HTTP GETs
         // the edge worker saw, including bots + prefetches + link previews)
-        // and a "human-looking" subset (bot and automated UA classes filtered
-        // out). Only the human-looking number is comparable to CF RUM.
+        // and a "human-looking" subset (CF bot score + UA class filtered).
+        // Only the human-looking number is comparable to CF RUM.
         analyticsEngine: {
             pageviews: number | null;
             pageviewsRawAllHtml?: number | null;
             error?: string;
         };
-        d1Client: { pageviews: number | null; error?: string };
+        // D1 now carries two kinds of page_view events:
+        //   client — fired by the webview beacon (blocked by uBlock etc.)
+        //   edge   — fired by the edge worker as a fallback for blocked users
+        // unionEstimate is the deduped total we compare to CF RUM.
+        d1Client: {
+            pageviews: number | null;
+            pageviewsClientBeacon?: number | null;
+            pageviewsEdgeFallback?: number | null;
+            error?: string;
+        };
     };
     ratios: {
         pillar1_vs_cf: number | null;  // human-filtered AE / CF RUM — should be ~1.0
-        pillar2_vs_cf: number | null;  // the capture rate we care about
+        pillar2_vs_cf: number | null;  // D1 union-estimate / CF RUM
+        /** Share of real users whose client-side beacon was blocked.
+         *  Only meaningful when both client and edge rows are present. */
+        clientBlockerSuppression: number | null;
     };
     verdict: 'healthy' | 'degraded' | 'unknown';
     notes: string[];
@@ -113,17 +125,34 @@ async function fetchAnalyticsEnginePageviews(
     startIso: string,
     endIso: string
 ): Promise<AePageviewCounts> {
-    // edge-worker.ts writes uaClass to blob4 ('bot' | 'automated' | 'mobile'
-    // | 'desktop' | 'other' | 'unknown'). Filter the bot classes out to get a
-    // human-looking count comparable to CF RUM. We query both numbers in one
-    // SQL round-trip so the raw-vs-filtered gap is visible in the report —
-    // if bot traffic suddenly spikes we want to see it, not have it masked.
+    // Bot filtering uses two signals, in order of trust:
+    //   1. cf.botManagement.score (double2): CF's own classifier.
+    //      Scale is 1 (definitely bot) → 99 (definitely human).
+    //      Score >= 30 is the standard "likely human" threshold —
+    //      Cloudflare docs recommend it for most sites.
+    //      Falls back to 0 when the free tier doesn't score the request;
+    //      we treat 0 as "unscored" and let the UA class decide.
+    //   2. uaClass (blob4): regex-based classifier in edge-worker.ts.
+    //      Catches obvious strings like "bot", "crawl", "facebookexternalhit".
+    //      Weaker signal — most sophisticated bots use real-browser UAs.
+    //
+    // A row counts as "human-looking" when either (score == 0 AND uaClass
+    // not in bot/automated) OR (score >= 30). This is strictly more accurate
+    // than UA alone — switching from UA-only to bot-score alone would be
+    // worse because the free tier doesn't score everything.
+    //
+    // We query raw + human-looking in one SQL round-trip so a bot spike
+    // can't be silently masked by the filter.
     const tsFrom = startIso.replace('T', ' ').replace(/\.\d+Z$/, '');
     const tsTo = endIso.replace('T', ' ').replace(/\.\d+Z$/, '');
     const sql = `
       SELECT
         SUM(_sample_interval) AS raw,
-        SUMIf(_sample_interval, blob4 NOT IN ('bot', 'automated')) AS human_like
+        SUMIf(
+          _sample_interval,
+          double2 >= 30
+          OR (double2 = 0 AND blob4 NOT IN ('bot', 'automated'))
+        ) AS human_like
       FROM ${AE_DATASET}
       WHERE timestamp >= toDateTime('${tsFrom}')
         AND timestamp <  toDateTime('${tsTo}')
@@ -151,16 +180,47 @@ async function fetchAnalyticsEnginePageviews(
     return { raw, humanLike };
 }
 
-async function fetchD1Pageviews(startMs: number, endMs: number): Promise<number> {
+interface D1PageviewCounts {
+    /** Client-side beacon pageviews (event_name='page_view'). */
+    client: number;
+    /** Server-side fallback pageviews fired by the edge worker
+     *  (event_name='page_view_edge'). Catches users whose client beacon
+     *  was blocked by uBlock / Brave Shields / iOS ITP / NoScript. */
+    edge: number;
+    /** Backward-compat: client + edge, deduped by (hour, path, country) so
+     *  a user whose client beacon fired *and* was seen by the edge isn't
+     *  double-counted. Approximation — not perfectly deduped — but good
+     *  enough to compare against CF RUM. */
+    unionEstimate: number;
+}
+
+async function fetchD1Pageviews(startMs: number, endMs: number): Promise<D1PageviewCounts> {
     const fs = require('fs');
     const path = require('path');
     const file = path.resolve(process.cwd(), 'performance_data/telemetry_latest.json');
     if (!fs.existsSync(file)) throw new Error('telemetry_latest.json missing (run `npm run telemetry:pull` first)');
     const data = JSON.parse(fs.readFileSync(file, 'utf8'));
     const events = data.events || [];
-    return events.filter((e: any) =>
-        e.event_name === 'page_view' && e.timestamp >= startMs && e.timestamp < endMs
+    const inWindow = (e: any) => e.timestamp >= startMs && e.timestamp < endMs;
+
+    const client = events.filter((e: any) =>
+        e.event_name === 'page_view' && inWindow(e)
     ).length;
+    const edge = events.filter((e: any) =>
+        e.event_name === 'page_view_edge' && inWindow(e)
+    ).length;
+
+    // Dedupe union by hour-bucket + path + country. Each tuple represents
+    // one plausible user session for that page. Rough but defensible.
+    const seen = new Set<string>();
+    for (const e of events) {
+        if (!inWindow(e)) continue;
+        if (e.event_name !== 'page_view' && e.event_name !== 'page_view_edge') continue;
+        const hour = Math.floor(e.timestamp / (60 * 60 * 1000));
+        const key = `${hour}|${e.path || ''}|${e.country || ''}`;
+        seen.add(key);
+    }
+    return { client, edge, unionEstimate: seen.size };
 }
 
 export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateReport> {
@@ -179,7 +239,7 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
                 analyticsEngine: { pageviews: null, error: 'no CF API token available' },
                 d1Client: { pageviews: null },
             },
-            ratios: { pillar1_vs_cf: null, pillar2_vs_cf: null },
+            ratios: { pillar1_vs_cf: null, pillar2_vs_cf: null, clientBlockerSuppression: null },
             verdict: 'unknown',
             notes: ['Set CLOUDFLARE_API_TOKEN or run `wrangler login` first.'],
         };
@@ -199,8 +259,12 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
         ? { pageviews: aeRes.value.humanLike, pageviewsRawAllHtml: aeRes.value.raw }
         : { pageviews: null, pageviewsRawAllHtml: null, error: String(aeRes.reason).slice(0, 200) };
     const d1 = d1Res.status === 'fulfilled'
-        ? { pageviews: d1Res.value }
-        : { pageviews: null, error: String(d1Res.reason).slice(0, 200) };
+        ? {
+            pageviews: d1Res.value.unionEstimate,
+            pageviewsClientBeacon: d1Res.value.client,
+            pageviewsEdgeFallback: d1Res.value.edge,
+        }
+        : { pageviews: null, pageviewsClientBeacon: null, pageviewsEdgeFallback: null, error: String(d1Res.reason).slice(0, 200) };
 
     const ratio = (num: number | null, denom: number | null) =>
         (num == null || denom == null || denom === 0) ? null : num / denom;
@@ -210,6 +274,16 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
     // report so bot-traffic spikes stay visible.
     const pillar1 = ratio(ae.pageviews, cf.pageviews);
     const pillar2 = ratio(d1.pageviews, cf.pageviews);
+
+    // Blocker suppression: 1 - (client / edge). Only meaningful once edge
+    // writes have accumulated — if edge == 0 we don't have the fallback
+    // signal yet (either worker not deployed or the window is too fresh).
+    const clientBlockerSuppression =
+        d1.pageviewsEdgeFallback != null &&
+            d1.pageviewsClientBeacon != null &&
+            d1.pageviewsEdgeFallback > 0
+            ? 1 - d1.pageviewsClientBeacon / d1.pageviewsEdgeFallback
+            : null;
 
     let verdict: CaptureRateReport['verdict'] = 'unknown';
     if (cf.pageviews != null && d1.pageviews != null) {
@@ -255,7 +329,11 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
     return {
         window: { startIso, endIso, hours: windowHours },
         sources: { cfWebAnalytics: cf, analyticsEngine: ae, d1Client: d1 },
-        ratios: { pillar1_vs_cf: pillar1, pillar2_vs_cf: pillar2 },
+        ratios: {
+            pillar1_vs_cf: pillar1,
+            pillar2_vs_cf: pillar2,
+            clientBlockerSuppression,
+        },
         verdict,
         notes,
     };
@@ -276,7 +354,14 @@ export function formatCaptureRateSection(report: CaptureRateReport): string {
     if (rawAllHtml != null) {
         lines.push(`    ↳ ${fmtNum(rawAllHtml)} raw HTML requests total (incl. bots, prefetch, link previews)`);
     }
-    lines.push(`• Pillar 2 (D1 client):        ${fmtNum(report.sources.d1Client.pageviews)} pageviews  (${fmtPct(report.ratios.pillar2_vs_cf)} of CF)`);
+    const d1 = report.sources.d1Client;
+    lines.push(`• Pillar 2 (D1 union):         ${fmtNum(d1.pageviews)} pageviews  (${fmtPct(report.ratios.pillar2_vs_cf)} of CF)`);
+    if (d1.pageviewsClientBeacon != null || d1.pageviewsEdgeFallback != null) {
+        lines.push(`    ↳ ${fmtNum(d1.pageviewsClientBeacon ?? null)} client beacons, ${fmtNum(d1.pageviewsEdgeFallback ?? null)} edge fallback writes`);
+        if (report.ratios.clientBlockerSuppression != null) {
+            lines.push(`    ↳ Client-beacon blocker suppression: ${fmtPct(report.ratios.clientBlockerSuppression)}`);
+        }
+    }
     lines.push(`• Verdict: ${report.verdict.toUpperCase()}`);
     for (const n of report.notes) lines.push(`  ⚠ ${n}`);
     if (report.sources.cfWebAnalytics.error) lines.push(`  ✗ CF Web Analytics error: ${report.sources.cfWebAnalytics.error}`);

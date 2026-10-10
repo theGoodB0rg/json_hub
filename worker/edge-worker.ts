@@ -262,6 +262,58 @@ export default {
                     // Use country for geo aggregations; keeps per-shard cardinality low.
                     indexes: [country],
                 });
+
+                // --- Pillar 2 fallback write ---
+                // Also fire a page_view_edge event into D1 so we catch users
+                // whose client-side beacon was blocked by uBlock / Brave /
+                // iOS ITP / NoScript. The event_name is a sentinel: the
+                // analytics report distinguishes 'page_view' (client beacon)
+                // from 'page_view_edge' (server fallback) so we can compute
+                // the blocker suppression rate honestly without double-
+                // counting.
+                //
+                // Only fire for human-looking requests (bot score >= 30 or
+                // score == 0 AND uaClass not bot/automated) — bot pageviews
+                // would spam D1 and inflate the counter without informing
+                // conversion metrics.
+                const isHumanLike =
+                    botScore >= 30 ||
+                    (botScore === 0 && uaClass !== 'bot' && uaClass !== 'automated');
+
+                if (isHumanLike && env.TELEMETRY_UPSTREAM) {
+                    const upstreamBase = env.TELEMETRY_UPSTREAM.replace(/\/$/, '');
+                    const edgeEventBody = JSON.stringify({
+                        event_name: 'page_view_edge',
+                        path,
+                        referrer,
+                        // bot_score + ua_class are not in the schema; packed
+                        // into error_type as a tiny breadcrumb so the row is
+                        // still introspectable later. is_sample flags obvious
+                        // bots we let through (score < 30 but ambiguous UA)
+                        // so they don't pollute conversion funnels.
+                        error_type: `edge:bot_score=${botScore};ua=${uaClass}`,
+                        is_sample: botScore < 30 && botScore > 0 ? 1 : 0,
+                    });
+                    // waitUntil keeps the write alive past the response
+                    // without blocking the user. Catch silently — telemetry
+                    // failures must never surface to the visitor.
+                    ctx.waitUntil(
+                        fetch(`${upstreamBase}/api/telemetry`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'cf-ipcountry': country,
+                                'user-agent': request.headers.get('user-agent') || '',
+                                // Mark the request so the upstream can
+                                // distinguish genuine client beacons from
+                                // our server-side fallback if we ever add
+                                // divergent handling later.
+                                'x-source': 'edge-worker',
+                            },
+                            body: edgeEventBody,
+                        }).catch(() => {})
+                    );
+                }
             } catch {
                 // Never block the response on telemetry.
             }
