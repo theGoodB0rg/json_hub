@@ -60,13 +60,19 @@ export function jsonToXlsx(
  * @param schema - Column headers
  * @param filename - Output filename
  */
-export function downloadXlsx(
+export async function downloadXlsx(
     data: Record<string, any>[],
     schema: string[],
     filename: string = 'export.xlsx'
-): void {
+) {
     const workbook = jsonToXlsx(data, schema);
-    XLSX.writeFile(workbook, filename);
+    const bytes = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
+    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+    return saveWithDialog(
+        bytes,
+        filename,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
 }
 
 
@@ -215,10 +221,16 @@ export function jsonToXlsxHierarchical(data: any): XLSX.WorkBook {
 /**
  * Downloads Hierarchical Excel file
  */
-export function downloadXlsxHierarchical(
+export async function downloadXlsxHierarchical(
     data: any,
     filename: string = 'nested-export.xlsx'
-): void {
+) {
     const workbook = jsonToXlsxHierarchical(data);
-    XLSX.writeFile(workbook, filename);
+    const bytes = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
+    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+    return saveWithDialog(
+        bytes,
+        filename,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
 }

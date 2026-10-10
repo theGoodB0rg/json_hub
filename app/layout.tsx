@@ -9,6 +9,7 @@ import { Navbar } from "@/components/Navbar"
 import { DesktopLinkGuard } from "@/components/DesktopLinkGuard"
 import { ROUTES, SITE_ORIGIN } from '@/lib/routes'
 import { AnalyticsProvider } from '@/components/AnalyticsProvider'
+import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({
     subsets: ['latin'],
@@ -93,6 +94,13 @@ export default function RootLayout({
                                 </div>
                                 <Footer />
                             </div>
+                            {/*
+                              Toaster host for the shadcn/radix toast system.
+                              The export flow uses this to surface the saved
+                              file path + a "Reveal in folder" action on the
+                              desktop app (M3) — see lib/platform/saveResultToast.
+                            */}
+                            <Toaster />
                         </AnalyticsProvider>
                     </TooltipProvider>
 

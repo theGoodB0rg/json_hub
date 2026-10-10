@@ -48,24 +48,17 @@ export function jsonToCsv(
 }
 
 /**
- * Downloads CSV file
- * @param data - Array of flat objects
- * @param schema - Column headers
- * @param filename - Output filename
+ * Save CSV to disk. On desktop opens the native Save As dialog; on web
+ * triggers a browser download. Returns a SaveResult so callers can show
+ * a "Reveal in folder" toast on desktop.
  */
-export function downloadCsv(
+export async function downloadCsv(
     data: Record<string, any>[],
     schema: string[],
     filename: string = 'export.csv'
-): void {
+) {
     const csvContent = jsonToCsv(data, schema);
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
-
-    URL.revokeObjectURL(url);
+    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+    return saveWithDialog(blob, filename, 'text/csv;charset=utf-8');
 }

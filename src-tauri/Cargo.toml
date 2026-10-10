@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "0.1.1"
+version = "0.1.2"
 description = "JsonExport Desktop Pro Native App"
 authors = ["JsonExport Team"]
 license = ""
@@ -32,4 +32,9 @@ tauri-plugin-log = "2"
 tauri-plugin-store = "2"
 tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
+# Native Save As dialog (user picks destination) + reveal-in-folder so people
+# can actually find exports. M3 remainder — real users complained "I can't
+# tell where my file went" because the webview default-downloads silently.
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
 tokio = { version = "1.37", features = ["full"] }

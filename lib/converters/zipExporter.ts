@@ -53,14 +53,8 @@ export async function downloadZip(
     schema: string[],
     parsedData: any,
     filename: string = 'json-hub-export.zip'
-): Promise<void> {
+) {
     const zipBlob = await createZipExport(data, schema, parsedData);
-    const url = URL.createObjectURL(zipBlob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
-
-    URL.revokeObjectURL(url);
+    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+    return saveWithDialog(zipBlob, filename, 'application/zip');
 }

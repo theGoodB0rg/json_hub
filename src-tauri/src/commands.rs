@@ -174,3 +174,17 @@ pub fn open_external_url(url: String) -> Result<bool, String> {
     #[allow(unreachable_code)]
     Ok(false)
 }
+
+/// Write a buffer of bytes to an absolute path chosen by the user via the
+/// Save As dialog. We keep writes constrained to a Tauri command (not the
+/// fs plugin) because the only legitimate call-site is the download helper
+/// right after the dialog returns — no need to grant broad filesystem
+/// capabilities to the whole webview.
+///
+/// The caller is responsible for picking a sensible destination; this just
+/// does the write and bubbles any IO error back to JS as a message.
+#[tauri::command]
+pub fn write_bytes_to_path(path: String, bytes: Vec<u8>) -> Result<(), String> {
+    std::fs::write(&path, &bytes).map_err(|e| format!("write {}: {}", path, e))
+}
+

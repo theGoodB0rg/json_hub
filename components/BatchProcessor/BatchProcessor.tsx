@@ -87,17 +87,22 @@ export function BatchProcessor({ className }: BatchProcessorProps) {
                         setOverallProgress(payload.percent);
                         break;
 
-                    case 'BATCH_COMPLETE':
-                        // Download ZIP
-                        const url = URL.createObjectURL(payload.zipBlob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `batch-conversion-${Date.now()}.zip`;
-                        a.click();
-                        URL.revokeObjectURL(url);
+                    case 'BATCH_COMPLETE': {
+                        // Use the shared save helper so desktop gets the
+                        // native Save As dialog + "Reveal in folder" toast
+                        // instead of silently dropping the ZIP into
+                        // %USERPROFILE%\Downloads.
+                        const batchName = `batch-conversion-${Date.now()}.zip`;
+                        void (async () => {
+                            const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+                            const { showSaveResultToast } = await import('@/lib/platform/saveResultToast');
+                            const result = await saveWithDialog(payload.zipBlob, batchName, 'application/zip');
+                            showSaveResultToast(result, batchName);
+                        })();
                         setIsProcessing(false);
                         setOverallProgress(100);
                         break;
+                    }
 
                     case 'BATCH_CANCELLED':
                         setIsProcessing(false);

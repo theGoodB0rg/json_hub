@@ -248,19 +248,13 @@ export function jsonToHtml(
  * @param schema - Column headers
  * @param filename - Output filename
  */
-export function downloadHtml(
+export async function downloadHtml(
     data: Record<string, any>[],
     schema: string[],
     filename: string = 'export.html'
-): void {
+) {
     const htmlContent = jsonToHtml(data, schema);
     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
-
-    URL.revokeObjectURL(url);
+    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+    return saveWithDialog(blob, filename, 'text/html;charset=utf-8');
 }

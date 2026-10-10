@@ -497,53 +497,60 @@ export const useAppStore = create<AppState>()(
 
                             const isHierarchical = exportSettings.structure === 'nested';
 
+                            // All exporters return a SaveResult so the UI can show
+                            // a "Reveal in folder" toast on desktop. undefined means
+                            // the branch bailed early (e.g. table-view with no data).
+                            let saveResult: Awaited<ReturnType<typeof import('@/lib/platform/downloadHelper').saveWithDialog>> | undefined;
+                            let savedFilename = `${fileName}.${format}`;
+
                             switch (format) {
                                 case 'csv': {
                                     const { downloadCsv } = await import('@/lib/converters/jsonToCsv');
-                                    downloadCsv(rows, effectiveSchema, `${fileName}.csv`);
+                                    saveResult = await downloadCsv(rows, effectiveSchema, `${fileName}.csv`);
                                     break;
                                 }
                                 case 'xlsx': {
                                     if (exportSettings.structure === 'table') {
                                         const { jsonToXlsxTableView } = await import('@/lib/converters/jsonToXlsxTableView');
-                                        jsonToXlsxTableView(dataToExport, `${fileName}.xlsx`);
+                                        saveResult = await jsonToXlsxTableView(dataToExport, `${fileName}.xlsx`);
                                     } else if (isHierarchical) {
                                         const { downloadXlsxHierarchical } = await import('@/lib/converters/jsonToXlsx');
-                                        downloadXlsxHierarchical(dataToExport, `${fileName}.xlsx`);
+                                        saveResult = await downloadXlsxHierarchical(dataToExport, `${fileName}.xlsx`);
                                     } else {
                                         const { downloadXlsx } = await import('@/lib/converters/jsonToXlsx');
-                                        downloadXlsx(rows, effectiveSchema, `${fileName}.xlsx`);
+                                        saveResult = await downloadXlsx(rows, effectiveSchema, `${fileName}.xlsx`);
                                     }
                                     break;
                                 }
                                 case 'html': {
                                     if (exportSettings.structure === 'table') {
                                         const { downloadHtmlTableView } = await import('@/lib/converters/jsonToHtmlTableView');
-                                        downloadHtmlTableView(dataToExport, `${fileName}.html`);
+                                        saveResult = await downloadHtmlTableView(dataToExport, `${fileName}.html`);
                                     } else {
                                         const { downloadHtml } = await import('@/lib/converters/jsonToHtml');
-                                        downloadHtml(rows, effectiveSchema, `${fileName}.html`);
+                                        saveResult = await downloadHtml(rows, effectiveSchema, `${fileName}.html`);
                                     }
                                     break;
                                 }
                                 case 'zip': {
                                     const { downloadZip } = await import('@/lib/converters/zipExporter');
-                                    await downloadZip(rows, schema, parsedData, `json-hub-${fileName}.zip`);
+                                    savedFilename = `json-hub-${fileName}.zip`;
+                                    saveResult = await downloadZip(rows, schema, parsedData, savedFilename);
                                     break;
                                 }
                                 case 'json': {
                                     const jsonStr = get().formattedOutput || JSON.stringify(parsedData, null, 2);
-                                    const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
-                                    const url = URL.createObjectURL(blob);
-                                    const link = document.createElement('a');
-                                    link.href = url;
-                                    link.download = `${fileName}.json`;
-                                    link.click();
-                                    URL.revokeObjectURL(url);
+                                    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+                                    saveResult = await saveWithDialog(jsonStr, `${fileName}.json`, 'application/json;charset=utf-8');
                                     break;
                                 }
                                 default:
                                     throw new Error(`Unsupported format: ${format}`);
+                            }
+
+                            if (saveResult) {
+                                const { showSaveResultToast } = await import('@/lib/platform/saveResultToast');
+                                showSaveResultToast(saveResult, savedFilename);
                             }
 
                             try {

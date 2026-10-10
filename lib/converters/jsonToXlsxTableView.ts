@@ -151,11 +151,14 @@ export function generateTableXlsx(data: any): XLSX.WorkBook | null {
 /**
  * Downloads Excel file with table view structure
  */
-export function jsonToXlsxTableView(data: any, filename: string = 'table-export.xlsx'): void {
+export async function jsonToXlsxTableView(data: any, filename: string = 'table-export.xlsx') {
     const wb = generateTableXlsx(data);
     if (!wb) return;
-
-    // Download
-    XLSX.writeFile(wb, filename);
-    console.log('=== Excel export complete ===');
+    const bytes = XLSX.write(wb, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
+    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+    return saveWithDialog(
+        bytes,
+        filename,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
 }

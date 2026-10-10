@@ -173,18 +173,12 @@ export function jsonToHtmlTableView(data: any): string {
 /**
  * Downloads HTML file with table view structure
  */
-export function downloadHtmlTableView(
+export async function downloadHtmlTableView(
     data: any,
     filename: string = 'table-export.html'
-): void {
+) {
     const htmlContent = jsonToHtmlTableView(data);
     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
-
-    URL.revokeObjectURL(url);
+    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+    return saveWithDialog(blob, filename, 'text/html;charset=utf-8');
 }
