@@ -55,21 +55,23 @@ jobs:
         with:
           node-version: "22"
 
-      # Schema via inline --command instead of --file:
-      # The --file path hits the D1 /import endpoint which returns a false
-      # "database not found" (7404) on fresh databases for weeks.
-      # https://github.com/cloudflare/workers-sdk/issues (recurring)
-      # --command hits /query which is stable. Statements must be on one
-      # line because wrangler splits on semicolons.
+      # Schema via inline --command (NOT --file).
+      # The D1 /import endpoint (used by --file) returns a false
+      # "database not found" (7404) on fresh databases for weeks after
+      # creation; --command hits /query which is stable.
+      # Using `run:` block instead of wrangler-action's `command` input
+      # because the latter folds YAML strings and strips the quotes
+      # around the SQL arg, so wrangler saw "--command CREATE" (one word)
+      # instead of the full statement string.
       - name: Apply D1 schema (idempotent)
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: worker
-          wranglerVersion: "4.73.0"
-          command: >-
-            d1 execute jsonexport-license-db --config wrangler-license.toml --remote --command
-            "CREATE TABLE IF NOT EXISTS license_activations (license_key TEXT NOT NULL, device_id TEXT NOT NULL, activated_at INTEGER NOT NULL, revoked_at INTEGER, country TEXT, user_agent TEXT, email TEXT, PRIMARY KEY (license_key, device_id)); CREATE INDEX IF NOT EXISTS idx_license_active ON license_activations (license_key) WHERE revoked_at IS NULL; CREATE INDEX IF NOT EXISTS idx_license_email ON license_activations (email) WHERE email IS NOT NULL;"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        working-directory: worker
+        run: |
+          npx -y wrangler@4.73.0 d1 execute jsonexport-license-db \
+            --config wrangler-license.toml \
+            --remote \
+            --command "CREATE TABLE IF NOT EXISTS license_activations (license_key TEXT NOT NULL, device_id TEXT NOT NULL, activated_at INTEGER NOT NULL, revoked_at INTEGER, country TEXT, user_agent TEXT, email TEXT, PRIMARY KEY (license_key, device_id)); CREATE INDEX IF NOT EXISTS idx_license_active ON license_activations (license_key) WHERE revoked_at IS NULL; CREATE INDEX IF NOT EXISTS idx_license_email ON license_activations (email) WHERE email IS NOT NULL;"
 
       - name: Deploy license worker
         uses: cloudflare/wrangler-action@v3
