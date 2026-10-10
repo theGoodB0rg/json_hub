@@ -12,6 +12,27 @@ type Status =
     | { kind: 'success'; devicesUsed?: number; devicesAllowed?: number; email?: string | null }
     | { kind: 'error'; message: string };
 
+// Translate the server's machine error codes into something a buyer with a
+// mistyped key or a stale link can actually act on. Raw `Gumroad HTTP 404`
+// leaked straight through before — buyers would email support confused about
+// why we were mentioning Gumroad at all.
+function friendlyError(code: string | undefined, serverMessage: string | undefined): string {
+    switch (code) {
+        case 'invalid_license':
+            return 'That key wasn’t recognized. Double-check for typos — the exact key is in your purchase email (format: XXXX-XXXX-XXXX-XXXX).';
+        case 'license_revoked':
+            return 'This license is no longer active (it may have been refunded). Reply to your purchase email if this is unexpected.';
+        case 'max_uses_exceeded':
+            return 'Your license is already active on 3 devices. Deactivate one from its JsonExport Pro settings before adding this one.';
+        case 'empty_key':
+            return 'Enter your license key.';
+        case 'network':
+            return 'Network error — check your connection and try again.';
+        default:
+            return serverMessage || 'Something went wrong. Try again in a moment.';
+    }
+}
+
 export function ActivateForm() {
     const params = useSearchParams();
     const router = useRouter();
@@ -53,7 +74,7 @@ export function ActivateForm() {
             // Give the user ~3s to read the confirmation before auto-redirect
             setTimeout(() => router.push('/?pro=activated'), 3000);
         } else {
-            setStatus({ kind: 'error', message: result.message || result.error || 'Activation failed.' });
+            setStatus({ kind: 'error', message: friendlyError(result.error, result.message) });
         }
     }
 
