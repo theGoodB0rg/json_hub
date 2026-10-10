@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Zap } from 'lucide-react';
 import { ConvertersNavDropdown } from '@/components/ConvertersNavDropdown';
 import { ConversionHistory } from '@/components/ConversionHistory/ConversionHistory';
 import { ShareButton } from '@/components/ShareButton/ShareButton';
@@ -70,16 +70,20 @@ export function Navbar() {
                             Recommended Tools
                         </Link>
                         {/*
-                          M2: links to the /desktop landing page, which has
-                          the comparison table + dynamic OS download picker.
-                          Keeps the user in-site instead of punting to Gumroad.
+                          M3: amber-filled Pro CTA, visible from md breakpoint
+                          and up (phones use MobileNav drawer). High-contrast
+                          against the muted primary nav links so it reads as
+                          an action, not a link. Gentle 3s pulse — subtle but
+                          enough to catch peripheral vision on a long dwell.
                         */}
                         <Link
                             href={ROUTES.desktop}
-                            className="hidden xl:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:opacity-80 transition-opacity whitespace-nowrap px-2 py-0.5 rounded border border-primary/30 bg-primary/5"
+                            className="hidden md:inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-md text-sm font-bold text-amber-950 bg-amber-400 hover:bg-amber-300 shadow-sm shadow-amber-500/30 ring-1 ring-amber-500/50 transition-colors motion-safe:animate-pulse-gentle"
+                            aria-label="Upgrade to JsonExport Pro — $9 one-time, lifetime license"
                         >
-                            Pro
-                            <span className="text-[10px] font-normal text-primary/70">$9</span>
+                            <Zap className="h-3.5 w-3.5" aria-hidden />
+                            Get Pro
+                            <span className="text-[10px] font-semibold text-amber-900/80 border-l border-amber-700/40 pl-1.5 ml-0.5">$9</span>
                         </Link>
                         <ShareButton />
                         <BatchProcessor />

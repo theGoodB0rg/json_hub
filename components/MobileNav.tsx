@@ -40,6 +40,25 @@ export function MobileNav() {
                 </Link>
 
                 <div className="flex flex-col gap-4 py-2 pr-4">
+                    {/*
+                      M3: Pro CTA at the top of the mobile drawer — same
+                      visual language as the desktop Navbar amber pill.
+                      Mobile users previously saw NO Pro affordance at all.
+                    */}
+                    <Link
+                        href={ROUTES.desktop}
+                        onClick={() => setOpen(false)}
+                        aria-label="Upgrade to JsonExport Pro — $9 one-time, lifetime license"
+                        className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-md text-sm font-bold text-amber-950 bg-amber-400 hover:bg-amber-300 shadow-sm ring-1 ring-amber-500/50"
+                    >
+                        <span className="inline-flex items-center gap-2">
+                            <span aria-hidden>⚡</span>
+                            Get Pro
+                            <span className="text-[11px] font-semibold text-amber-900/80 border-l border-amber-700/40 pl-2 ml-0.5">$9 lifetime</span>
+                        </span>
+                        <ArrowRight className="w-4 h-4 opacity-70" />
+                    </Link>
+
                     {/* Converters Directory CTA */}
                     <Button
                         asChild
