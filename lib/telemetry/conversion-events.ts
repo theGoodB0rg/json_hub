@@ -1,3 +1,10 @@
+import { dispatch, flushQueue } from './dispatcher';
+import {
+    resolveEndpoints,
+    ingestFallbackChain,
+    feedbackFallbackChain,
+} from './endpoints';
+
 export type ConversionEventName =
     | 'page_view'
     | 'funnel_step'
@@ -37,10 +44,23 @@ export interface UserFeedbackPayload {
 
 export const DEFAULT_TELEMETRY_URL = 'https://jsonexport-telemetry.idowue93.workers.dev';
 const STORAGE_KEY = 'jsonexport:conversion-events';
-const PENDING_QUEUE_KEY = 'jsonexport:telemetry-pending';
 const FEEDBACK_STORAGE_KEY = 'jsonexport:user-feedback';
 const MAX_EVENTS = 200;
-const MAX_PENDING = 100;
+
+// Shared TextEncoder — serializing JSON payloads to UTF-8 bytes for the
+// transport layer. Reused to avoid per-call allocation.
+const JSON_ENCODER = typeof TextEncoder !== 'undefined' ? new TextEncoder() : null;
+const JSON_CONTENT_TYPE = 'application/json';
+
+function encodeJson(obj: unknown): Uint8Array {
+    const text = JSON.stringify(obj);
+    if (JSON_ENCODER) return JSON_ENCODER.encode(text);
+    // Fallback for very old environments — convert via unescape(encodeURIComponent(…)).
+    const bin = unescape(encodeURIComponent(text));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+}
 
 function isBrowser() {
     return typeof window !== 'undefined';
@@ -58,101 +78,39 @@ function generateId(): string {
 }
 
 export function getTelemetryEndpoint(subpath: string): string {
+    // Backward-compat shim: callers that still hardcode legacy paths get the
+    // legacy URL back. New code should import from endpoints.ts directly.
     const baseUrl = process.env.NEXT_PUBLIC_TELEMETRY_URL || DEFAULT_TELEMETRY_URL;
     return `${baseUrl.replace(/\/$/, '')}${subpath}`;
 }
 
-function getPendingQueue(): any[] {
-    if (!isBrowser()) return [];
-    try {
-        const raw = window.localStorage.getItem(PENDING_QUEUE_KEY);
-        return raw ? JSON.parse(raw) : [];
-    } catch {
-        return [];
-    }
-}
-
-function savePendingQueue(queue: any[]) {
+/**
+ * Public: drain the IndexedDB-backed outbound queue. Called on `online`
+ * events, on page-visibility changes, and opportunistically after each
+ * successful dispatch. Safe to call concurrently — the dispatcher's own
+ * lock prevents reentry.
+ */
+export async function flushPendingTelemetry() {
     if (!isBrowser()) return;
     try {
-        window.localStorage.setItem(PENDING_QUEUE_KEY, JSON.stringify(queue.slice(-MAX_PENDING)));
+        await flushQueue();
     } catch {
-        // Local storage error
+        // Fails gracefully — will retry on next trigger.
     }
 }
 
-let isFlushing = false;
-export async function flushPendingTelemetry() {
-    if (!isBrowser() || isFlushing) return;
-    const queue = getPendingQueue();
-    if (queue.length === 0) return;
-
-    isFlushing = true;
-    const batch = queue.slice(0, 50);
-    const endpoint = getTelemetryEndpoint('/api/telemetry/batch');
-
-    try {
-        const body = JSON.stringify({ events: batch });
-        let sent = false;
-
-        if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-            const blob = new Blob([body], { type: 'application/json' });
-            sent = navigator.sendBeacon(endpoint, blob);
-        }
-
-        if (!sent) {
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body,
-                keepalive: true,
-            });
-            sent = res.ok;
-        }
-
-        if (sent) {
-            const remaining = queue.slice(batch.length);
-            savePendingQueue(remaining);
-        }
-    } catch {
-        // Will retry on next activity or online event
-    } finally {
-        isFlushing = false;
-    }
-}
-
-// Auto-flush on window online event
+// Auto-flush on reconnection and tab-visibility events — the two moments
+// when queued events are most likely to actually deliver.
 if (isBrowser()) {
     try {
-        window.addEventListener('online', () => {
-            flushPendingTelemetry().catch(() => {});
+        window.addEventListener('online', () => { flushPendingTelemetry().catch(() => {}); });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                flushPendingTelemetry().catch(() => {});
+            }
         });
     } catch {
         // Ignore listener error
-    }
-}
-
-function sendRemotePayload(url: string, data: any) {
-    if (!isBrowser()) return;
-
-    try {
-        const body = JSON.stringify(data);
-        if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-            const blob = new Blob([body], { type: 'application/json' });
-            const sent = navigator.sendBeacon(url, blob);
-            if (sent) return;
-        }
-
-        fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body,
-            keepalive: true,
-        }).catch(() => {
-            // Fails silently, already queued in pending storage if critical
-        });
-    } catch {
-        // Suppress telemetry errors
     }
 }
 
@@ -203,8 +161,8 @@ export function trackConversionEvent(
         // Ignore dispatch errors
     }
 
-    // Transmit to Cloudflare D1 worker
-    const endpoint = getTelemetryEndpoint('/api/telemetry');
+    // Transmit via first-party → legacy fallback chain + transport chain.
+    // Dispatcher handles its own queueing when every endpoint+transport fails.
     const flatEvent = {
         id: event.id,
         event_name: name,
@@ -212,18 +170,12 @@ export function trackConversionEvent(
         ...event.payload,
     };
 
-    // Add to pending queue and attempt transmission
-    const pending = getPendingQueue();
-    savePendingQueue([...pending, flatEvent]);
+    const endpoints = ingestFallbackChain(resolveEndpoints());
+    const body = encodeJson(flatEvent);
+    void dispatch({ endpoints, body, contentType: JSON_CONTENT_TYPE });
 
-    sendRemotePayload(endpoint, flatEvent);
-
-    // If there's an accumulated queue, flush in background
-    if (pending.length > 0) {
-        setTimeout(() => {
-            flushPendingTelemetry().catch(() => {});
-        }, 100);
-    }
+    // Opportunistic drain in case prior events are stuck in the queue.
+    setTimeout(() => { flushPendingTelemetry().catch(() => {}); }, 500);
 }
 
 export async function sendUserFeedback(feedback: UserFeedbackPayload): Promise<void> {
@@ -251,17 +203,11 @@ export async function sendUserFeedback(feedback: UserFeedbackPayload): Promise<v
         has_comment: !!feedback.comment,
     });
 
-    const endpoint = getTelemetryEndpoint('/api/feedback');
-    try {
-        await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(record),
-            keepalive: true,
-        });
-    } catch {
-        // Fails gracefully
-    }
+    // Route feedback through the same first-party → legacy chain so it
+    // benefits from the full blocker-resistance stack.
+    const endpoints = feedbackFallbackChain(resolveEndpoints());
+    const body = encodeJson(record);
+    await dispatch({ endpoints, body, contentType: JSON_CONTENT_TYPE });
 }
 
 export function getTrackedConversionEvents(): ConversionEvent[] {

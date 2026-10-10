@@ -3,6 +3,7 @@ import path from 'path';
 import { pullTelemetryData } from '../pull-telemetry';
 import { loadGscData, GscSummary, GscQuery, GscPage } from './gsc-parser';
 import { fetchLiveGscData } from './gsc-fetcher';
+import { computeCaptureRate, formatCaptureRateSection } from './capture-rate';
 
 interface TelemetryEvent {
     id: string;
@@ -250,7 +251,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     fs.writeFileSync(path.join(outDir, 'unified_analytics_latest.json'), JSON.stringify(reportData, null, 2), 'utf8');
 
     // 6. Terminal Output Dashboard
-    printTerminalDashboard(reportData);
+    await printTerminalDashboard(reportData);
 
     return reportData;
 }
@@ -326,7 +327,7 @@ ${recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n\n')}
 `;
 }
 
-function printTerminalDashboard(data: UnifiedReportData): void {
+async function printTerminalDashboard(data: UnifiedReportData): Promise<void> {
     const { gsc, telemetry, recommendations } = data;
 
     console.log('======================================================================');
@@ -390,6 +391,15 @@ function printTerminalDashboard(data: UnifiedReportData): void {
         console.log('│ 3. STRATEGIC ACTION ITEMS FOR REPO & PROGRAMMATIC SEO             │');
         console.log('└───────────────────────────────────────────────────────────────────┘');
         recommendations.forEach((r, i) => console.log(`  ${i + 1}. ${r}`));
+    }
+
+    // Pillar 4 capture-rate reconciliation — compares CF Web Analytics vs
+    // Analytics Engine vs D1 to flag whether blockers are suppressing events.
+    try {
+        const captureReport = await computeCaptureRate(24);
+        console.log(formatCaptureRateSection(captureReport));
+    } catch (err) {
+        console.log('\n⚠ Capture-rate reconciliation failed:', err instanceof Error ? err.message : String(err));
     }
 
     console.log('======================================================================\n');

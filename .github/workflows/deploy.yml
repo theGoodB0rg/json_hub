@@ -43,6 +43,10 @@ jobs:
         env:
           NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN: ${{ secrets.NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN }}
           NEXT_PUBLIC_TELEMETRY_URL: https://jsonexport-telemetry.idowue93.workers.dev
+          # First-party telemetry path token. Must match TELEMETRY_TOKEN set
+          # in worker/wrangler-edge.toml. Rotate both on each deploy to break
+          # cached adblock-filter rules targeting a stable path.
+          NEXT_PUBLIC_TELEMETRY_TOKEN: k7m2x9q
         run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

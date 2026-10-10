@@ -1,0 +1,37 @@
+# jsonexport-edge: edge pageview middleware
+# Deployed on the Theregalstarlite CF account where the jsonexport.com zone lives,
+# so Worker routes can bind to the zone hostnames.
+
+name = "jsonexport-edge"
+main = "edge-worker.ts"
+compatibility_date = "2024-09-01"
+account_id = "ea158eac6035716195ee97831b85562c"
+
+# Keep workers.dev disabled — this worker is only reached via a zone route.
+workers_dev = false
+
+# Workers Analytics Engine binding. The dataset is created on first write;
+# no explicit setup needed, but we can query it later via the SQL API.
+[[analytics_engine_datasets]]
+binding = "PAGEVIEWS"
+dataset = "jsonexport_pageviews"
+
+[vars]
+# Upstream telemetry worker (jsonexport-telemetry on Idowue93 account).
+# The edge worker proxies /_i/<token>/* requests here so the client sees
+# a same-origin endpoint while the D1 schema stays untouched.
+TELEMETRY_UPSTREAM = "https://jsonexport-telemetry.idowue93.workers.dev"
+# Rotation token in the opaque first-party path. Change on each deploy to
+# invalidate stale adblock rules. The Next.js build must set the matching
+# NEXT_PUBLIC_TELEMETRY_TOKEN secret so client and edge agree.
+TELEMETRY_TOKEN = "k7m2x9q"
+
+# Zone route binding — matches every URL on jsonexport.com and the www alias.
+# The worker runs *before* the request reaches the GitHub Pages origin.
+[[routes]]
+pattern = "jsonexport.com/*"
+zone_name = "jsonexport.com"
+
+[[routes]]
+pattern = "www.jsonexport.com/*"
+zone_name = "jsonexport.com"

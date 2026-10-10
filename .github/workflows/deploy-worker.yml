@@ -1,0 +1,42 @@
+name: Deploy Edge Worker
+
+# Deploys the jsonexport-edge Cloudflare Worker (worker/edge-worker.ts)
+# whenever the worker code or its config changes on main. This mirrors
+# the existing deploy.yml (Next.js → GH Pages) so site + edge ship on
+# the same push.
+#
+# Auth: CLOUDFLARE_API_TOKEN secret (scoped Workers Scripts/Routes Edit on
+# the Theregalstarlite account + jsonexport.com zone).
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "worker/edge-worker.ts"
+      - "worker/wrangler-edge.toml"
+      - ".github/workflows/deploy-worker.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: "deploy-edge-worker"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Deploy worker to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: worker
+          wranglerVersion: "4.73.0"
+          command: deploy --config wrangler-edge.toml
