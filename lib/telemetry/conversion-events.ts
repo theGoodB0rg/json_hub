@@ -225,8 +225,11 @@ export function clearTrackedConversionEvents() {
     if (!isBrowser()) return;
     try {
         window.localStorage.removeItem(STORAGE_KEY);
-        window.localStorage.removeItem(PENDING_QUEUE_KEY);
         window.localStorage.removeItem(FEEDBACK_STORAGE_KEY);
+        // Legacy pending queue key — removed from the active code path but
+        // still cleared here so machines upgrading from the old client don't
+        // keep stale entries forever.
+        window.localStorage.removeItem('jsonexport:telemetry-pending');
     } catch {
         // Ignore localStorage errors.
     }
