@@ -325,6 +325,17 @@ export default {
                         referrer,      // blob3
                         uaClass,       // blob4
                         request.headers.get('accept-language')?.slice(0, 64) || '', // blob5
+                        // blob6: the raw cf.verifiedBotCategory string.
+                        //
+                        // Recorded rather than inferred. The original bug came
+                        // from assuming what this field contains for ordinary
+                        // traffic; after the first fix, rows still came back
+                        // classified VERIFIED_BOT with uaClass 'mobile' and
+                        // 'other', which verified bots should not be. Storing
+                        // the literal value is the only way to settle what
+                        // Cloudflare actually sends on this plan instead of
+                        // guessing a second time.
+                        verifiedBotCategory.slice(0, 64),
                     ],
                     // doubles: numeric columns (up to 20, Float64)
                     doubles: [
