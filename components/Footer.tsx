@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Github, Lock, Zap, FileJson, FileSpreadsheet, FileText, ArrowRight, Code2 } from 'lucide-react';
+import { Github, Lock, Zap, FileJson, FileSpreadsheet, FileText, ArrowRight, Code2, Bell } from 'lucide-react';
 import { LinkToUs } from '@/components/LinkToUs';
 import { SocialProofBadges } from '@/components/SocialProofBadges';
 import { BrandIcon } from '@/components/ui/BrandIcon';
@@ -141,6 +141,24 @@ export function Footer() {
                                     className="hover:text-primary transition-colors flex items-center gap-1.5"
                                 >
                                     <Github className="w-3.5 h-3.5" /> GitHub Open Source
+                                </a>
+                            </li>
+                            <li>
+                                {/*
+                                  Soft-touch Pro CTA: pro.jsonexport.com is
+                                  the seller profile page with a native
+                                  Gumroad Subscribe button. Catches visitors
+                                  who aren't ready to buy yet but want to
+                                  hear about new releases — builds a mailing
+                                  list without us running one.
+                                */}
+                                <a
+                                    href="https://pro.jsonexport.com/?src=footer_follow"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-primary transition-colors flex items-center gap-1.5"
+                                >
+                                    <Bell className="w-3.5 h-3.5" /> Follow for updates
                                 </a>
                             </li>
                             <li>
