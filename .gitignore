@@ -40,13 +40,20 @@ test-results/
 temp_old_*.tsx
 old_platform_data_temp.ts
 
-# Planning and Marketing Artifacts
+# Planning and Marketing Artifacts — private, never commit
 PRODUCT_HUNT_*.html
 PRODUCT_HUNT_*.md
 SEO_IMPLEMENTATION_PLAN.md
 MARKETING_ASSETS_PLAN.md
+MONETIZATION_*.md
+MONETIZATION_ROADMAP*.md
+ROADMAP_*.md
+*_ROADMAP*.md
 project_plan.txt
 JSONExport_Media_Kit.pdf
+# Per-page internal dev docs that live beside app routes
+app/*/INSTRUCTIONS.md
+scratch/
 
 # Docs/Temp Artifacts
 docs/project_status.md
