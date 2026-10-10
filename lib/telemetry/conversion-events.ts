@@ -44,6 +44,11 @@ export interface UserFeedbackPayload {
     platform?: string;
     format?: string;
     path?: string;
+    /** True when the rating is about a demo/sample conversion rather than a
+     *  file the user supplied. Sent to D1 as `is_sample` so the analytics
+     *  report can exclude it from the satisfaction rate — our own demo and
+     *  E2E submissions previously read as genuine user dissatisfaction. */
+    isSample?: boolean;
 }
 
 export const DEFAULT_TELEMETRY_URL = 'https://jsonexport-telemetry.idowue93.workers.dev';
@@ -185,11 +190,14 @@ export function trackConversionEvent(
 export async function sendUserFeedback(feedback: UserFeedbackPayload): Promise<void> {
     if (!isBrowser()) return;
 
+    const { isSample, ...rest } = feedback;
     const record = {
+        ...rest,
         id: feedback.id || generateId(),
-        ...feedback,
         path: feedback.path || (typeof window !== 'undefined' ? window.location.pathname : ''),
         timestamp: Date.now(),
+        // snake_case on the wire — the D1 column is `is_sample`.
+        is_sample: isSample ? 1 : 0,
     };
 
     try {
@@ -205,6 +213,7 @@ export async function sendUserFeedback(feedback: UserFeedbackPayload): Promise<v
         rating: feedback.rating,
         platform: feedback.platform,
         has_comment: !!feedback.comment,
+        is_sample: isSample ? 1 : 0,
     });
 
     // Route feedback through the same first-party → legacy chain so it

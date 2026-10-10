@@ -1,0 +1,25 @@
+-- 0001_feedback_is_sample.sql
+--
+-- Adds is_sample to user_feedback so demo/sample conversions and automated
+-- test submissions can be told apart from genuine user ratings.
+--
+-- Why: before this column existed, `npm run analytics` reported "9.1%
+-- satisfaction" off 11 rows, 9 of which were our own QA probes (8 identical
+-- "Missing changelog" Jira tests plus one row captioned "Live deployment test
+-- from assistant"). That tripped the "inspect flattening bugs" alert on every
+-- run. schema.sql uses CREATE TABLE IF NOT EXISTS, which cannot add a column
+-- to an already-provisioned D1, so the change needs this explicit migration.
+--
+-- Safe to re-run? No — SQLite has no ADD COLUMN IF NOT EXISTS. Running twice
+-- errors with "duplicate column name: is_sample", which is harmless.
+--
+-- Apply with:
+--   npx wrangler d1 execute jsonexport-db --remote \
+--     --file worker/migrations/0001_feedback_is_sample.sql
+--
+-- Rows written before this migration keep is_sample = 0 by default, but the
+-- report does NOT trust that value for them: unified-report.ts treats
+-- anything older than FEEDBACK_FLAG_EPOCH as unclassified, because a default
+-- of 0 on a backfilled row means "unknown", not "genuine".
+
+ALTER TABLE user_feedback ADD COLUMN is_sample INTEGER DEFAULT 0;

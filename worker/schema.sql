@@ -28,7 +28,12 @@ CREATE TABLE IF NOT EXISTS user_feedback (
     platform TEXT,
     format TEXT,
     path TEXT,
-    timestamp INTEGER NOT NULL
+    timestamp INTEGER NOT NULL,
+    -- 1 when the rating came from a demo/sample conversion or an automated
+    -- test rather than a genuine user upload. Mirrors events.is_sample.
+    -- Without it the dashboard counted our own QA probes as real user
+    -- dissatisfaction (see unified-report.ts FEEDBACK_FLAG_EPOCH).
+    is_sample INTEGER DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_feedback_timestamp ON user_feedback(timestamp);

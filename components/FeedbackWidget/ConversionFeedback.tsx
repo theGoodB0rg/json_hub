@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ThumbsUp, ThumbsDown, Send, CheckCircle2, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { sendUserFeedback } from '@/lib/telemetry/conversion-events';
+import { useAppStore } from '@/lib/store/store';
 
 interface ConversionFeedbackProps {
     platform?: string;
@@ -18,12 +19,28 @@ export function ConversionFeedback({ platform, format, onDismiss }: ConversionFe
     const [submitted, setSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // A rating about a demo/sample conversion is not a verdict on the product
+    // for a file the user actually cared about. Flagged so the analytics
+    // report can exclude it from the satisfaction rate.
+    const isSample = useAppStore((s) => s.isSample) ?? false;
+
+    // One id per feedback interaction. A negative rating sends twice — once on
+    // the thumb click so an abandoned complaint is still captured, once when
+    // the comment is submitted. Reusing the id lets the worker collapse them
+    // into a single record (INSERT OR REPLACE) instead of logging the same
+    // complaint twice and double-counting it as two unhappy users.
+    const feedbackId = useRef<string>(
+        `fb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`
+    );
+
     const handleRating = async (selected: 'positive' | 'negative') => {
         setRating(selected);
         await sendUserFeedback({
+            id: feedbackId.current,
             rating: selected,
             platform: platform || 'generic',
             format: format || 'xlsx',
+            isSample,
         });
 
         if (selected === 'positive') {
@@ -38,10 +55,12 @@ export function ConversionFeedback({ platform, format, onDismiss }: ConversionFe
         setIsSubmitting(true);
         try {
             await sendUserFeedback({
+                id: feedbackId.current,
                 rating: rating || 'negative',
                 comment: comment.trim(),
                 platform: platform || 'generic',
                 format: format || 'xlsx',
+                isSample,
             });
             setSubmitted(true);
         } finally {

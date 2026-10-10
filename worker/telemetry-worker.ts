@@ -115,11 +115,22 @@ export default {
                 const rating = body.rating === 'positive' || body.rating === 'negative' ? body.rating : 'neutral';
                 const timestamp = Date.now();
 
+                // INSERT OR REPLACE, not INSERT.
+                //
+                // The widget sends twice for a negative rating: once the
+                // moment the thumb is clicked (so an abandoned complaint is
+                // still captured) and again when the user submits the comment.
+                // Both carry the same client-generated id. A plain INSERT made
+                // that the second row — producing duplicate pairs like the two
+                // identical 2026-09-22 Trello rows, one with the comment and
+                // one with NULL, and double-counting every negative that came
+                // with a note. Replacing on id collapses them to one record
+                // that gains the comment.
                 ctx.waitUntil(
                     env.DB.prepare(
-                        `INSERT INTO user_feedback (
-                            id, rating, comment, platform, format, path, timestamp
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?)`
+                        `INSERT OR REPLACE INTO user_feedback (
+                            id, rating, comment, platform, format, path, timestamp, is_sample
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
                     )
                         .bind(
                             id,
@@ -128,7 +139,8 @@ export default {
                             safeString(body.platform, 64),
                             safeString(body.format, 32),
                             safeString(body.path, 300),
-                            timestamp
+                            timestamp,
+                            body.is_sample === true || body.is_sample === 1 ? 1 : 0
                         )
                         .run()
                         .catch((err: any) => console.error('D1 feedback insert error:', err))
