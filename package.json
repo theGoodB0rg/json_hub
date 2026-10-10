@@ -49,7 +49,8 @@
     "analytics:report": "npx tsx scripts/analytics/unified-report.ts",
     "trend-research": "node scripts/trend-research/index.js",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
