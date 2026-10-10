@@ -13,7 +13,10 @@ workers_dev = false
 [[d1_databases]]
 binding = "DB"
 database_name = "jsonexport-license-db"
-database_id = "dc7e399a-0d5f-461f-9b0f-1f4772d299df"
+# Recreated from CI 2026-10-10 after the local-wrangler-created one
+# returned 7404 to the CI token across all /query + /import calls.
+# This new UUID is guaranteed accessible to CLOUDFLARE_API_TOKEN.
+database_id = "0ebfc1b0-35bc-44df-8fbe-29176f7e8678"
 
 [vars]
 # Gumroad short-link permalink for the Pro product. Must match the
