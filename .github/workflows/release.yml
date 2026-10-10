@@ -5,6 +5,13 @@ on:
     tags:
       - 'v*'
 
+# tauri-apps/tauri-action creates a draft GitHub Release and uploads
+# artifacts. Default GITHUB_TOKEN scopes on this repo are read-only, so
+# release creation returns "Resource not accessible by integration".
+# `contents: write` is the minimum needed to create/update releases.
+permissions:
+  contents: write
+
 jobs:
   release:
     strategy:
