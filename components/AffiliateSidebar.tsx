@@ -1,4 +1,5 @@
 import { AFFILIATE_PARTNERS } from '@/lib/affiliates';
+import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Database, Table, Zap } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +23,7 @@ export function AffiliateSidebar() {
                     if (partner.id === 'zapier') Icon = Zap;
                     if (partner.id === 'notion') Icon = Database;
                     if (partner.id === 'coupler') Icon = Table;
+                    if (partner.id === 'systeme') Icon = Zap;
 
                     return (
                         <Card key={partner.id} className="overflow-hidden border-border/50 hover:border-primary/50 transition-colors shadow-sm bg-muted/20">
@@ -47,7 +49,13 @@ export function AffiliateSidebar() {
                                 <Button
                                     className="w-full h-8 text-xs gap-1.5"
                                     variant="outline"
-                                    onClick={() => window.open(partner.affiliateUrl, '_blank')}
+                                    onClick={() => {
+                                        trackConversionEvent('affiliate_sidebar_click', {
+                                            partner: partner.id,
+                                            destination: partner.affiliateUrl,
+                                        });
+                                        window.open(partner.affiliateUrl, '_blank');
+                                    }}
                                 >
                                     Try for Free
                                     <ExternalLink className="h-3 w-3 opacity-50" />

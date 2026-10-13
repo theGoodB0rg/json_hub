@@ -67,7 +67,7 @@ All processing happens in your browser. Zero network calls. No data upload.
 ### Growth Execution (Phase 4)
 - UTM source-aware landing banner for campaign traffic (`utm_source=producthunt`, `g2`, `capterra`, etc.)
 - Social proof badges in footer with safe fallback when listing URLs are not configured
-- Conversion telemetry events for parse/export plus growth interactions (campaign detect, badge clicks, affiliate toast shown/clicked)
+- Conversion telemetry events for parse/export plus growth interactions (campaign detect, badge clicks, affiliate toast shown/clicked, affiliate sidebar clicked)
 
 ---
 

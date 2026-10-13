@@ -19,6 +19,7 @@ export type ConversionEventName =
     | 'campaign_source_detected'
     | 'affiliate_toast_shown'
     | 'affiliate_toast_click'
+    | 'affiliate_sidebar_click'
     | 'github_star_click'
     | 'github_issues_click'
     // Post-export Pro upsell (M1 in MONETIZATION_ROADMAP_2026-10-10.md)

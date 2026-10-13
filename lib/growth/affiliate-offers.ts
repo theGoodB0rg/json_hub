@@ -10,7 +10,7 @@
  * Audited 2026-10-10: six of seven offers (Baremetrics, Coefficient,
  * Supermetrics, MongoDB BI, EasyBI, and the sidebar's Zapier/Notion) carried
  * no referral id at all. They were earning exactly $0 while occupying that
- * slot, so they are gone. Coupler.io (ref=john70) is the one approved partner
+ * slot, so they are gone. Coupler.io (ref=jsonexport) is the one approved partner
  * and is the only destination here.
  *
  * Copy constraint: Coupler.io advertises 300+ sources but publishes no stable
@@ -20,9 +20,11 @@
  * true regardless of which connectors exist, rather than a claim we would be
  * guessing at.
  *
- * Adding an offer: get accepted into the programme first, put the real ref in
- * the URL, and only then add a key here.
+ * Adding an offer: get accepted into the programme first, set the real
+ * refCode in lib/affiliates-core.ts PARTNERS, and only then add a key here.
  */
+
+import { buildAffiliateLink } from '@/lib/affiliates-core';
 
 export interface AffiliateOffer {
     title: string;
@@ -34,7 +36,7 @@ export interface AffiliateOffer {
 /** The single approved affiliate destination.
  *
  *  This is the "Signup page" link from the FirstPromoter partner dashboard,
- *  not the marketing homepage one. Both carry the same `ref=john70` payout
+ *  not the marketing homepage one. Both carry the same `ref=jsonexport` payout
  *  identifier and both are tracked, but this toast only fires AFTER a
  *  successful conversion — the user is already warm and the toast copy has
  *  already made the pitch, so sending them to the homepage makes them re-read
@@ -42,18 +44,16 @@ export interface AffiliateOffer {
  *  keeps the homepage link instead (see lib/affiliates.ts).
  *
  *  `ref` is the payout identifier — do not strip it when editing these URLs.
- *  Verified 2026-10-10: loading a ?ref=john70 URL sets `_fprom_ref=john70`
- *  plus a FirstPromoter tracking id, and the partner dashboard lists this
- *  exact link under "Referral links". */
-const COUPLER_BASE = 'https://app.coupler.io/register/sign_up?ref=john70';
+ *  Token `jsonexport` set 2026-10-13 via "Customize Token" (replacing
+ *  `john70`, whose links are now invalid); the partner dashboard lists
+ *  the new links under "Referral links". */
 
 function couplerLink(platform: string): string {
-    const url = new URL(COUPLER_BASE);
-    url.searchParams.set('utm_source', 'jsonexport');
-    url.searchParams.set('utm_medium', 'affiliate_toast');
-    url.searchParams.set('utm_campaign', 'phase4_growth_execution');
-    url.searchParams.set('utm_content', platform);
-    return url.toString();
+    return buildAffiliateLink('coupler', {
+        placement: 'affiliate_toast',
+        platform,
+        campaign: 'phase4_growth_execution',
+    });
 }
 
 export const AFFILIATE_OFFERS: Record<string, AffiliateOffer> = {
@@ -92,5 +92,14 @@ export const AFFILIATE_OFFERS: Record<string, AffiliateOffer> = {
             'Rebuilding this report each sprint? Coupler.io can schedule the sync into Sheets and Excel instead.',
         cta: 'See Coupler.io',
         link: couplerLink('jira'),
+    },
+    // Trello drives a top platform page (trello-json-to-csv: 14 clicks /
+    // 633 impressions) but had no toast key — silent highest-intent moment.
+    trello: {
+        title: 'Trello Cards Flattened! 📋',
+        description:
+            'Exporting this board every week? Coupler.io can keep the data flowing into Sheets and Excel on a schedule.',
+        cta: 'See Coupler.io',
+        link: couplerLink('trello'),
     },
 };
