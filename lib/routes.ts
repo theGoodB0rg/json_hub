@@ -20,7 +20,13 @@ export const ROUTES = {
 
 function normalizePath(pathname: string): string {
     if (!pathname) return ROUTES.home;
-    return pathname.startsWith('/') ? pathname : `/${pathname}`;
+    // Guard against absolute URLs: new URL('/https://...', origin) would
+    // otherwise produce a doubled URL like
+    // https://jsonexport.com/https://jsonexport.com/... (seen as 404s in GSC).
+    const withoutOrigin = pathname.startsWith(SITE_ORIGIN)
+        ? pathname.slice(SITE_ORIGIN.length)
+        : pathname;
+    return withoutOrigin.startsWith('/') ? withoutOrigin : `/${withoutOrigin}`;
 }
 
 export function toAbsoluteUrl(pathname: string = ROUTES.home): string {

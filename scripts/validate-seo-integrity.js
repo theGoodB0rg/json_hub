@@ -7,6 +7,7 @@ const runAll = args.size === 0;
 const runSlugs = runAll || args.has('--slugs');
 const runLinks = runAll || args.has('--links');
 const runSitemap = runAll || args.has('--sitemap');
+const runMeta = runAll || args.has('--meta');
 
 const failures = [];
 
@@ -199,6 +200,44 @@ if (runLinks) {
 
 if (runSitemap) {
     checkSitemapStaticRoutes();
+}
+
+function checkMetadataHygiene() {
+    // 1. No toAbsoluteUrl() call may receive an absolute URL — that produced
+    //    doubled URLs (https://jsonexport.com/https://...) seen as 404s in GSC.
+    const tsFiles = [
+        ...walkDir(path.join(ROOT, 'app'), (p) => /\.(ts|tsx)$/.test(p)),
+        ...walkDir(path.join(ROOT, 'lib'), (p) => /\.(ts|tsx)$/.test(p)),
+        ...walkDir(path.join(ROOT, 'components'), (p) => /\.(ts|tsx)$/.test(p)),
+    ].filter((p) => !/\.test\.(ts|tsx)$/.test(p));
+    const absoluteArgRegex = /toAbsoluteUrl\([^)]*https?:\/\//g;
+    for (const absFilePath of tsFiles) {
+        const relPath = path.relative(ROOT, absFilePath).replace(/\\/g, '/');
+        const fileContent = fs.readFileSync(absFilePath, 'utf8');
+        let m;
+        while ((m = absoluteArgRegex.exec(fileContent)) !== null) {
+            addFailure(`${relPath}:${lineFromIndex(fileContent, m.index)} passes an absolute URL to toAbsoluteUrl() (doubled-origin 404 risk)`);
+        }
+    }
+
+    // 2. Convention OG/twitter image routes must be statically exportable.
+    //    `runtime = 'edge'` image routes emit nothing under output: 'export',
+    //    while Next still advertises their URLs in meta tags -> GSC 404s.
+    const imageRoutes = walkDir(
+        path.join(ROOT, 'app'),
+        (p) => /(^|[\\/])(opengraph-image|twitter-image)\.tsx$/.test(p)
+    );
+    for (const absFilePath of imageRoutes) {
+        const relPath = path.relative(ROOT, absFilePath).replace(/\\/g, '/');
+        const fileContent = fs.readFileSync(absFilePath, 'utf8');
+        if (/runtime\s*=\s*['"]edge['"]/.test(fileContent)) {
+            addFailure(`${relPath} uses edge runtime, which emits no file under output: 'export' (GSC og:image 404 risk)`);
+        }
+    }
+}
+
+if (runMeta) {
+    checkMetadataHygiene();
 }
 
 if (failures.length > 0) {

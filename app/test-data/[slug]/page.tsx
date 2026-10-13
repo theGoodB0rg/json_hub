@@ -61,6 +61,7 @@ export default function DummyDataPage({ params }: { params: { slug: string } }) 
             name: 'JsonExport',
             url: 'https://jsonexport.com',
         },
+        license: 'https://creativecommons.org/publicdomain/zero/1.0/',
         distribution: [
             {
                 '@type': 'DataDownload',

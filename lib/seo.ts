@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ROUTES, toAbsoluteUrl } from '@/lib/routes';
+import { ROUTES, SITE_ORIGIN, toAbsoluteUrl } from '@/lib/routes';
 
 interface BuildPageMetadataInput {
     title: string;
@@ -17,6 +17,11 @@ export function buildPageMetadata({
     canonicalPath = ROUTES.home,
 }: BuildPageMetadataInput): Metadata {
     const url = toAbsoluteUrl(canonicalPath);
+    // Explicit OG image: the per-converter opengraph-image.tsx route cannot
+    // emit files under `output: 'export'` (static hosts have no edge runtime),
+    // so Next's auto meta (/converters/<slug>/opengraph-image?hash) 404s —
+    // flagged in GSC Page indexing. Point everything at the root static PNG.
+    const ogImage = `${SITE_ORIGIN}/opengraph-image.png`;
     return {
         title,
         description,
@@ -29,11 +34,13 @@ export function buildPageMetadata({
             type: 'website',
             url,
             siteName: 'JsonExport',
+            images: [{ url: ogImage, width: 1200, height: 630 }],
         },
         twitter: {
             card: 'summary_large_image',
             title,
             description,
+            images: [ogImage],
         },
     };
 }
@@ -58,11 +65,13 @@ export function buildArticleMetadata({
             type: 'article',
             publishedTime,
             url: toAbsoluteUrl(canonical),
+            images: [{ url: `${SITE_ORIGIN}/opengraph-image.png`, width: 1200, height: 630 }],
         },
         twitter: {
             card: 'summary_large_image',
             title,
             description,
+            images: [`${SITE_ORIGIN}/opengraph-image.png`],
         },
     };
 }
