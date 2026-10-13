@@ -12,6 +12,8 @@ import { useProStore } from '@/lib/store/proStore';
 import { LicenseModal } from '../LicenseModal';
 import { pluginRegistry } from '@/lib/plugins/registry';
 import { ConversionFeedback } from '@/components/FeedbackWidget/ConversionFeedback';
+import { JiraChangelogNotice } from './JiraChangelogNotice';
+import { getJiraChangelogStatus } from '@/lib/parsers/platform/jira';
 
 interface ExportMenuProps {
     platform?: string;
@@ -27,6 +29,7 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
         updateExportSettings,
         rawInput,
         activePluginId,
+        parsedData,
     } = useAppStore();
 
     const { isPro, setIsPro } = useProStore();
@@ -111,6 +114,7 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
             </div>
 
             <div className="grid grid-cols-2 gap-2">
+                <JiraChangelogNotice status={getJiraChangelogStatus(parsedData)} />
                 {formats.map((format) => (
                     <Button
                         key={format.value}

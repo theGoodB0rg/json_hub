@@ -109,6 +109,63 @@ export function isJiraSearchResponse(data: unknown): data is JiraSearchResponse 
     return hasFields && hasKey;
 }
 
+/**
+ * Structural detection for a bare single issue — the `GET
+ * /rest/api/2/issue/{KEY}?expand=changelog` shape, which carries no `issues`
+ * envelope. Same `key` + `fields` marker as the search response, required on
+ * the object itself. Bare arrays are rejected on purpose: without the envelope
+ * or the issue markers there is no evidence of what one row should be.
+ */
+export function isJiraIssue(data: unknown): data is JiraIssue {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+    const d = data as Record<string, any>;
+    if (Array.isArray(d.issues)) return false;
+    const hasFields = d.fields !== null && typeof d.fields === 'object';
+    const hasKey = typeof d.key === 'string' || typeof d.id === 'string';
+    return hasFields && hasKey;
+}
+
+/**
+ * Normalize either accepted shape to a search response so every downstream
+ * path (`issues[]…` omission patterns, the LOSSLESS invariant, both grains)
+ * keeps working unchanged. A bare issue has no `names` map; custom fields
+ * stay raw rather than resolved, which the generic path would also produce.
+ */
+export function toJiraSearchResponse(data: JiraSearchResponse | JiraIssue): JiraSearchResponse {
+    if (isJiraSearchResponse(data)) return data;
+    return { issues: [data] };
+}
+
+export type JiraChangelogStatus = 'present' | 'empty' | 'missing';
+
+/**
+ * Why a Jira sheet may show no changelog content, for UI hints.
+ * Returns null when the payload is not Jira at all.
+ *
+ * - 'present': at least one issue carries changelog histories.
+ * - 'empty':   a changelog key exists but records zero histories
+ *              (nothing changed yet — re-exporting will not help).
+ * - 'missing': no issue carries a changelog key — the export was almost
+ *              certainly made without `expand=changelog`, and telling the
+ *              user that is more useful than an empty column set.
+ */
+export function getJiraChangelogStatus(data: unknown): JiraChangelogStatus | null {
+    const issues = isJiraSearchResponse(data)
+        ? data.issues
+        : isJiraIssue(data)
+          ? [data]
+          : null;
+    if (!issues) return null;
+
+    let sawKey = false;
+    for (const issue of issues) {
+        const histories = issue.changelog?.histories;
+        if (Array.isArray(histories) && histories.length > 0) return 'present';
+        if (issue.changelog !== undefined && issue.changelog !== null) sawKey = true;
+    }
+    return sawKey ? 'empty' : 'missing';
+}
+
 /** `{ name: 'Open' }` → `'Open'`; `{ displayName }` → name; scalars pass through. */
 function readable(value: any): string {
     if (value === null || value === undefined) return '';
@@ -453,11 +510,12 @@ function transformChangelogLong(data: JiraSearchResponse): Record<string, any>[]
 }
 
 export function transformJiraSearch(
-    data: JiraSearchResponse,
+    data: JiraSearchResponse | JiraIssue,
     mode: FlattenMode = 'flat'
 ): Record<string, any>[] {
-    if (!Array.isArray(data.issues)) return [];
-    return mode === 'relational' ? transformChangelogLong(data) : transformIssuesWide(data);
+    const search = toJiraSearchResponse(data);
+    if (!Array.isArray(search.issues)) return [];
+    return mode === 'relational' ? transformChangelogLong(search) : transformIssuesWide(search);
 }
 
 /**
@@ -545,10 +603,11 @@ const JIRA_OMISSIONS = [
     '*.statusCategory.name',
 ] as const;
 
-export const jiraParser: PlatformParser<JiraSearchResponse> = {
+export const jiraParser: PlatformParser<JiraSearchResponse | JiraIssue> = {
     id: 'jira',
     label: 'Jira',
-    detect: isJiraSearchResponse,
+    detect: (data): data is JiraSearchResponse | JiraIssue =>
+        isJiraSearchResponse(data) || isJiraIssue(data),
     transform: transformJiraSearch,
     intentionalOmissions: JIRA_OMISSIONS,
     guaranteedColumns: [
