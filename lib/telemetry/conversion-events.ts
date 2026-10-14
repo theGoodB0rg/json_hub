@@ -4,6 +4,7 @@ import {
     ingestFallbackChain,
     feedbackFallbackChain,
 } from './endpoints';
+import { resolveSampleFlag } from './sample-detection';
 
 export type ConversionEventName =
     | 'page_view'
@@ -192,13 +193,21 @@ export async function sendUserFeedback(feedback: UserFeedbackPayload): Promise<v
     if (!isBrowser()) return;
 
     const { isSample, ...rest } = feedback;
+    // Quarantine, don't trust: the store flag covers demo conversions, but
+    // automated harnesses (jsdom QA probes, Playwright E2E) never set it and
+    // their ratings previously counted as genuine user dissatisfaction.
+    // resolveSampleFlag ORs the store flag with environment detection, so a
+    // harness that forgets the flag is still labelled is_sample = 1. The
+    // worker re-checks the request UA server-side as a second layer.
+    const flag = resolveSampleFlag({ storeIsSample: isSample });
+    const effectiveSample = flag.isSample;
     const record = {
         ...rest,
         id: feedback.id || generateId(),
         path: feedback.path || (typeof window !== 'undefined' ? window.location.pathname : ''),
         timestamp: Date.now(),
         // snake_case on the wire — the D1 column is `is_sample`.
-        is_sample: isSample ? 1 : 0,
+        is_sample: effectiveSample ? 1 : 0,
     };
 
     try {
@@ -214,7 +223,7 @@ export async function sendUserFeedback(feedback: UserFeedbackPayload): Promise<v
         rating: feedback.rating,
         platform: feedback.platform,
         has_comment: !!feedback.comment,
-        is_sample: isSample ? 1 : 0,
+        is_sample: effectiveSample ? 1 : 0,
     });
 
     // Route feedback through the same first-party → legacy chain so it

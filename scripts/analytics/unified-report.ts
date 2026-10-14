@@ -207,6 +207,14 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     // user_feedback, so they are genuinely unclassifiable. They are reported
     // separately rather than assumed genuine — same convention Pillar 1 uses
     // for Analytics Engine rows that predate the bot-score fix.
+    //
+    // Second poisoning vector (Oct 2026): automation that never sets the
+    // client flag. jsdom QA probes arrived with is_sample = 0 and read as
+    // genuine dissatisfaction. Two layers now prevent recurrence — the client
+    // auto-flags automation (lib/telemetry/sample-detection.ts) and the
+    // worker forces is_sample = 1 on automation UAs server-side
+    // (worker/telemetry-worker.ts resolveServerSampleFlag). Either layer
+    // alone quarantines the row; both are tested.
     const isSampleFeedback = (f: TelemetryFeedback) =>
         f.is_sample === 1 || f.is_sample === true;
     const classifiedFeedback = feedback.filter(f => f.timestamp >= FEEDBACK_FLAG_EPOCH);
@@ -396,8 +404,20 @@ function printTrendBlock(trend?: GscTrend): void {
     }
 }
 
+function formatFeedbackLine(f: { rating: string; platform?: string; comment?: string; timestamp: number }, quarantined: boolean): string {
+    const icon = f.rating === 'positive' ? '👍' : '👎';
+    const tag = quarantined ? '🧪 test ' : '';
+    return `- **${tag}${icon} [${f.platform || 'general'}]**: "${f.comment || 'No comment'}" _(${new Date(f.timestamp).toLocaleDateString()})_`;
+}
+
 function formatMarkdownReport(data: UnifiedReportData): string {
     const { gsc, telemetry, recommendations, generatedAt, gscTrend } = data;
+    const isSampleRow = (f: { is_sample?: number | boolean }) => f.is_sample === 1 || (f.is_sample as unknown) === true;
+    const genuineLines = telemetry.recentFeedback.filter(f => !isSampleRow(f)).map(f => formatFeedbackLine(f, false));
+    const quarantinedLines = telemetry.recentFeedback.filter(isSampleRow).map(f => formatFeedbackLine(f, true));
+    const quarantineNote = telemetry.sampleFeedback > 0 || quarantinedLines.length > 0
+        ? `\n\n#### 🧪 Quarantined test submissions (shown, not counted — excluded from satisfaction)\n${quarantinedLines.length > 0 ? quarantinedLines.join('\n') : `_(${telemetry.sampleFeedback} test submission(s) outside the recent window)_`}`
+        : '';
 
     return `# Unified Analytics & Search Intelligence Report
 
@@ -458,8 +478,8 @@ ${telemetry.topCountries.length > 0 ? `### Geographic Breakdown
 ${telemetry.topCountries.map(c => `| ${c.country} | ${c.count} |`).join('\n')}
 ` : ''}
 
-${telemetry.recentFeedback.length > 0 ? `### User Output Feedback
-${telemetry.recentFeedback.map(f => `- **${f.rating === 'positive' ? '👍' : '👎'} [${f.platform || 'general'}]**: "${f.comment || 'No comment'}" _(${new Date(f.timestamp).toLocaleDateString()})_`).join('\n')}` : ''}
+${genuineLines.length > 0 || quarantinedLines.length > 0 || telemetry.sampleFeedback > 0 ? `### User Output Feedback
+${genuineLines.length > 0 ? genuineLines.join('\n') : '_No genuine user ratings in the recent window._'}${quarantineNote}` : ''}
 
 ---
 
@@ -537,7 +557,8 @@ async function printTerminalDashboard(data: UnifiedReportData): Promise<void> {
     if (telemetry.recentFeedback.length > 0) {
         console.log('\nRecent User Output Feedback:');
         telemetry.recentFeedback.forEach(f => {
-            console.log(`  ${f.rating === 'positive' ? '👍' : '👎'} [${f.platform || 'general'}] "${f.comment || 'No comment'}"`);
+            const quarantined = (f as { is_sample?: number | boolean }).is_sample === 1;
+            console.log(`  ${quarantined ? '🧪test ' : ''}${f.rating === 'positive' ? '👍' : '👎'} [${f.platform || 'general'}] "${f.comment || 'No comment'}"${quarantined ? ' (quarantined — not counted)' : ''}`);
         });
     }
 

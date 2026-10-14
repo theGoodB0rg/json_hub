@@ -129,4 +129,93 @@ describe('Telemetry Conversion Events', () => {
         expect(tracked[0].name).toBe('sample_preview');
         expect(tracked[0].payload.is_sample).toBe(true);
     });
+
+    describe('feedback automation quarantine (client layer)', () => {
+        const NORMAL_UA =
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36';
+        let originalUserAgent: string;
+
+        function setUserAgent(value: string) {
+            Object.defineProperty(window.navigator, 'userAgent', {
+                value,
+                configurable: true,
+            });
+        }
+
+        function feedbackWireBodies(): any[] {
+            // Feedback travels first-party (`/_i/<token>/f`) with legacy
+            // (`/api/feedback`) fallback. Match by endpoint AND payload shape:
+            // the mirror `feedback_submitted` ingest event also carries
+            // `rating`, but goes to the ingest endpoint (`/_i/<token>/i`).
+            // (Buffer, not TextDecoder: this jsdom build has no TextDecoder.)
+            const calls = (global.fetch as jest.Mock).mock.calls;
+            const bodies: any[] = [];
+            for (const [url, init] of calls) {
+                const isFeedbackEndpoint =
+                    typeof url === 'string' && (url.endsWith('/f') || url.includes('/api/feedback'));
+                if (!isFeedbackEndpoint) continue;
+                try {
+                    const parsed = JSON.parse(Buffer.from(init.body as Uint8Array).toString('utf8'));
+                    if (parsed && typeof parsed.rating === 'string') bodies.push(parsed);
+                } catch {
+                    // Non-JSON or empty body — not a feedback record.
+                }
+            }
+            return bodies;
+        }
+
+        beforeEach(() => {
+            originalUserAgent = window.navigator.userAgent;
+        });
+
+        afterEach(() => {
+            Object.defineProperty(window.navigator, 'userAgent', {
+                value: originalUserAgent,
+                configurable: true,
+            });
+        });
+
+        it('auto-flags a harness that forgets isSample (the Oct 2026 jsdom case)', async () => {
+            // Self-validating: this test is meaningful only under an automation UA.
+            expect(window.navigator.userAgent.toLowerCase()).toContain('jsdom');
+
+            await sendUserFeedback({
+                rating: 'negative',
+                platform: 'jira',
+                comment: 'Missing changelog',
+            });
+
+            const bodies = feedbackWireBodies();
+            expect(bodies.length).toBe(1);
+            expect(bodies[0].is_sample).toBe(1);
+        });
+
+        it('leaves genuine browser feedback unflagged when the store flag is false', async () => {
+            setUserAgent(NORMAL_UA);
+
+            await sendUserFeedback({
+                rating: 'positive',
+                platform: 'trello',
+                comment: 'Clean columns!',
+            });
+
+            const bodies = feedbackWireBodies();
+            expect(bodies.length).toBe(1);
+            expect(bodies[0].is_sample).toBe(0);
+        });
+
+        it('preserves an explicit store demo flag from a real browser', async () => {
+            setUserAgent(NORMAL_UA);
+
+            await sendUserFeedback({
+                rating: 'positive',
+                platform: 'trello',
+                isSample: true,
+            });
+
+            const bodies = feedbackWireBodies();
+            expect(bodies.length).toBe(1);
+            expect(bodies[0].is_sample).toBe(1);
+        });
+    });
 });

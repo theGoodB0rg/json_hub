@@ -47,6 +47,49 @@ function safeNumber(val: any, min = 0, max = 1_000_000_000): number | null {
     return Math.max(min, Math.min(max, Math.round(val)));
 }
 
+/**
+ * Automation-UA detection — server-side mirror of
+ * lib/telemetry/sample-detection.ts (canonical definition).
+ *
+ * The worker bundles standalone, so the substring list is duplicated here
+ * rather than imported; worker/telemetry-worker.test.ts asserts the two stay
+ * in agreement over a shared corpus (same mirror-and-test convention as the
+ * bot-score derivation). If you extend one list, extend the other.
+ *
+ * Why this exists: Oct 2026 QA probes from a jsdom harness arrived with
+ * is_sample = 0 and were reported as genuine user dissatisfaction. The
+ * client now auto-flags automation, but a forged or missing client flag (or
+ * a direct API post) must not be able to poison the metric — hence this
+ * second layer, derived from the request UA which the client cannot spoof
+ * past the edge. Flagged rows are still STORED (quarantine, don't delete);
+ * they are labelled and excluded from satisfaction downstream.
+ */
+const AUTOMATED_UA_SUBSTRINGS = [
+    'jsdom',
+    'happy-dom',
+    'headless',
+    'playwright',
+    'selenium',
+    'puppeteer',
+    'cypress',
+    'phantomjs',
+    'test-client',
+    'vitest',
+];
+
+export function isAutomationUserAgent(ua: unknown): boolean {
+    if (typeof ua !== 'string' || ua.length === 0) return false;
+    const lower = ua.toLowerCase();
+    return AUTOMATED_UA_SUBSTRINGS.some((sub) => lower.includes(sub));
+}
+
+/** Client flag OR automation UA — either signal quarantines the row. */
+export function resolveServerSampleFlag(clientFlag: unknown, userAgent: unknown): 0 | 1 {
+    const clientSaysSample =
+        clientFlag === true || clientFlag === 1 || clientFlag === 'true';
+    return clientSaysSample || isAutomationUserAgent(userAgent) ? 1 : 0;
+}
+
 export default {
     async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
         if (request.method === 'OPTIONS') {
@@ -54,6 +97,10 @@ export default {
         }
 
         const url = new URL(request.url);
+        // Edge-observed UA, computed once for all branches. The feedback
+        // branch needs it for server-side automation quarantine (it cannot
+        // rely on a client-supplied value).
+        const userAgent = safeString(request.headers.get('user-agent'), 256) || 'Unknown';
 
         try {
             // POST /api/telemetry or /api/telemetry/batch - Record event(s)
@@ -64,7 +111,6 @@ export default {
                 const body: any = await request.json();
                 const rawEvents = Array.isArray(body) ? body : Array.isArray(body?.events) ? body.events : [body];
                 const country = safeString((request as any).cf?.country || request.headers.get('cf-ipcountry'), 16) || 'Unknown';
-                const userAgent = safeString(request.headers.get('user-agent'), 256) || 'Unknown';
                 const timestamp = Date.now();
 
                 // Cap batch at 100 events max to prevent DOS
@@ -72,7 +118,7 @@ export default {
                 const statements: D1PreparedStatement[] = eventsList.map((e: any) => {
                     const id = safeString(e.id, 64) || crypto.randomUUID();
                     const eventTime = safeNumber(e.timestamp, 0, timestamp + 86400000) || timestamp;
-                    const isSample = (e.is_sample === true || e.is_sample === 1 || e.is_sample === 'true') ? 1 : 0;
+                    const isSample = resolveServerSampleFlag(e.is_sample, userAgent);
                     return env.DB.prepare(
                         `INSERT INTO events (
                             id, event_name, platform, format, file_size_bytes, 
@@ -126,6 +172,12 @@ export default {
                 // one with NULL, and double-counting every negative that came
                 // with a note. Replacing on id collapses them to one record
                 // that gains the comment.
+                // Server-side quarantine: the client auto-flags automation, but
+                // this override catches forged/missing flags and direct posts.
+                // The request UA is edge-observed, so the client cannot spoof
+                // its way into the genuine set. Country is deliberately NOT
+                // used — real users share countries with our harnesses.
+                const serverSample = resolveServerSampleFlag(body.is_sample, userAgent);
                 ctx.waitUntil(
                     env.DB.prepare(
                         `INSERT OR REPLACE INTO user_feedback (
@@ -140,7 +192,7 @@ export default {
                             safeString(body.format, 32),
                             safeString(body.path, 300),
                             timestamp,
-                            body.is_sample === true || body.is_sample === 1 ? 1 : 0
+                            serverSample
                         )
                         .run()
                         .catch((err: any) => console.error('D1 feedback insert error:', err))
