@@ -110,8 +110,10 @@ jobs:
       - name: Deploy telemetry worker
         uses: cloudflare/wrangler-action@v3
         env:
-          # Token must cover the Idowue93 account (see header comment).
-          CLOUDFLARE_ACCOUNT_ID: 18d17abc6c7f3200383d6aba1aad23ac
+          # Account ID via secret (not plaintext): identifiers aren't
+          # credentials, but there is no reason to publish them either.
+          # The token must cover this account (see header comment).
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_TELEMETRY_ACCOUNT_ID }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: worker
