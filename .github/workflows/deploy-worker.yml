@@ -42,7 +42,10 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: worker
           wranglerVersion: "4.73.0"
-          command: deploy --config wrangler-edge.toml
+          # TELEMETRY_TOKEN comes from the repo secret (never committed) so it
+          # can rotate without touching code. Must match the site's
+          # NEXT_PUBLIC_TELEMETRY_TOKEN at build time (deploy.yml).
+          command: deploy --config wrangler-edge.toml --var TELEMETRY_TOKEN:${{ secrets.NEXT_PUBLIC_TELEMETRY_TOKEN }}
 
   license-worker:
     name: Deploy jsonexport-license + apply schema

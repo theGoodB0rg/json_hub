@@ -53,7 +53,6 @@ export interface UserFeedbackPayload {
     isSample?: boolean;
 }
 
-export const DEFAULT_TELEMETRY_URL = 'https://jsonexport-telemetry.idowue93.workers.dev';
 const STORAGE_KEY = 'jsonexport:conversion-events';
 const FEEDBACK_STORAGE_KEY = 'jsonexport:user-feedback';
 const MAX_EVENTS = 200;
@@ -89,10 +88,12 @@ function generateId(): string {
 }
 
 export function getTelemetryEndpoint(subpath: string): string {
-    // Backward-compat shim: callers that still hardcode legacy paths get the
-    // legacy URL back. New code should import from endpoints.ts directly.
-    const baseUrl = process.env.NEXT_PUBLIC_TELEMETRY_URL || DEFAULT_TELEMETRY_URL;
-    return `${baseUrl.replace(/\/$/, '')}${subpath}`;
+    // Backward-compat shim. New code resolves via endpoints.ts directly.
+    // Returns '' when unconfigured — callers must treat empty as disabled.
+    // (The old hardcoded production default was removed Oct 2026: it made
+    // every clone phone production telemetry. See endpoints.ts.)
+    const baseUrl = (process.env.NEXT_PUBLIC_TELEMETRY_URL || '').replace(/\/$/, '');
+    return baseUrl ? `${baseUrl}${subpath}` : '';
 }
 
 /**
@@ -174,6 +175,11 @@ export function trackConversionEvent(
 
     // Transmit via first-party → legacy fallback chain + transport chain.
     // Dispatcher handles its own queueing when every endpoint+transport fails.
+    // Fail-closed: with no endpoint configured (dev/clone without env) we
+    // keep local diagnostics + the DOM event but send nothing anywhere.
+    const endpoints = ingestFallbackChain(resolveEndpoints());
+    if (endpoints.length === 0) return;
+
     const flatEvent = {
         id: event.id,
         event_name: name,
@@ -181,7 +187,6 @@ export function trackConversionEvent(
         ...event.payload,
     };
 
-    const endpoints = ingestFallbackChain(resolveEndpoints());
     const body = encodeJson(flatEvent);
     void dispatch({ endpoints, body, contentType: JSON_CONTENT_TYPE });
 
@@ -227,8 +232,11 @@ export async function sendUserFeedback(feedback: UserFeedbackPayload): Promise<v
     });
 
     // Route feedback through the same first-party → legacy chain so it
-    // benefits from the full blocker-resistance stack.
+    // benefits from the full blocker-resistance stack. Fail-closed like
+    // trackConversionEvent: local record + mirror event are kept, but with
+    // no endpoint configured nothing leaves the machine.
     const endpoints = feedbackFallbackChain(resolveEndpoints());
+    if (endpoints.length === 0) return;
     const body = encodeJson(record);
     await dispatch({ endpoints, body, contentType: JSON_CONTENT_TYPE });
 }

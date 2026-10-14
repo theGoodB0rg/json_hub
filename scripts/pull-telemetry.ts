@@ -9,21 +9,34 @@ interface PullOptions {
     outFile?: string;
 }
 
-function getEndpointFromEnv(): string {
-    if (process.env.TELEMETRY_ENDPOINT) return process.env.TELEMETRY_ENDPOINT;
+function readEnvLocal(key: string): string | null {
     try {
         const envPath = path.resolve(process.cwd(), '.env.local');
         if (fs.existsSync(envPath)) {
             const raw = fs.readFileSync(envPath, 'utf-8');
-            const match = raw.match(/TELEMETRY_ENDPOINT=["']?([^"'\r\n]+)/);
+            const match = raw.match(new RegExp(`^${key}=["']?([^"'\r\n]+)`, 'm'));
             if (match) return match[1].trim();
-            const publicMatch = raw.match(/NEXT_PUBLIC_TELEMETRY_URL=["']?([^"'\r\n]+)/);
-            if (publicMatch) return `${publicMatch[1].trim().replace(/\/$/, '')}/api/telemetry/pull`;
         }
     } catch {
         // ignore error
     }
-    return 'https://jsonexport-telemetry.idowue93.workers.dev/api/telemetry/pull';
+    return null;
+}
+
+function getEndpointFromEnv(): string | null {
+    if (process.env.TELEMETRY_ENDPOINT) return process.env.TELEMETRY_ENDPOINT;
+    const fromFile = readEnvLocal('TELEMETRY_ENDPOINT');
+    if (fromFile) return fromFile;
+    const publicMatch = readEnvLocal('NEXT_PUBLIC_TELEMETRY_URL') || process.env.NEXT_PUBLIC_TELEMETRY_URL;
+    if (publicMatch) return `${publicMatch.trim().replace(/\/$/, '')}/api/telemetry/pull`;
+    // Fail closed (Oct 2026): earlier revisions defaulted to the production
+    // worker URL, so any clone silently read prod telemetry. No default —
+    // set TELEMETRY_ENDPOINT (or NEXT_PUBLIC_TELEMETRY_URL) explicitly.
+    return null;
+}
+
+function getAdminSecretFromEnv(): string | undefined {
+    return process.env.TELEMETRY_ADMIN_SECRET || readEnvLocal('TELEMETRY_ADMIN_SECRET') || undefined;
 }
 
 function fetchHttps(urlStr: string, headers: Record<string, string>): Promise<any> {
@@ -63,7 +76,13 @@ function fetchHttps(urlStr: string, headers: Record<string, string>): Promise<an
 
 export async function pullTelemetryData(options: PullOptions = {}) {
     const endpoint = options.endpoint || getEndpointFromEnv();
-    const adminSecret = options.adminSecret || process.env.TELEMETRY_ADMIN_SECRET;
+    if (!endpoint) {
+        throw new Error(
+            'Telemetry endpoint is not configured. Set TELEMETRY_ENDPOINT (or NEXT_PUBLIC_TELEMETRY_URL) ' +
+            'in .env.local or the environment — there is deliberately no production default.'
+        );
+    }
+    const adminSecret = options.adminSecret || getAdminSecretFromEnv();
     const limit = options.limit || 2000;
     const outDir = path.resolve(process.cwd(), 'performance_data');
     const outFile = options.outFile || path.join(outDir, 'telemetry_latest.json');

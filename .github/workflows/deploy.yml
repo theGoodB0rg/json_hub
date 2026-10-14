@@ -42,12 +42,21 @@ jobs:
       - name: Build with Next.js
         env:
           NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN: ${{ secrets.NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN }}
-          NEXT_PUBLIC_TELEMETRY_URL: https://jsonexport-telemetry.idowue93.workers.dev
-          # First-party telemetry path token. Must match TELEMETRY_TOKEN set
-          # in worker/wrangler-edge.toml. Rotate both on each deploy to break
-          # cached adblock-filter rules targeting a stable path.
-          NEXT_PUBLIC_TELEMETRY_TOKEN: k7m2x9q
-        run: npm run build
+          # Telemetry endpoint + first-party path token come from repo secrets
+          # (never hardcoded — Oct 2026: a hardcoded default made every clone
+          # phone production telemetry). Both must be set or the build fails
+          # fast below instead of shipping a blind client.
+          NEXT_PUBLIC_TELEMETRY_URL: ${{ secrets.NEXT_PUBLIC_TELEMETRY_URL }}
+          # Must match TELEMETRY_TOKEN passed to the edge worker at deploy
+          # (deploy-worker.yml). Rotate by updating the secret + redeploying
+          # both; stale cached clients degrade to the legacy endpoint.
+          NEXT_PUBLIC_TELEMETRY_TOKEN: ${{ secrets.NEXT_PUBLIC_TELEMETRY_TOKEN }}
+        run: |
+          if [ -z "$NEXT_PUBLIC_TELEMETRY_URL" ] || [ -z "$NEXT_PUBLIC_TELEMETRY_TOKEN" ]; then
+            echo "::error::Telemetry secrets NEXT_PUBLIC_TELEMETRY_URL / NEXT_PUBLIC_TELEMETRY_TOKEN are not set (repo Settings → Secrets → Actions)."
+            exit 1
+          fi
+          npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:

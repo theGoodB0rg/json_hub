@@ -21,10 +21,11 @@ dataset = "jsonexport_pageviews"
 # The edge worker proxies /_i/<token>/* requests here so the client sees
 # a same-origin endpoint while the D1 schema stays untouched.
 TELEMETRY_UPSTREAM = "https://jsonexport-telemetry.idowue93.workers.dev"
-# Rotation token in the opaque first-party path. Change on each deploy to
-# invalidate stale adblock rules. The Next.js build must set the matching
-# NEXT_PUBLIC_TELEMETRY_TOKEN secret so client and edge agree.
-TELEMETRY_TOKEN = "k7m2x9q"
+# Rotation token for the opaque first-party path. intentionally NOT stored
+# here: it is passed as --var TELEMETRY_TOKEN at deploy time from the
+# NEXT_PUBLIC_TELEMETRY_TOKEN repo secret (deploy-worker.yml), so rotation
+# never touches code. `wrangler dev` without --var falls back to 'i', which
+# matches the client's BUILD_TOKEN default.
 
 # Zone route binding — matches every URL on jsonexport.com and the www alias.
 # The worker runs *before* the request reaches the GitHub Pages origin.

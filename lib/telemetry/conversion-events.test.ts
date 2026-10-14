@@ -4,12 +4,13 @@ import {
     clearTrackedConversionEvents,
     sendUserFeedback,
     getTelemetryEndpoint,
-    DEFAULT_TELEMETRY_URL,
     flushPendingTelemetry,
 } from './conversion-events';
 
 describe('Telemetry Conversion Events', () => {
     const originalFetch = global.fetch;
+    const originalXHR = (window as any).XMLHttpRequest;
+    const originalImage = (window as any).Image;
 
     beforeEach(() => {
         clearTrackedConversionEvents();
@@ -21,15 +22,34 @@ describe('Telemetry Conversion Events', () => {
                 json: () => Promise.resolve({ success: true }),
             } as any)
         );
+        // HERMETICITY GUARD (Oct 2026 incident — do not remove).
+        //
+        // Only fetch is mocked here, but the dispatcher falls through to the
+        // XHR and image-pixel transports when fetch fails — and jsdom's
+        // XMLHttpRequest/Image perform REAL network requests. The 'network
+        // failures' test below silently POSTed jira feedback to the PRODUCTION
+        // telemetry worker on every `npm test` run (31 phantom "Missing
+        // changelog" rows over 5 days, all bursty around commits because that's
+        // when suites run). With these globals removed the transports report
+        // unavailable and dispatch queues to IndexedDB instead of live-firing.
+        Object.defineProperty(window, 'XMLHttpRequest', { value: undefined, configurable: true });
+        Object.defineProperty(window, 'Image', { value: undefined, configurable: true });
     });
 
     afterEach(() => {
         global.fetch = originalFetch;
+        Object.defineProperty(window, 'XMLHttpRequest', { value: originalXHR, configurable: true });
+        Object.defineProperty(window, 'Image', { value: originalImage, configurable: true });
     });
 
-    it('resolves to DEFAULT_TELEMETRY_URL when environment variable is absent', () => {
-        const endpoint = getTelemetryEndpoint('/api/telemetry');
-        expect(endpoint).toBe(`${DEFAULT_TELEMETRY_URL}/api/telemetry`);
+    it('returns empty string when no telemetry URL is configured (fail-closed, no prod default)', () => {
+        const saved = process.env.NEXT_PUBLIC_TELEMETRY_URL;
+        delete process.env.NEXT_PUBLIC_TELEMETRY_URL;
+        try {
+            expect(getTelemetryEndpoint('/api/telemetry')).toBe('');
+        } finally {
+            if (saved !== undefined) process.env.NEXT_PUBLIC_TELEMETRY_URL = saved;
+        }
     });
 
     it('tracks conversion event in localStorage and dispatches custom DOM event', () => {
