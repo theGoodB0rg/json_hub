@@ -7,14 +7,12 @@ name: Deploy Workers
 # Auth: CLOUDFLARE_API_TOKEN secret (scoped Workers Scripts/Routes Edit
 # on the Theregalstarlite account + jsonexport.com zone + D1 edit).
 # The telemetry job uses CLOUDFLARE_API_TOKEN_TELEMETRY instead: the shared
-# token does NOT cover the Idowue93 account (proven by a 10000 auth error on
-# the first telemetry deploy attempt). Recipe — Cloudflare dashboard →
-# My Profile → API Tokens → Create (template: Edit Cloudflare Workers):
-#   Account: Idowue93 / 18d17abc6c7f3200383d6aba1aad23ac — Workers Scripts:Edit
-#   (Zone resources: not needed; this worker has no zone route.)
+# token does NOT cover the Idowue93 account (10000 auth error). Recipe —
+# dashboard → My Profile → API Tokens → Create (Edit Cloudflare Workers
+# template): Account Idowue93, Workers Scripts:Edit (no zone route needed);
 # then `gh secret set CLOUDFLARE_API_TOKEN_TELEMETRY` (paste, never commit).
-# Alternatively mint one token covering both accounts and reuse
-# CLOUDFLARE_API_TOKEN — either way, no code change needed beyond the secret.
+# Alternatively broaden one token to both accounts and reuse
+# CLOUDFLARE_API_TOKEN.
 #
 # Secrets set directly on a worker (e.g. ADMIN_SECRET on jsonexport-telemetry
 # via `wrangler secret put`) survive `wrangler deploy` — deploys here never
