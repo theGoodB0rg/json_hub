@@ -6,6 +6,13 @@ name: Deploy Workers
 #
 # Auth: CLOUDFLARE_API_TOKEN secret (scoped Workers Scripts/Routes Edit
 # on the Theregalstarlite account + jsonexport.com zone + D1 edit).
+# The telemetry job targets the Idowue93 account explicitly via
+# CLOUDFLARE_ACCOUNT_ID — it needs the token to also cover that account;
+# if its deploy step 401s, mint a token with access to both accounts.
+#
+# Secrets set directly on a worker (e.g. ADMIN_SECRET on jsonexport-telemetry
+# via `wrangler secret put`) survive `wrangler deploy` — deploys here never
+# wipe them.
 
 on:
   push:
@@ -16,6 +23,8 @@ on:
       - "worker/license-worker.ts"
       - "worker/wrangler-license.toml"
       - "worker/license-schema.sql"
+      - "worker/telemetry-worker.ts"
+      - "worker/wrangler.toml"
       - ".github/workflows/deploy-worker.yml"
   workflow_dispatch:
 
@@ -87,3 +96,24 @@ jobs:
           workingDirectory: worker
           wranglerVersion: "4.73.0"
           command: deploy --config wrangler-license.toml
+
+  telemetry-worker:
+    name: Deploy jsonexport-telemetry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Deploy telemetry worker
+        uses: cloudflare/wrangler-action@v3
+        env:
+          # Token must cover the Idowue93 account (see header comment).
+          CLOUDFLARE_ACCOUNT_ID: 18d17abc6c7f3200383d6aba1aad23ac
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: worker
+          wranglerVersion: "4.73.0"
+          command: deploy --config wrangler.toml
