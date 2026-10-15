@@ -14,8 +14,59 @@
 import {
     SCORE_SOURCE,
     HUMAN_BOT_SCORE_THRESHOLD,
+    NON_HUMAN_CLIENT_CLASSES,
+    classifyClient,
     looksHuman,
 } from './edge-worker';
+import { NON_HUMAN_SQL_LIST } from '../scripts/analytics/capture-rate';
+
+const CHROME_UA =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36';
+
+function headers(h: Record<string, string>) {
+    const lower = Object.fromEntries(Object.entries(h).map(([k, v]) => [k.toLowerCase(), v]));
+    return { get: (name: string) => lower[name.toLowerCase()] ?? null };
+}
+
+describe('classifyClient — request-header refinement of the UA class', () => {
+    it('keeps a real browser navigation as desktop', () => {
+        expect(classifyClient(headers({
+            'user-agent': CHROME_UA,
+            'sec-fetch-mode': 'navigate',
+            'accept-language': 'en-US,en;q=0.9',
+        }))).toBe('desktop');
+    });
+
+    it('keeps an older Safari without Sec-Fetch headers when it sends Accept-Language', () => {
+        expect(classifyClient(headers({
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/15.6 Safari/605.1.15',
+            'accept-language': 'en-GB',
+        }))).toBe('desktop');
+    });
+
+    it('REGRESSION: a scraper with a Chrome UA and no browser headers is not human', () => {
+        const cls = classifyClient(headers({ 'user-agent': CHROME_UA }));
+        expect(cls).toBe('nobrowser');
+        expect(looksHuman(0, SCORE_SOURCE.UNSCORED, cls)).toBe(false);
+    });
+
+    it('treats browser prefetch and prerender as non-pageviews', () => {
+        expect(classifyClient(headers({ 'user-agent': CHROME_UA, 'sec-purpose': 'prefetch;prerender', 'sec-fetch-mode': 'navigate' }))).toBe('prefetch');
+        expect(classifyClient(headers({ 'user-agent': CHROME_UA, purpose: 'prefetch' }))).toBe('prefetch');
+    });
+
+    it('treats non-navigation fetches of HTML as subrequests', () => {
+        expect(classifyClient(headers({ 'user-agent': CHROME_UA, 'sec-fetch-mode': 'cors', 'accept-language': 'en' }))).toBe('subrequest');
+    });
+
+    it('lets declared bots keep their UA class', () => {
+        expect(classifyClient(headers({ 'user-agent': 'Googlebot/2.1', 'sec-fetch-mode': 'navigate' }))).toBe('bot');
+    });
+
+    it('capture-rate SQL list contains exactly the non-human classes', () => {
+        expect(NON_HUMAN_SQL_LIST).toBe(NON_HUMAN_CLIENT_CLASSES.map(c => `'${c}'`).join(', '));
+    });
+});
 
 /**
  * Mirrors the score derivation inside the worker's fetch handler. Kept here as
@@ -101,7 +152,7 @@ describe('capture-rate SQL agrees with looksHuman()', () => {
     const sqlPredicate = (row: { double2: number; double3: number; double4: number; blob4: string }) =>
         row.double4 >= 2 &&
         ((row.double3 === 1 && row.double2 >= HUMAN_BOT_SCORE_THRESHOLD) ||
-            (row.double3 === 0 && !['bot', 'automated'].includes(row.blob4)));
+            (row.double3 === 0 && !(NON_HUMAN_CLIENT_CLASSES as readonly string[]).includes(row.blob4)));
 
     const cases: Array<{ double2: number; double3: number; blob4: string }> = [
         { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'desktop' },
@@ -109,6 +160,9 @@ describe('capture-rate SQL agrees with looksHuman()', () => {
         { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'bot' },
         { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'automated' },
         { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'other' },
+        { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'prefetch' },
+        { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'subrequest' },
+        { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'nobrowser' },
         { double2: 1, double3: SCORE_SOURCE.VERIFIED_BOT, blob4: 'desktop' },
         { double2: 1, double3: SCORE_SOURCE.VERIFIED_BOT, blob4: 'bot' },
         { double2: 99, double3: SCORE_SOURCE.CF_SCORED, blob4: 'desktop' },

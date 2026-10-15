@@ -38,6 +38,9 @@ interface TelemetryFeedback {
  *  Ratings older than this cannot be classified as genuine or test. */
 const FEEDBACK_FLAG_EPOCH = Date.parse('2026-10-11T00:00:00Z');
 
+/** Events that mean someone used the converter, not just loaded a page. */
+const ACTIVITY_EVENTS = new Set(['parse_success', 'parse_error', 'export_success', 'export_complete', 'export_error']);
+
 /** Epoch at which every Gumroad link started firing `checkout_clicked`. */
 const CHECKOUT_EVENT_EPOCH = Date.parse('2026-10-15T00:00:00Z');
 
@@ -154,8 +157,11 @@ interface UnifiedReportData {
         unclassifiedFeedback: number;
         platformCounts: Record<string, { parses: number; exports: number }>;
         topCountries: Array<{ country: string; count: number }>;
-        topErrors: Array<{ error: string; count: number; samplePath?: string }>;
-        recentFeedback: TelemetryFeedback[];
+        /** Keyed `event_name:error_type`. */
+        topErrors: Array<{ error: string; count: number; samplePath?: string; example?: string }>;
+        /** parse_error / (parse_success + parse_error), genuine events only. */
+        parseErrorRate: number;
+        recentFeedback: Array<TelemetryFeedback & { unclassified?: boolean }>;
     };
     monetization: MonetizationFunnel;
     recommendations: string[];
@@ -258,8 +264,9 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     const sampleParses = events.filter(e => (e.event_name === 'sample_preview' || e.event_name === 'parse_success') && isSampleEvent(e)).length;
     const userParses = events.filter(e => e.event_name === 'parse_success' && !isSampleEvent(e)).length;
     const parseSuccess = userParses;
-    const parseErrors = events.filter(e => e.event_name === 'parse_error').length;
-    const exportComplete = events.filter(e => e.event_name === 'export_complete' || e.event_name === 'export_success').length;
+    const parseErrors = events.filter(e => e.event_name === 'parse_error' && !isSampleEvent(e)).length;
+    const isExport = (e: TelemetryEvent) => e.event_name === 'export_complete' || e.event_name === 'export_success';
+    const exportComplete = events.filter(e => isExport(e) && !isSampleEvent(e)).length;
     const exportErrors = events.filter(e => e.event_name === 'export_error').length;
 
     const platformCounts: Record<string, { parses: number; exports: number }> = {};
@@ -269,9 +276,12 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
         const p = (e.platform || 'general').toLowerCase();
         if (!platformCounts[p]) platformCounts[p] = { parses: 0, exports: 0 };
         if (e.event_name === 'parse_success' && !isSampleEvent(e)) platformCounts[p].parses++;
-        if (e.event_name === 'export_complete' || e.event_name === 'export_success') platformCounts[p].exports++;
+        if (isExport(e) && !isSampleEvent(e)) platformCounts[p].exports++;
 
-        if (e.country && e.country !== 'Unknown') {
+        // Countries of people who actually used the tool. Page views are left
+        // out: the edge fallback counts data-centre scrapers (PL/NL/SG rows
+        // with no activity), which made bot traffic look like the top markets.
+        if (ACTIVITY_EVENTS.has(e.event_name) && !isSampleEvent(e) && e.country && e.country !== 'Unknown') {
             countryMap[e.country] = (countryMap[e.country] || 0) + 1;
         }
     }
@@ -308,6 +318,12 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     const unclassifiedFeedback = feedback.length - classifiedFeedback.length;
     const genuineFeedback = classifiedFeedback.filter(f => !isSampleFeedback(f));
     const sampleFeedback = classifiedFeedback.length - genuineFeedback.length;
+    const knownTestComments = new Set(
+        classifiedFeedback.filter(isSampleFeedback).map(f => f.comment).filter(Boolean)
+    );
+    const unclassifiedForDisplay = feedback
+        .filter(f => f.timestamp < FEEDBACK_FLAG_EPOCH && !(f.comment && knownTestComments.has(f.comment)))
+        .map(f => ({ ...f, unclassified: true }));
 
     const posFeedback = genuineFeedback.filter(f => f.rating === 'positive').length;
     const negFeedback = genuineFeedback.filter(f => f.rating === 'negative').length;
@@ -315,18 +331,23 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     const satisfactionRate = totalRated > 0 ? Number(((posFeedback / totalRated) * 100).toFixed(1)) : null;
     const conversionRate = userParses > 0 ? Number(((exportComplete / userParses) * 100).toFixed(1)) : 0;
 
-    const errorMap: Record<string, { count: number; samplePath?: string }> = {};
-    for (const e of events) {
-        if (e.error_message || e.error_type) {
-            const key = e.error_message || e.error_type || 'Unknown Error';
-            if (!errorMap[key]) errorMap[key] = { count: 0, samplePath: e.path };
-            errorMap[key].count++;
-        }
+    // Only real error events. page_view_edge rows carry an `edge:bot_score=…`
+    // breadcrumb in error_type and used to dominate this list.
+    const errorEvents = events.filter(e => e.event_name.endsWith('_error') && !isSampleEvent(e));
+    const errorMap: Record<string, { count: number; samplePath?: string; example?: string }> = {};
+    for (const e of errorEvents) {
+        // Rows from before 2026-10-15 reached D1 with no message or type.
+        const key = `${e.event_name}:${e.error_type || 'unrecorded'}`;
+        if (!errorMap[key]) errorMap[key] = { count: 0, samplePath: e.path, example: e.error_message };
+        errorMap[key].count++;
     }
     const topErrors = Object.entries(errorMap)
-        .map(([error, data]) => ({ error, count: data.count, samplePath: data.samplePath }))
+        .map(([error, data]) => ({ error, count: data.count, samplePath: data.samplePath, example: data.example }))
         .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
+        .slice(0, 8);
+    const parseErrorRate = userParses + parseErrors > 0
+        ? Number(((parseErrors / (userParses + parseErrors)) * 100).toFixed(1))
+        : 0;
 
     // 4. Strategic Recommendations Generator
     const recommendations: string[] = [];
@@ -402,9 +423,19 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
             platformCounts,
             topCountries,
             topErrors,
+            parseErrorRate,
             // Surface genuine ratings first so real complaints are never
             // pushed off the list by a burst of test submissions.
-            recentFeedback: [...genuineFeedback, ...classifiedFeedback.filter(isSampleFeedback)].slice(0, 5),
+            //
+            // Unclassified rows (pre-flag) come next, minus any whose comment
+            // matches a known test submission. Without them the only genuine
+            // complaint on record — Trello, 2026-09-22, "rows were duplicated
+            // and plugin data was missing" — never appeared in the report.
+            recentFeedback: [
+                ...genuineFeedback,
+                ...unclassifiedForDisplay,
+                ...classifiedFeedback.filter(isSampleFeedback),
+            ].slice(0, 6),
         },
         monetization: computeMonetization(events),
         recommendations,
@@ -419,6 +450,33 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
     await printTerminalDashboard(reportData);
 
     return reportData;
+}
+
+const UNRECORDED_NOTE = '"unrecorded" rows predate 2026-10-15, when error type and message started reaching D1.';
+
+function formatErrorSection(t: UnifiedReportData['telemetry']): string {
+    if (t.topErrors.length === 0) return '';
+    const rows = t.topErrors.map(e =>
+        `| \`${e.error}\` | ${e.count} | ${e.example ? e.example.replace(/\|/g, '\\|') : '—'} | ${e.samplePath || '—'} |`
+    );
+    return `### Errors (parse failure rate ${t.parseErrorRate}%)
+| Event : type | Count | Example (redacted) | Seen on |
+| :--- | :--- | :--- | :--- |
+${rows.join('\n')}
+
+> ${UNRECORDED_NOTE}
+`;
+}
+
+function printErrorBlock(t: UnifiedReportData['telemetry']): void {
+    if (t.topErrors.length === 0) return;
+    console.log(`\nErrors (parse failure rate ${t.parseErrorRate}%):`);
+    for (const e of t.topErrors) {
+        console.log(`  ⚠ ${e.error.padEnd(34)} ${String(e.count).padStart(4)}  ${e.samplePath || ''}${e.example ? `  — ${e.example}` : ''}`);
+    }
+    if (t.topErrors.some(e => e.error.endsWith(':unrecorded'))) {
+        console.log(`  ↳ ${UNRECORDED_NOTE}`);
+    }
 }
 
 /** Human-readable satisfaction cell that never invents a number. */
@@ -492,9 +550,9 @@ function printTrendBlock(trend?: GscTrend): void {
     }
 }
 
-function formatFeedbackLine(f: { rating: string; platform?: string; comment?: string; timestamp: number }, quarantined: boolean): string {
+function formatFeedbackLine(f: { rating: string; platform?: string; comment?: string; timestamp: number; unclassified?: boolean }, quarantined: boolean): string {
     const icon = f.rating === 'positive' ? '👍' : '👎';
-    const tag = quarantined ? '🧪 test ' : '';
+    const tag = quarantined ? '🧪 test ' : f.unclassified ? '❔ unclassified ' : '';
     return `- **${tag}${icon} [${f.platform || 'general'}]**: "${f.comment || 'No comment'}" _(${new Date(f.timestamp).toLocaleDateString()})_`;
 }
 
@@ -560,7 +618,10 @@ ${gsc.topPages.slice(0, 10).map(p => `| [${p.page}](${p.page.startsWith('http') 
 - **User Conversion Rate**: ${telemetry.conversionRate}%
 - **Output Satisfaction**: ${formatSatisfaction(telemetry)}
 
-${telemetry.topCountries.length > 0 ? `### Geographic Breakdown
+${formatErrorSection(telemetry)}
+${telemetry.topCountries.length > 0 ? `### Countries of Active Users
+_People who loaded data or exported. Page views are excluded because they include data-centre scrapers._
+
 | Country | Events |
 | :--- | :--- |
 ${telemetry.topCountries.map(c => `| ${c.country} | ${c.count} |`).join('\n')}
@@ -636,17 +697,21 @@ async function printTerminalDashboard(data: UnifiedReportData): Promise<void> {
     }
 
     if (telemetry.topCountries.length > 0) {
-        console.log('\nTop Visitor Countries (D1 Edge):');
+        console.log('\nActive-user Countries (loaded data or exported; bots excluded):');
         telemetry.topCountries.forEach(c => {
             console.log(`  🌍 ${c.country.padEnd(6)} | ${c.count} event(s)`);
         });
     }
 
+    printErrorBlock(telemetry);
+
     if (telemetry.recentFeedback.length > 0) {
         console.log('\nRecent User Output Feedback:');
         telemetry.recentFeedback.forEach(f => {
             const quarantined = (f as { is_sample?: number | boolean }).is_sample === 1;
-            console.log(`  ${quarantined ? '🧪test ' : ''}${f.rating === 'positive' ? '👍' : '👎'} [${f.platform || 'general'}] "${f.comment || 'No comment'}"${quarantined ? ' (quarantined — not counted)' : ''}`);
+            const tag = quarantined ? '🧪test ' : f.unclassified ? '❔ ' : '';
+            const note = quarantined ? ' (quarantined — not counted)' : f.unclassified ? ' (unclassified — predates test flag)' : '';
+            console.log(`  ${tag}${f.rating === 'positive' ? '👍' : '👎'} [${f.platform || 'general'}] ${new Date(f.timestamp).toISOString().slice(0, 10)} ${f.path || ''} "${f.comment || 'No comment'}"${note}`);
         });
     }
 

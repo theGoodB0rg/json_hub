@@ -19,11 +19,13 @@
  * reconciliation is a health check, not a critical path.
  */
 
+import { HUMAN_BOT_SCORE_THRESHOLD, NON_HUMAN_CLIENT_CLASSES } from '../../worker/human-classification';
+
 const ACCOUNT_ID = 'ea158eac6035716195ee97831b85562c';
 const AE_DATASET = 'jsonexport_pageviews';
 
-/** Mirrors HUMAN_BOT_SCORE_THRESHOLD in worker/edge-worker.ts. */
-const HUMAN_BOT_SCORE_THRESHOLD = 30;
+/** SQL list literal for the client classes looksHuman() rejects. */
+export const NON_HUMAN_SQL_LIST = NON_HUMAN_CLIENT_CLASSES.map(c => `'${c}'`).join(', ');
 const WEB_ANALYTICS_SITE_TAG = 'cf7c385cfd434867b78284cb63af585a';
 
 export interface CaptureRateReport {
@@ -140,8 +142,8 @@ async function fetchAnalyticsEnginePageviews(
     startIso: string,
     endIso: string
 ): Promise<AePageviewCounts> {
-    // Bot filtering mirrors `looksHuman()` in worker/edge-worker.ts. Keep the
-    // two in sync — worker/edge-worker.test.ts asserts they agree.
+    // Bot filtering mirrors `looksHuman()` in worker/edge-worker.ts, built
+    // from the same exported constants so the two cannot drift.
     //
     // Column meanings (schema v2, double4 = 2):
     //   double2 = bot score: 0 = unscored, 1..99 = score (1 bot, 99 human)
@@ -151,7 +153,7 @@ async function fetchAnalyticsEnginePageviews(
     //
     // A row is human-looking when:
     //   scoreSource = 1 (CF_SCORED)   AND double2 >= 30
-    //   scoreSource = 0 (UNSCORED)    AND blob4 NOT IN ('bot','automated')
+    //   scoreSource = 0 (UNSCORED)    AND blob4 NOT IN NON_HUMAN_CLIENT_CLASSES
     //   scoreSource = 2 (VERIFIED_BOT) -> never human
     //
     // Rows written before 2026-10-10 carry no double3/double4 (both read back
@@ -171,7 +173,7 @@ async function fetchAnalyticsEnginePageviews(
           double4 >= 2
           AND (
             (double3 = 1 AND double2 >= ${HUMAN_BOT_SCORE_THRESHOLD})
-            OR (double3 = 0 AND blob4 NOT IN ('bot', 'automated'))
+            OR (double3 = 0 AND blob4 NOT IN (${NON_HUMAN_SQL_LIST}))
           )
         ) AS human_like
       FROM ${AE_DATASET}

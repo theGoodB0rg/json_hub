@@ -11,6 +11,10 @@
  * report. This is Pillar 1 of the blocker-resistant telemetry stack.
  */
 
+import { HUMAN_BOT_SCORE_THRESHOLD, NON_HUMAN_CLIENT_CLASSES } from './human-classification';
+
+export { HUMAN_BOT_SCORE_THRESHOLD, NON_HUMAN_CLIENT_CLASSES };
+
 export interface AnalyticsEngineDataPoint {
     blobs?: (string | null)[];
     doubles?: number[];
@@ -92,6 +96,30 @@ function classifyUserAgent(ua: string | null): string {
 }
 
 /**
+ * Refines the UA class with request headers. On the free plan Cloudflare
+ * gives no bot score, so the UA string was the only signal — and data-centre
+ * scrapers send a Chrome UA. That let edge page views run at ~4x Cloudflare's
+ * own RUM count (Oct 2026). Real browsers send Sec-Fetch-Mode: navigate and
+ * Accept-Language on every navigation; most scrapers send neither.
+ */
+export function classifyClient(headers: Pick<Headers, 'get'>): string {
+    const uaClass = classifyUserAgent(headers.get('user-agent'));
+    if (uaClass === 'bot' || uaClass === 'automated') return uaClass;
+
+    const purpose = `${headers.get('sec-purpose') || ''} ${headers.get('purpose') || ''}`;
+    if (/prefetch|prerender/i.test(purpose)) return 'prefetch';
+
+    const fetchMode = headers.get('sec-fetch-mode');
+    if (fetchMode && fetchMode !== 'navigate') return 'subrequest';
+
+    // Browsers without Sec-Fetch support (Safari < 16.4) still send
+    // Accept-Language, so only the absence of both marks a non-browser.
+    if (!fetchMode && !headers.get('accept-language')) return 'nobrowser';
+
+    return uaClass;
+}
+
+/**
  * How we came by the bot score in double2. Stored in double3 so every row
  * says what its own score means — the 2026-10-10 incident happened because
  * "1" silently meant two different things (verified bot / unscored human).
@@ -109,8 +137,6 @@ export const SCORE_SOURCE = {
  */
 export const ROW_SCHEMA_VERSION = 2;
 
-/** CF's recommended "likely human" threshold for a real bot score. */
-export const HUMAN_BOT_SCORE_THRESHOLD = 30;
 
 /**
  * The single definition of "this request looks like a real person".
@@ -123,8 +149,8 @@ export function looksHuman(botScore: number, scoreSource: number, uaClass: strin
     if (scoreSource === SCORE_SOURCE.VERIFIED_BOT) return false;
     // A real CF score is the most trustworthy signal we have.
     if (scoreSource === SCORE_SOURCE.CF_SCORED) return botScore >= HUMAN_BOT_SCORE_THRESHOLD;
-    // Unscored: fall back to the UA class heuristic.
-    return uaClass !== 'bot' && uaClass !== 'automated';
+    // Unscored: fall back to the client class heuristic.
+    return !(NON_HUMAN_CLIENT_CLASSES as readonly string[]).includes(uaClass);
 }
 
 // First-party telemetry ingest paths. The build-time token in the middle
@@ -269,7 +295,7 @@ export default {
                 const path = normalizePath(url);
                 const country = (cf.country as string) || request.headers.get('cf-ipcountry') || 'XX';
                 const referrer = normalizeReferrer(request.headers.get('referer'));
-                const uaClass = classifyUserAgent(request.headers.get('user-agent'));
+                const uaClass = classifyClient(request.headers);
 
                 // Cloudflare bot score: 1 = definitely bot, 99 = definitely human.
                 // Available on Enterprise and (as of 2024) a sampled version on Free.
