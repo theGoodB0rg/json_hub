@@ -23,6 +23,7 @@ on:
     branches: ["main"]
     paths:
       - "worker/edge-worker.ts"
+      - "worker/human-classification.ts"
       - "worker/wrangler-edge.toml"
       - "worker/license-worker.ts"
       - "worker/wrangler-license.toml"
