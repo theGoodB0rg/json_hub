@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES } from '@/lib/routes';
 import { ActivateForm } from './ActivateForm';
+import { BuyProLink } from '@/components/BuyProLink';
 
 /**
  * /activate — license activation entry point.
@@ -64,14 +65,12 @@ export default function ActivatePage() {
                 <div className="mt-6 border-t border-border pt-4 text-xs text-muted-foreground">
                     <p>
                         Haven&apos;t bought yet?{' '}
-                        <a
-                            href="https://pro.jsonexport.com/l/json_hub?src=activate_page"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <BuyProLink
+                            source="activate_page"
                             className="font-medium text-primary hover:underline"
                         >
                             Get a license — $9 lifetime →
-                        </a>
+                        </BuyProLink>
                     </p>
                     <p className="mt-2">
                         Lost your key?{' '}

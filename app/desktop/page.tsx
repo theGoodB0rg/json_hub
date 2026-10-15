@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES } from '@/lib/routes';
 import { DesktopDownloads } from '@/components/DesktopDownloads';
+import { BuyProLink } from '@/components/BuyProLink';
 
 /**
  * /desktop — Pro landing page.
@@ -29,8 +30,6 @@ export const metadata: Metadata = {
     ],
 };
 
-const GUMROAD_URL = 'https://pro.jsonexport.com/l/json_hub?src=desktop_landing';
-
 export default function DesktopPage() {
     return (
         <main className="mx-auto max-w-5xl px-4 py-12 sm:py-16">
@@ -47,14 +46,12 @@ export default function DesktopPage() {
                     for new files you drop in. <strong>$9 one-time. Lifetime license.</strong>
                 </p>
                 <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-                    <a
-                        href={GUMROAD_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <BuyProLink
+                        source="desktop_hero"
                         className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-md transition hover:opacity-90"
                     >
                         Buy Pro — $9 lifetime
-                    </a>
+                    </BuyProLink>
                     <a
                         href="#downloads"
                         className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium transition hover:bg-accent"
@@ -155,14 +152,12 @@ export default function DesktopPage() {
                 <p className="mt-2 text-sm text-muted-foreground">
                     One-time payment, lifetime access, all future updates included.
                 </p>
-                <a
-                    href={GUMROAD_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <BuyProLink
+                    source="desktop_footer"
                     className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-md transition hover:opacity-90"
                 >
                     Buy JsonExport Pro — $9
-                </a>
+                </BuyProLink>
                 <p className="mt-3 text-xs text-muted-foreground">
                     30-day refund if it doesn&apos;t work for you.
                 </p>

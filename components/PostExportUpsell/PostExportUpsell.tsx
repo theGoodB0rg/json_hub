@@ -25,10 +25,11 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { useProStore } from '@/lib/store/proStore';
+import { checkoutUrl, trackCheckoutClick } from '@/components/BuyProLink';
 
 const COOLDOWN_KEY = 'jsonexport:post-export-upsell-last';
 const COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24h — one impression per day max
-const GUMROAD_URL = 'https://pro.jsonexport.com/l/json_hub?src=post_export_upsell';
+const CHECKOUT_SOURCE = 'post_export_upsell';
 
 interface ExportDetails {
     platform?: string;
@@ -114,10 +115,11 @@ export function PostExportUpsell() {
             platform: details.platform,
             format: details.format,
         });
+        trackCheckoutClick(CHECKOUT_SOURCE);
         // Open outside the current tab so we don't interrupt the user who
         // might be about to open their fresh download.
         if (typeof window !== 'undefined') {
-            window.open(GUMROAD_URL, '_blank', 'noopener,noreferrer');
+            window.open(checkoutUrl(CHECKOUT_SOURCE), '_blank', 'noopener,noreferrer');
         }
         setVisible(false);
     };

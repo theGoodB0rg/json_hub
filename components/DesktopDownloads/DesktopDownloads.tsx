@@ -15,6 +15,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2, Download, Monitor, Apple, Terminal, AlertCircle } from 'lucide-react';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
+import { BuyProLink } from '@/components/BuyProLink';
 
 const GH_RELEASES_API = 'https://api.github.com/repos/theGoodB0rg/json_hub/releases/latest';
 const GH_RELEASES_PAGE = 'https://github.com/theGoodB0rg/json_hub/releases/latest';
@@ -175,14 +176,12 @@ export function DesktopDownloads() {
                     now to lock in $9 — we&apos;ll email you the download links the moment
                     the release ships.
                 </p>
-                <a
-                    href="https://pro.jsonexport.com/l/json_hub?src=desktop_landing_waitlist"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <BuyProLink
+                    source="desktop_landing_waitlist"
                     className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
                 >
                     Pre-order $9
-                </a>
+                </BuyProLink>
             </div>
         );
     }

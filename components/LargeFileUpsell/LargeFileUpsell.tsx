@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Zap, Download, ShieldCheck, Layers, Cpu, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { LicenseModal } from '../LicenseModal';
+import { BuyProLink } from '../BuyProLink';
 import { useProStore } from '@/lib/store/proStore';
 
 interface LargeFileUpsellProps {
@@ -73,13 +74,9 @@ export function LargeFileUpsell({ isOpen, onClose, onProceedAnyway, fileSize }: 
                                     asChild
                                     className="flex-1 font-bold shadow-md shadow-primary/20"
                                 >
-                                    <a
-                                        href="https://pro.jsonexport.com/l/json_hub?src=large_file_upsell"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
+                                    <BuyProLink source="large_file_upsell">
                                         Get Desktop Pro — $29 Lifetime
-                                    </a>
+                                    </BuyProLink>
                                 </Button>
                                 <Button
                                     variant="outline"

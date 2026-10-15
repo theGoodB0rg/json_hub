@@ -38,6 +38,92 @@ interface TelemetryFeedback {
  *  Ratings older than this cannot be classified as genuine or test. */
 const FEEDBACK_FLAG_EPOCH = Date.parse('2026-10-11T00:00:00Z');
 
+/** Epoch at which every Gumroad link started firing `checkout_clicked`. */
+const CHECKOUT_EVENT_EPOCH = Date.parse('2026-10-15T00:00:00Z');
+
+/** Purchase intent, from first sight of Pro to a click on a Gumroad link.
+ *  Sales themselves live in Gumroad — telemetry only sees the click. */
+interface MonetizationFunnel {
+    /** Client page_view beacons on /desktop (the Pro landing page). */
+    desktopPageViews: number;
+    upsellShown: number;
+    upsellDismissed: number;
+    /** `checkout_clicked` events, keyed by the link's source (sent as `format`). */
+    checkoutClicks: Record<string, number>;
+    totalCheckoutClicks: number;
+    /** Post-export upsell clicks logged before `checkout_clicked` existed. */
+    legacyUpsellClicks: number;
+    desktopDownloads: number;
+    activationAttempts: number;
+}
+
+/** `upsell_clicked` has carried three meanings, distinguishable only by path
+ *  because D1 drops the `upsell_type` payload field. */
+function computeMonetization(events: Array<TelemetryEvent & { is_sample?: unknown }>): MonetizationFunnel {
+    const real = events.filter(e => !(e.is_sample === 1 || e.is_sample === true || e.is_sample === 'true'));
+    const upsellClicks = real.filter(e => e.event_name === 'upsell_clicked');
+    const checkoutClicks: Record<string, number> = {};
+    for (const e of real) {
+        if (e.event_name !== 'checkout_clicked') continue;
+        const source = e.format || 'unknown';
+        checkoutClicks[source] = (checkoutClicks[source] || 0) + 1;
+    }
+    return {
+        desktopPageViews: real.filter(e => e.event_name === 'page_view' && e.path === '/desktop').length,
+        upsellShown: real.filter(e => e.event_name === 'upsell_shown').length,
+        upsellDismissed: real.filter(e => e.event_name === 'upsell_dismissed').length,
+        checkoutClicks,
+        totalCheckoutClicks: Object.values(checkoutClicks).reduce((a, b) => a + b, 0),
+        // Post-export upsell now also fires checkout_clicked, so only rows from
+        // before that change count here.
+        legacyUpsellClicks: upsellClicks.filter(e => e.path !== '/desktop' && e.path !== '/activate' && e.timestamp < CHECKOUT_EVENT_EPOCH).length,
+        desktopDownloads: upsellClicks.filter(e => e.path === '/desktop').length,
+        activationAttempts: upsellClicks.filter(e => e.path === '/activate').length,
+    };
+}
+
+function formatMonetizationSection(m: MonetizationFunnel): string {
+    const sources = Object.entries(m.checkoutClicks).sort((a, b) => b[1] - a[1]);
+    return `
+---
+
+## 5. Monetization Funnel — Purchase Intent
+
+| Step | Count |
+| :--- | :--- |
+| Pro landing page views (/desktop) | ${m.desktopPageViews} |
+| Post-export upsell shown | ${m.upsellShown} |
+| Post-export upsell dismissed | ${m.upsellDismissed} |
+| **Buy-button clicks (all sources)** | **${m.totalCheckoutClicks}** |
+| Post-export upsell clicks (before buy tracking) | ${m.legacyUpsellClicks} |
+| Desktop app downloads | ${m.desktopDownloads} |
+| License activation attempts | ${m.activationAttempts} |
+
+${sources.length > 0 ? `### Buy-button clicks by source
+| Source | Clicks |
+| :--- | :--- |
+${sources.map(([s, n]) => `| \`${s}\` | ${n} |`).join('\n')}
+` : '_No buy-button clicks recorded yet._'}
+> Sales are recorded in Gumroad, not here. Clicks with no sales point at the offer or price; no clicks point at traffic.
+`;
+}
+
+function printMonetizationBlock(m: MonetizationFunnel): void {
+    console.log('\n┌───────────────────────────────────────────────────────────────────┐');
+    console.log('│ 4. MONETIZATION FUNNEL — PURCHASE INTENT                           │');
+    console.log('└───────────────────────────────────────────────────────────────────┘');
+    console.log(`• Pro Landing Views (/desktop): ${m.desktopPageViews}`);
+    console.log(`• Post-export Upsell Shown:     ${m.upsellShown} (dismissed ${m.upsellDismissed})`);
+    console.log(`• Buy-button Clicks:            ${m.totalCheckoutClicks}`);
+    for (const [source, n] of Object.entries(m.checkoutClicks).sort((a, b) => b[1] - a[1])) {
+        console.log(`    ↳ ${source.padEnd(26)} ${n}`);
+    }
+    console.log(`• Upsell Clicks (pre-tracking): ${m.legacyUpsellClicks}`);
+    console.log(`• Desktop Downloads:            ${m.desktopDownloads}`);
+    console.log(`• License Activation Attempts:  ${m.activationAttempts}`);
+    console.log('  ↳ Sales live in Gumroad. Clicks without sales = offer/price problem; no clicks = traffic problem.');
+}
+
 interface UnifiedReportData {
     generatedAt: string;
     gsc: GscSummary;
@@ -71,6 +157,7 @@ interface UnifiedReportData {
         topErrors: Array<{ error: string; count: number; samplePath?: string }>;
         recentFeedback: TelemetryFeedback[];
     };
+    monetization: MonetizationFunnel;
     recommendations: string[];
 }
 
@@ -319,6 +406,7 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
             // pushed off the list by a burst of test submissions.
             recentFeedback: [...genuineFeedback, ...classifiedFeedback.filter(isSampleFeedback)].slice(0, 5),
         },
+        monetization: computeMonetization(events),
         recommendations,
     };
 
@@ -480,10 +568,10 @@ ${telemetry.topCountries.map(c => `| ${c.country} | ${c.count} |`).join('\n')}
 
 ${genuineLines.length > 0 || quarantinedLines.length > 0 || telemetry.sampleFeedback > 0 ? `### User Output Feedback
 ${genuineLines.length > 0 ? genuineLines.join('\n') : '_No genuine user ratings in the recent window._'}${quarantineNote}` : ''}
-
+${formatMonetizationSection(data.monetization)}
 ---
 
-## 5. Key Recommendations & Action Items
+## 6. Key Recommendations & Action Items
 
 ${recommendations.map((r, i) => `${i + 1}. ${r}`).join('\n\n')}
 `;
@@ -562,9 +650,11 @@ async function printTerminalDashboard(data: UnifiedReportData): Promise<void> {
         });
     }
 
+    printMonetizationBlock(data.monetization);
+
     if (recommendations.length > 0) {
         console.log('\n┌───────────────────────────────────────────────────────────────────┐');
-        console.log('│ 4. STRATEGIC ACTION ITEMS FOR REPO & PROGRAMMATIC SEO             │');
+        console.log('│ 5. STRATEGIC ACTION ITEMS FOR REPO & PROGRAMMATIC SEO             │');
         console.log('└───────────────────────────────────────────────────────────────────┘');
         recommendations.forEach((r, i) => console.log(`  ${i + 1}. ${r}`));
     }

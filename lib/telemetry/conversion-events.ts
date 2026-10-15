@@ -26,7 +26,9 @@ export type ConversionEventName =
     // Post-export Pro upsell (M1 in MONETIZATION_ROADMAP_2026-10-10.md)
     | 'upsell_shown'
     | 'upsell_dismissed'
-    | 'upsell_clicked';
+    | 'upsell_clicked'
+    // Any click on a Gumroad "buy Pro" link. Source rides in `format`.
+    | 'checkout_clicked';
 
 export interface ConversionEventPayload {
     [key: string]: string | number | boolean | null | undefined;

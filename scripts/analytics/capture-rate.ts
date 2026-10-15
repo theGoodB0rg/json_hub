@@ -411,7 +411,7 @@ export function formatCaptureRateSection(report: CaptureRateReport): string {
     const lines: string[] = [];
     lines.push('');
     lines.push('┌───────────────────────────────────────────────────────────────────┐');
-    lines.push('│ 5. CAPTURE-RATE RECONCILIATION — telemetry health check            │');
+    lines.push('│ 6. CAPTURE-RATE RECONCILIATION — telemetry health check            │');
     lines.push('└───────────────────────────────────────────────────────────────────┘');
     lines.push(`• Window:  ${report.window.hours}h  (${report.window.startIso} → ${report.window.endIso})`);
     lines.push(`• CF Web Analytics (RUM):      ${fmtNum(report.sources.cfWebAnalytics.pageviews)} pageviews (JS-only, real users)`);
