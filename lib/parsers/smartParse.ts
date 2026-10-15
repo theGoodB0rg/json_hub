@@ -32,6 +32,12 @@ export function validateAndParse(
         };
     }
 
+    // Files saved by Excel, Notepad and PowerShell on Windows often start
+    // with a UTF-8 byte-order mark, which JSON.parse rejects outright.
+    if (input.charCodeAt(0) === 0xfeff) {
+        input = input.slice(1);
+    }
+
     try {
         // Attempt to parse JSON
         const parsed = JSON.parse(input);
@@ -50,19 +56,8 @@ export function validateAndParse(
             }
         }
 
-        // Check for circular references by attempting to stringify
-        try {
-            JSON.stringify(parsed);
-        } catch (stringifyError) {
-            return {
-                success: false,
-                errors: [
-                    {
-                        message: 'Circular reference detected in JSON structure',
-                    },
-                ],
-            };
-        }
+        // No circular-reference check: JSON.parse cannot produce cycles, and
+        // re-stringifying the whole document doubled peak memory on large files.
 
         // Success - return parsed data as-is
         // Note: Previously we wrapped single objects in arrays here, but this caused issues
@@ -72,6 +67,13 @@ export function validateAndParse(
             data: parsed,
         };
     } catch (error) {
+        // JSON Lines (one object per line), common in log and database
+        // exports, is not a single JSON document but is unambiguous to read.
+        const jsonLines = parseJsonLines(input);
+        if (jsonLines) {
+            return { success: true, data: jsonLines };
+        }
+
         const errors: ParseError[] = [];
 
         // Get error message
@@ -80,6 +82,11 @@ export function validateAndParse(
             errorMessage = error.message;
         } else if (typeof error === 'string') {
             errorMessage = error;
+        }
+
+        const hint = describeNonJsonInput(input);
+        if (hint) {
+            errorMessage = `${hint} (${errorMessage})`;
         }
 
         // Extract line and column information if available
@@ -97,6 +104,46 @@ export function validateAndParse(
             errors,
         };
     }
+}
+
+/**
+ * Parses newline-delimited JSON. Returns null unless there are at least two
+ * non-empty lines and every one of them is a JSON object or array, so plain
+ * invalid JSON is never misread as JSON Lines.
+ */
+export function parseJsonLines(input: string): unknown[] | null {
+    const lines = input.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) return null;
+
+    const rows: unknown[] = [];
+    for (const line of lines) {
+        if (line[0] !== '{' && line[0] !== '[') return null;
+        try {
+            rows.push(JSON.parse(line));
+        } catch {
+            return null;
+        }
+    }
+    return rows;
+}
+
+/**
+ * Names the format when the input is recognisably something other than JSON,
+ * so the user is told what to do instead of seeing a bare syntax error.
+ */
+export function describeNonJsonInput(input: string): string | null {
+    const head = input.trimStart().slice(0, 200);
+    if (/^<!doctype html|^<html[\s>]/i.test(head)) {
+        return 'This looks like an HTML page, not JSON. Save the JSON response itself, not the web page.';
+    }
+    if (/^<\?xml|^<[a-zA-Z][\w:-]*[\s>]/.test(head)) {
+        return 'This looks like XML, not JSON. Use the XML to Excel converter instead.';
+    }
+    const firstLine = head.split(/\r?\n/)[0];
+    if (!/^[[{"]/.test(firstLine) && /[,;\t]/.test(firstLine) && /\r?\n/.test(input.trim())) {
+        return 'This looks like CSV or a spreadsheet export, not JSON. Use the CSV converter instead.';
+    }
+    return null;
 }
 
 /**

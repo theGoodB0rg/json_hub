@@ -47,6 +47,9 @@ ctx.addEventListener('message', (event) => {
     } catch (error) {
         ctx.postMessage({
             type: 'ERROR',
+            // Which step threw: a FLATTEN failure is a converter bug, a PARSE
+            // failure here is unexpected input. Telemetry splits on it.
+            stage: type,
             payload: [{ message: error instanceof Error ? error.message : 'Unknown worker error' }]
         });
     }

@@ -64,15 +64,46 @@ describe('smartParse', () => {
             expect(result.errors?.[0].message).toContain('JSON');
         });
 
-        it('should detect circular references', () => {
-            // Create circular reference
-            const obj: any = { name: 'Test' };
-            obj.self = obj;
+        it('strips a UTF-8 byte-order mark (Windows-saved files)', () => {
+            const result = validateAndParse('﻿[{"id": 1}]');
+            expect(result.success).toBe(true);
+            expect(result.data).toEqual([{ id: 1 }]);
+        });
 
-            // Manually create a JSON string that would parse to circular ref
-            // (This is a theoretical test - in practice, JSON.stringify would fail first)
-            const result = validateAndParse('{"a": 1}');
-            expect(result.success).toBe(true); // Valid JSON without circular ref
+        it('reads JSON Lines as an array of rows', () => {
+            const result = validateAndParse('{"id": 1}\n{"id": 2}\r\n\n{"id": 3}\n');
+            expect(result.success).toBe(true);
+            expect(result.data).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]);
+        });
+
+        it('does not misread broken JSON as JSON Lines', () => {
+            const result = validateAndParse('{"id": 1}\n{"id": 2');
+            expect(result.success).toBe(false);
+        });
+
+        it('does not treat a single broken line as JSON Lines', () => {
+            expect(validateAndParse('{"id": 1').success).toBe(false);
+        });
+
+        it('tells the user when the input is XML', () => {
+            const result = validateAndParse('<?xml version="1.0"?><root><a>1</a></root>');
+            expect(result.success).toBe(false);
+            expect(result.errors?.[0].message).toMatch(/looks like XML/);
+        });
+
+        it('tells the user when the input is an HTML page', () => {
+            const result = validateAndParse('<!DOCTYPE html><html><body>Login</body></html>');
+            expect(result.errors?.[0].message).toMatch(/HTML page/);
+        });
+
+        it('tells the user when the input is CSV', () => {
+            const result = validateAndParse('id,name\n1,Alice\n2,Bob');
+            expect(result.errors?.[0].message).toMatch(/CSV/);
+        });
+
+        it('gives no format hint for ordinary malformed JSON', () => {
+            const result = validateAndParse('{"a": 1,}');
+            expect(result.errors?.[0].message).not.toMatch(/looks like/);
         });
 
         it('should handle deeply nested objects', () => {

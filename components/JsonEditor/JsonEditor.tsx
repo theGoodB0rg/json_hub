@@ -21,6 +21,23 @@ const WARNING_SIZE = 50 * 1024 * 1024; // 50MB - tested, works smoothly
 const HARD_MAX_SIZE = 100 * 1024 * 1024; // 100MB - show upsell (device-dependent above this)
 
 import { FormatSwitcher } from '@/components/FormatSwitcher/FormatSwitcher';
+import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
+
+/** A file the browser could not read (moved, locked, permission denied) used
+ *  to fail silently: no message to the user, nothing in telemetry. */
+function reportFileReadError(file: File, error: DOMException | null) {
+    const reason = error?.name || 'unknown error';
+    useAppStore.setState({
+        isLoading: false,
+        parseErrors: [{ message: `Could not read "${file.name}" (${reason}). Check the file still exists and is not open in another program, then try again.` }],
+    });
+    trackConversionEvent('parse_error', {
+        source: 'file-reader',
+        file_size_bytes: file.size,
+        error_type: 'file_read',
+        error_message: `File read error: ${reason}`,
+    });
+}
 
 export function JsonEditor({ platform }: { platform?: string }) {
     const {
@@ -108,6 +125,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                 setSourceFilename(file.name);
                 setFileSize(file.size);
             };
+            reader.onerror = () => reportFileReadError(file, reader.error);
             reader.readAsText(file);
             return;
         }
@@ -125,6 +143,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                 parseInput();
             }
         };
+        reader.onerror = () => reportFileReadError(file, reader.error);
         reader.readAsText(file);
     }, [setRawInput, setSourceFilename, parseInput, parseInputStreaming]);
 
