@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     alternates: {
         canonical: ROUTES.home,
     },
-    title: 'JSON to Excel (XLSX) Converter — Free & Instant Tool',
+    title: 'JsonExport — Free JSON Exporter for Excel & CSV',
     description: 'Convert JSON to Excel, CSV, or XLSX instantly. 100% free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
     applicationName: 'JsonExport',
     authors: [{ name: 'JsonExport Team' }],
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
         apple: '/logo-512.png',
     },
     openGraph: {
-        title: 'JSON to Excel (XLSX) Converter — Free & Instant Tool',
+        title: 'JsonExport — Free JSON Exporter for Excel & CSV',
         description: 'Convert JSON to Excel, CSV, or XLSX instantly. 100% free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
         url: SITE_ORIGIN,
         siteName: 'JsonExport',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'JSON to Excel (XLSX) Converter — Free & Instant Tool',
+        title: 'JsonExport — Free JSON Exporter for Excel & CSV',
         description: 'Convert JSON to Excel, CSV, or XLSX instantly. 100% free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
         creator: '@jsonexport',
     },

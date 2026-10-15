@@ -7,9 +7,12 @@ import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES, converterPath } from '@/lib/routes';
 import { BrandIcon } from '@/components/ui/BrandIcon';
 
+// The homepage owns "json export" / "json exporter" (pos ~4.6). "JSON to
+// Excel" belongs to /json-to-excel alone — when both pages carried it as
+// their title, Google split the ranking and /json-to-excel sank to pos 64.
 export const metadata: Metadata = buildPageMetadata({
-    title: 'JSON to Excel (XLSX) Converter — Free, Instant & No Sign-up',
-    description: 'Convert JSON to Excel (.xlsx) or CSV in 1 click. Auto-flattens nested arrays, fixes [object Object] errors, and processes 100MB+ files with zero sign-up.',
+    title: 'JSON Exporter — Export JSON to Excel, CSV & More | JsonExport',
+    description: 'Free online JSON exporter. Export any JSON file or API dump from Stripe, Trello, HubSpot and more to a clean spreadsheet. Runs in your browser, no upload, no sign-up.',
     canonicalPath: ROUTES.home,
 });
 
@@ -19,7 +22,7 @@ export default function Home() {
             <ConverterApp
                 heading={
                     <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-5 duration-700">
-                        Convert <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">JSON to Excel</span> Instantly.
+                        Export <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">JSON</span> to Any Spreadsheet.
                     </h1>
                 }
                 subheading="The fast online JSON exporter — auto-flattens nested arrays, fixes [object Object] errors, and unwinds API dumps from Stripe, Salesforce, HubSpot into clean spreadsheets."
@@ -39,7 +42,10 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
                         <h2 className="text-2xl font-bold">Popular Converters &amp; Presets</h2>
-                        <p className="text-muted-foreground text-sm">Instant, zero-upload data converters for top SaaS tools and file formats</p>
+                        <p className="text-muted-foreground text-sm">
+                            Instant, zero-upload data converters for top SaaS tools and file formats. Just need a spreadsheet? Use the{' '}
+                            <Link href={ROUTES.jsonToExcel} className="font-medium text-primary hover:underline">JSON to Excel converter</Link>.
+                        </p>
                     </div>
                     <Link
                         href={ROUTES.converters}
