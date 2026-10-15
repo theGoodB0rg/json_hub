@@ -15,9 +15,9 @@ import { BuyProLink } from '@/components/BuyProLink';
 
 export const metadata: Metadata = {
     ...buildPageMetadata({
-        title: 'JsonExport Desktop Pro — $9 lifetime, no subscription',
+        title: 'JsonExport Desktop Pro — $29 lifetime, no subscription',
         description:
-            'Native desktop JSON → Excel/CSV converter. Handle 1 GB+ files, batch convert folders, and watch directories for new files. $9 one-time, lifetime license.',
+            'Native desktop JSON → Excel/CSV converter. Handle 1 GB+ files, batch convert folders, and watch directories for new files. $29 one-time, lifetime license.',
         canonicalPath: ROUTES.desktop,
     }),
     keywords: [
@@ -43,14 +43,14 @@ export default function DesktopPage() {
                 <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg text-muted-foreground">
                     The free web app handles files up to 10 MB. The desktop app handles
                     gigabytes, converts entire folders at once, and watches directories
-                    for new files you drop in. <strong>$9 one-time. Lifetime license.</strong>
+                    for new files you drop in. <strong>$29 one-time. Lifetime license.</strong>
                 </p>
                 <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                     <BuyProLink
                         source="desktop_hero"
                         className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-md transition hover:opacity-90"
                     >
-                        Buy Pro — $9 lifetime
+                        Buy Pro — $29 lifetime
                     </BuyProLink>
                     <a
                         href="#downloads"
@@ -88,7 +88,7 @@ export default function DesktopPage() {
                                 ['Streaming parser for huge files', '—', '—', 'Yes (Rust engine)'],
                                 ['Works offline', '—', '—', 'Yes'],
                                 ['Auto-updates', 'N/A', 'N/A', 'Yes'],
-                                ['Price', 'Free', '$9 lifetime', '$9 lifetime (same license)'],
+                                ['Price', 'Free', '$29 lifetime', '$29 lifetime (same license)'],
                             ].map(([feature, free, webPro, desktopPro]) => (
                                 <tr key={feature as string}>
                                     <td className="px-4 py-3 font-medium">{feature}</td>
@@ -156,7 +156,7 @@ export default function DesktopPage() {
                     source="desktop_footer"
                     className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-md transition hover:opacity-90"
                 >
-                    Buy JsonExport Pro — $9
+                    Buy JsonExport Pro — $29
                 </BuyProLink>
                 <p className="mt-3 text-xs text-muted-foreground">
                     30-day refund if it doesn&apos;t work for you.

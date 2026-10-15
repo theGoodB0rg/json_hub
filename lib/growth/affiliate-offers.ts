@@ -5,7 +5,7 @@
  * actually pays us. A plain URL with UTM params is not an affiliate link — it
  * is a free outbound referral that costs us the highest-intent moment on the
  * site and, because the toast viewport sits at z-[100] over PostExportUpsell's
- * z-50, can render on top of the $9 Pro CTA that does pay.
+ * z-50, can render on top of the $29 Pro CTA that does pay.
  *
  * Audited 2026-10-10: six of seven offers (Baremetrics, Coefficient,
  * Supermetrics, MongoDB BI, EasyBI, and the sidebar's Zapier/Notion) carried

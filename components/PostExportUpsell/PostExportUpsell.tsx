@@ -152,7 +152,7 @@ export function PostExportUpsell() {
             </h3>
             <p className="mt-1.5 text-xs leading-relaxed text-neutral-600 dark:text-neutral-300">
                 Converting a lot more? The <strong>desktop app</strong> handles 1 GB+ files, batch
-                mode, and folder-watch. One-time $9, lifetime license.
+                mode, and folder-watch. One-time $29, lifetime license.
             </p>
             <div className="mt-3 flex items-center gap-2">
                 <button
@@ -160,7 +160,7 @@ export function PostExportUpsell() {
                     onClick={click}
                     className="flex-1 rounded bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition hover:opacity-90"
                 >
-                    Get Desktop Pro — $9
+                    Get Desktop Pro — $29
                 </button>
                 <button
                     type="button"

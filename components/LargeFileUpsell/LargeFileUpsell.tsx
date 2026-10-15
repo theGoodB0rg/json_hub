@@ -75,7 +75,7 @@ export function LargeFileUpsell({ isOpen, onClose, onProceedAnyway, fileSize }: 
                                     className="flex-1 font-bold shadow-md shadow-primary/20"
                                 >
                                     <BuyProLink source="large_file_upsell">
-                                        Get Desktop Pro — $29 Lifetime
+                                        Get Desktop Pro — $29 lifetime
                                     </BuyProLink>
                                 </Button>
                                 <Button
