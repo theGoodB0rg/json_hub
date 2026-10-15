@@ -5,6 +5,7 @@ import {
     sendUserFeedback,
     getTelemetryEndpoint,
     flushPendingTelemetry,
+    normalizeTelemetryPayload,
 } from './conversion-events';
 
 describe('Telemetry Conversion Events', () => {
@@ -237,5 +238,34 @@ describe('Telemetry Conversion Events', () => {
             expect(bodies.length).toBe(1);
             expect(bodies[0].is_sample).toBe(1);
         });
+    });
+});
+
+describe('normalizeTelemetryPayload — fields the D1 columns actually keep', () => {
+    it('REGRESSION: maps message and inputBytes onto the stored columns', () => {
+        const out = normalizeTelemetryPayload({ source: 'worker', message: 'Unexpected end of JSON input', inputBytes: 4096 });
+        expect(out.error_message).toBe('Unexpected end of JSON input');
+        expect(out.error_type).toBe('json_truncated');
+        expect(out.file_size_bytes).toBe(4096);
+    });
+
+    it('never sends the raw message alongside the redacted one', () => {
+        const out = normalizeTelemetryPayload({ message: 'JSON Parse error: Unexpected identifier "hunter2"' });
+        expect(JSON.stringify(out)).not.toContain('hunter2');
+        expect(out).not.toHaveProperty('message');
+    });
+
+    it('redacts error_message even when callers use the column name directly', () => {
+        const out = normalizeTelemetryPayload({ error_message: `Unexpected token 'a', "acct_secret" is not valid JSON` });
+        expect(out.error_message).not.toContain('acct_secret');
+    });
+
+    it('keeps an explicit error_type over the derived one', () => {
+        expect(normalizeTelemetryPayload({ error_type: 'worker_crash', message: 'Invalid string length' }).error_type)
+            .toBe('worker_crash');
+    });
+
+    it('leaves payloads without errors untouched', () => {
+        expect(normalizeTelemetryPayload({ platform: 'trello', format: 'xlsx' })).toEqual({ platform: 'trello', format: 'xlsx' });
     });
 });

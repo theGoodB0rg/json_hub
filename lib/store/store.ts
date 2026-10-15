@@ -10,6 +10,19 @@ import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { trackFunnelStep } from '@/lib/analytics';
 import { pluginRegistry } from '@/lib/plugins/registry';
 
+/** When the current parse started, for the duration_ms telemetry column. */
+let parseStartedAt = 0;
+/** Size of the file currently being streamed (the streaming worker is reused). */
+let streamingFileBytes = 0;
+
+function parseElapsedMs(): number | undefined {
+    return parseStartedAt > 0 ? Math.round(performance.now() - parseStartedAt) : undefined;
+}
+
+/** Shown when a parser worker dies (usually out of memory on a huge file). */
+const WORKER_CRASH_MESSAGE =
+    'The converter stopped unexpectedly, usually because the file is too large for this browser tab. Try a smaller file or the desktop app.';
+
 const initialState = {
     // Input State
     rawInput: '',
@@ -101,18 +114,16 @@ export const useAppStore = create<AppState>()(
                                     parseErrors: [],
                                     isLoading: false,
                                 });
+                                const parseFields = {
+                                    source: 'worker',
+                                    platform: get().activePluginId,
+                                    file_size_bytes: currentRawInput.length,
+                                    duration_ms: parseElapsedMs(),
+                                };
                                 if (isSample) {
-                                    trackConversionEvent('sample_preview', {
-                                        source: 'worker',
-                                        inputBytes: currentRawInput.length,
-                                        is_sample: true,
-                                    });
+                                    trackConversionEvent('sample_preview', { ...parseFields, is_sample: true });
                                 } else {
-                                    trackConversionEvent('parse_success', {
-                                        source: 'worker',
-                                        inputBytes: currentRawInput.length,
-                                        is_sample: false,
-                                    });
+                                    trackConversionEvent('parse_success', { ...parseFields, is_sample: false });
                                     trackFunnelStep('parse_success', { is_sample: false });
                                 }
                                 get().flattenData();
@@ -128,7 +139,10 @@ export const useAppStore = create<AppState>()(
                                 });
                                 trackConversionEvent('parse_error', {
                                     source: 'worker',
-                                    message: payload?.[0]?.message ?? 'Parse error',
+                                    platform: get().activePluginId,
+                                    file_size_bytes: get().rawInput.length,
+                                    duration_ms: parseElapsedMs(),
+                                    error_message: payload?.[0]?.message ?? 'Parse error',
                                 });
                             } else if (type === 'FLATTEN_SUCCESS') {
                                 set({
@@ -145,10 +159,36 @@ export const useAppStore = create<AppState>()(
                                 });
                                 trackConversionEvent('parse_error', {
                                     source: 'worker',
-                                    message: payload?.[0]?.message ?? 'Worker error',
+                                    platform: get().activePluginId,
+                                    file_size_bytes: get().rawInput.length,
+                                    // The worker reports which step threw; a flatten
+                                    // failure is a converter bug, not bad input.
+                                    error_type: event.data.stage === 'FLATTEN' ? 'flatten_failed' : undefined,
+                                    error_message: payload?.[0]?.message ?? 'Worker error',
                                 });
                             }
                         };
+
+                        // A worker that dies (out of memory, uncaught error in a
+                        // dependency) fires no message, so without this the UI
+                        // stayed on its spinner forever and nothing was logged.
+                        const handleCrash = (detail: string) => {
+                            set({ isLoading: false, worker: null, parseErrors: [{ message: WORKER_CRASH_MESSAGE }] });
+                            trackConversionEvent('parse_error', {
+                                source: 'worker',
+                                platform: get().activePluginId,
+                                file_size_bytes: get().rawInput.length,
+                                duration_ms: parseElapsedMs(),
+                                error_type: 'worker_crash',
+                                error_message: detail,
+                            });
+                            worker.terminate();
+                        };
+                        worker.onerror = (e) => {
+                            e.preventDefault();
+                            handleCrash(e.message || 'Worker crashed');
+                        };
+                        worker.onmessageerror = () => handleCrash('Worker message could not be deserialised');
 
                         set({ worker });
                     },
@@ -162,8 +202,11 @@ export const useAppStore = create<AppState>()(
                     },
 
                     parseInput: async (options?: { isSample?: boolean }) => {
+                        // Replace a worker that crashed on the previous file.
+                        if (!get().worker) get().initWorker();
                         const { rawInput, worker, activePluginId } = get();
                         const isSample = options?.isSample ?? get().isSample ?? false;
+                        parseStartedAt = performance.now();
                         set({ isLoading: true, isSample });
                         if (!isSample) {
                             trackFunnelStep('parse_initiated', { is_sample: false });
@@ -191,18 +234,16 @@ export const useAppStore = create<AppState>()(
                                         isLoading: false,
                                         outputMode: plugin.uiConfig.outputMode,
                                     });
+                                    const parseFields = {
+                                        source: 'plugin',
+                                        platform: activePluginId,
+                                        file_size_bytes: rawInput.length,
+                                        duration_ms: parseElapsedMs(),
+                                    };
                                     if (isSample) {
-                                        trackConversionEvent('sample_preview', {
-                                            source: 'plugin',
-                                            inputBytes: rawInput.length,
-                                            is_sample: true,
-                                        });
+                                        trackConversionEvent('sample_preview', { ...parseFields, is_sample: true });
                                     } else {
-                                        trackConversionEvent('parse_success', {
-                                            source: 'plugin',
-                                            inputBytes: rawInput.length,
-                                            is_sample: false,
-                                        });
+                                        trackConversionEvent('parse_success', { ...parseFields, is_sample: false });
                                         trackFunnelStep('parse_success', { source: 'plugin', is_sample: false });
                                     }
                                 } else {
@@ -218,21 +259,29 @@ export const useAppStore = create<AppState>()(
                                     });
                                     trackConversionEvent('parse_error', {
                                         source: 'plugin',
-                                        message: result.errors?.[0]?.message ?? 'Parse error',
+                                        platform: activePluginId,
+                                        file_size_bytes: rawInput.length,
+                                        duration_ms: parseElapsedMs(),
+                                        error_message: result.errors?.[0]?.message ?? 'Parse error',
                                     });
                                 }
                             } catch (e) {
                                 set({ isLoading: false, parseErrors: [{ message: String(e) }] });
                                 trackConversionEvent('parse_error', {
                                     source: 'plugin-exception',
-                                    message: String(e),
+                                    platform: activePluginId,
+                                    file_size_bytes: rawInput.length,
+                                    duration_ms: parseElapsedMs(),
+                                    error_message: String(e),
                                 });
                             }
                         }
                     },
 
                     parseInputStreaming: (file: File) => {
-                        set({ isLoading: true, streamingProgress: { itemCount: 0, bytesProcessed: 0, totalBytes: file.size, percent: 0 } });
+                        parseStartedAt = performance.now();
+                        streamingFileBytes = file.size;
+                        set({ isLoading: true, parseErrors: [], streamingProgress: { itemCount: 0, bytesProcessed: 0, totalBytes: file.size, percent: 0 } });
                         trackFunnelStep('parse_initiated', { method: 'streaming', fileName: file.name });
 
                         let streamingWorker = get().streamingWorker;
@@ -258,21 +307,48 @@ export const useAppStore = create<AppState>()(
                                     });
                                     trackConversionEvent('parse_success', {
                                         source: 'streaming-worker',
+                                        platform: get().activePluginId,
+                                        file_size_bytes: streamingFileBytes,
+                                        duration_ms: parseElapsedMs(),
                                         rowCount: payload.rows?.length ?? 0,
                                         schemaCount: payload.schema?.length ?? 0,
                                     });
-                                } else if (type === 'PARSE_ERROR') {
+                                } else if (type === 'PARSE_ERROR' || type === 'ERROR') {
+                                    // ERROR (an exception inside the worker) used to have
+                                    // no branch at all, leaving the UI loading forever.
+                                    const errors = Array.isArray(payload) ? payload : [payload ?? { message: 'Streaming parse error' }];
                                     set({
                                         isLoading: false,
                                         streamingProgress: null,
-                                        parseErrors: payload
+                                        parseErrors: errors
                                     });
                                     trackConversionEvent('parse_error', {
                                         source: 'streaming-worker',
-                                        message: payload?.[0]?.message ?? 'Streaming parse error',
+                                        platform: get().activePluginId,
+                                        file_size_bytes: streamingFileBytes,
+                                        duration_ms: parseElapsedMs(),
+                                        error_message: errors[0]?.message ?? 'Streaming parse error',
                                     });
                                 }
                             };
+
+                            const handleStreamingCrash = (detail: string) => {
+                                set({ isLoading: false, streamingProgress: null, streamingWorker: null, parseErrors: [{ message: WORKER_CRASH_MESSAGE }] });
+                                trackConversionEvent('parse_error', {
+                                    source: 'streaming-worker',
+                                    platform: get().activePluginId,
+                                    file_size_bytes: streamingFileBytes,
+                                    duration_ms: parseElapsedMs(),
+                                    error_type: 'worker_crash',
+                                    error_message: detail,
+                                });
+                                streamingWorker!.terminate();
+                            };
+                            streamingWorker.onerror = (e) => {
+                                e.preventDefault();
+                                handleStreamingCrash(e.message || 'Streaming worker crashed');
+                            };
+                            streamingWorker.onmessageerror = () => handleStreamingCrash('Worker message could not be deserialised');
 
                             set({ streamingWorker });
                         }
@@ -299,7 +375,11 @@ export const useAppStore = create<AppState>()(
                                 });
                                 trackConversionEvent('parse_error', {
                                     source: 'streaming-reader',
-                                    message: String(error),
+                                    platform: get().activePluginId,
+                                    file_size_bytes: streamingFileBytes,
+                                    duration_ms: parseElapsedMs(),
+                                    error_type: 'file_read',
+                                    error_message: String(error),
                                 });
                             }
                         };

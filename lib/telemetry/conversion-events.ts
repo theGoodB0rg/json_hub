@@ -5,6 +5,7 @@ import {
     feedbackFallbackChain,
 } from './endpoints';
 import { resolveSampleFlag } from './sample-detection';
+import { classifyErrorMessage, redactErrorMessage } from './error-classify';
 
 export type ConversionEventName =
     | 'page_view'
@@ -142,6 +143,38 @@ export function isBotOrCrawler(): boolean {
     return false;
 }
 
+/**
+ * Maps payload keys onto the D1 `events` columns and redacts error text.
+ *
+ * The worker stores only fixed columns (platform, format, file_size_bytes,
+ * duration_ms, error_type, error_message, path, referrer, is_sample); any
+ * other key is dropped at ingestion. Call sites sent `message` and
+ * `inputBytes`, so every parse error reached D1 with no message and every
+ * parse with no size (Oct 2026). Normalising here covers all call sites.
+ */
+export function normalizeTelemetryPayload(payload: ConversionEventPayload): ConversionEventPayload {
+    const out: ConversionEventPayload = { ...payload };
+    // The source key is removed: the whole payload goes over the wire, so a
+    // raw `message` left beside the redacted copy would still leave the browser.
+    const alias = (from: string, to: string) => {
+        if (out[to] == null && out[from] != null) out[to] = out[from];
+        delete out[from];
+    };
+    alias('message', 'error_message');
+    alias('errorMessage', 'error_message');
+    alias('errorType', 'error_type');
+    alias('inputBytes', 'file_size_bytes');
+    alias('fileSizeBytes', 'file_size_bytes');
+    alias('durationMs', 'duration_ms');
+
+    if (out.error_message != null) {
+        const raw = String(out.error_message);
+        out.error_message = redactErrorMessage(raw);
+        if (out.error_type == null) out.error_type = classifyErrorMessage(raw);
+    }
+    return out;
+}
+
 export function trackConversionEvent(
     name: ConversionEventName,
     payload: ConversionEventPayload = {}
@@ -152,11 +185,11 @@ export function trackConversionEvent(
         id: generateId(),
         name,
         timestamp: Date.now(),
-        payload: {
+        payload: normalizeTelemetryPayload({
             path: typeof window !== 'undefined' ? window.location.pathname : undefined,
             referrer: typeof document !== 'undefined' ? document.referrer || '(direct)' : undefined,
             ...payload,
-        },
+        }),
     };
 
     // Store in local history for diagnostics
