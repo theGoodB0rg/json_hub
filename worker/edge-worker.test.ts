@@ -37,17 +37,54 @@ describe('classifyClient — request-header refinement of the UA class', () => {
         }))).toBe('desktop');
     });
 
+    it('REGRESSION: a scraper with a Chrome UA and no browser headers is not human', () => {
+        // Chrome UA but neither Sec-Fetch-Mode nor Accept-Language: the
+        // Chromium discriminator fires before the generic nobrowser fallback.
+        const cls = classifyClient(headers({ 'user-agent': CHROME_UA }));
+        expect(cls).toBe('fakebrowser');
+        expect(looksHuman(0, SCORE_SOURCE.UNSCORED, cls)).toBe(false);
+    });
+
+    it('REGRESSION 2026-10-17: scanner spoofing Mobile Chrome + Accept-Language (no Sec-Fetch) is not human', () => {
+        // The exact observed fingerprint of the scanner that inflated Pillar 1
+        // to 764% of CF RUM: Mobile Chrome UA, Accept-Language: en-US,en;q=0.9,
+        // Sec-Purpose absent, but critically NO Sec-Fetch-* header. Real Chrome
+        // mobile has sent Sec-Fetch-Mode on every navigation since 2019.
+        const scannerH = headers({
+            'user-agent':
+                'Mozilla/5.0 (Linux; Android 13; SM-G990B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36',
+            'accept-language': 'en-US,en;q=0.9',
+        });
+        const cls = classifyClient(scannerH);
+        expect(cls).toBe('fakebrowser');
+        expect(looksHuman(0, SCORE_SOURCE.UNSCORED, cls)).toBe(false);
+    });
+
+    it('other Chromium variants (Edge, Opera, Samsung) without Sec-Fetch classify as fakebrowser', () => {
+        expect(classifyClient(headers({
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0',
+            'accept-language': 'en',
+        }))).toBe('fakebrowser');
+        expect(classifyClient(headers({
+            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 OPR/28.0.0.0',
+        }))).toBe('fakebrowser');
+    });
+
+    it('a real Firefox old enough to lack Sec-Fetch support still sends Accept-Language and stays counted', () => {
+        // Deliberate trade-off: spoofers fake Chrome, not Firefox, so the
+        // fakebrowser rule is Chromium-only. Old Firefox with Accept-Language
+        // keeps its human-conservative desktop class.
+        expect(classifyClient(headers({
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0',
+            'accept-language': 'en-GB',
+        }))).toBe('desktop');
+    });
+
     it('keeps an older Safari without Sec-Fetch headers when it sends Accept-Language', () => {
         expect(classifyClient(headers({
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/15.6 Safari/605.1.15',
             'accept-language': 'en-GB',
         }))).toBe('desktop');
-    });
-
-    it('REGRESSION: a scraper with a Chrome UA and no browser headers is not human', () => {
-        const cls = classifyClient(headers({ 'user-agent': CHROME_UA }));
-        expect(cls).toBe('nobrowser');
-        expect(looksHuman(0, SCORE_SOURCE.UNSCORED, cls)).toBe(false);
     });
 
     it('treats browser prefetch and prerender as non-pageviews', () => {
@@ -163,6 +200,7 @@ describe('capture-rate SQL agrees with looksHuman()', () => {
         { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'prefetch' },
         { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'subrequest' },
         { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'nobrowser' },
+        { double2: 0, double3: SCORE_SOURCE.UNSCORED, blob4: 'fakebrowser' },
         { double2: 1, double3: SCORE_SOURCE.VERIFIED_BOT, blob4: 'desktop' },
         { double2: 1, double3: SCORE_SOURCE.VERIFIED_BOT, blob4: 'bot' },
         { double2: 99, double3: SCORE_SOURCE.CF_SCORED, blob4: 'desktop' },

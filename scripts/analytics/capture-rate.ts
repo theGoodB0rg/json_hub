@@ -145,7 +145,8 @@ async function fetchAnalyticsEnginePageviews(
     // Bot filtering mirrors `looksHuman()` in worker/edge-worker.ts, built
     // from the same exported constants so the two cannot drift.
     //
-    // Column meanings (schema v2, double4 = 2):
+    // Column meanings (schema v2+, double4 >= 2; the classifier-bump versions
+    // land as 2 then 3, both covered by `double4 >= 2`):
     //   double2 = bot score: 0 = unscored, 1..99 = score (1 bot, 99 human)
     //   double3 = scoreSource: 0 UNSCORED | 1 CF_SCORED | 2 VERIFIED_BOT
     //   double4 = row schema version

@@ -17,5 +17,12 @@ export const HUMAN_BOT_SCORE_THRESHOLD = 30;
  *   subrequest      — a fetch() or iframe load, not a top-level navigation
  *   nobrowser       — Chrome-looking UA without the headers every real
  *                     browser sends on navigation (scrapers, HTTP libraries)
+ *   fakebrowser     — Chromium-family UA with no Sec-Fetch-* headers at all.
+ *                     Chrome has sent Sec-Fetch-Mode on every navigation since
+ *                     2019 (76+); a request that claims Chrome and omits them
+ *                     is a scraper replaying a hand-rolled header set. Added
+ *                     2026-10-17 after a scanner spoofing Mobile Chrome +
+ *                     Accept-Language: en-US,en;q=0.9 (no Sec-Fetch) produced
+ *                     ~70% of the "human-like" row count in one 24h window.
  */
-export const NON_HUMAN_CLIENT_CLASSES = ['bot', 'automated', 'prefetch', 'subrequest', 'nobrowser'] as const;
+export const NON_HUMAN_CLIENT_CLASSES = ['bot', 'automated', 'prefetch', 'subrequest', 'nobrowser', 'fakebrowser'] as const;

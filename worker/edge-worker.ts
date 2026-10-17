@@ -101,9 +101,27 @@ function classifyUserAgent(ua: string | null): string {
  * scrapers send a Chrome UA. That let edge page views run at ~4x Cloudflare's
  * own RUM count (Oct 2026). Real browsers send Sec-Fetch-Mode: navigate and
  * Accept-Language on every navigation; most scrapers send neither.
+ *
+ * Chromium-derived engines send Sec-Fetch-Mode on every top-level navigation
+ * since Chrome 76 (2019). A request that claims a Chromium browser but sends no
+ * Sec-Fetch-* header at all is a scraper replaying a hand-rolled header set —
+ * typically just UA + Accept + Accept-Language. This discriminator keeps those
+ * rows out of the human count even when they fake everything else.
+ * 2026-10-17 Evidence (24h AE window): 208/298 "human-like" rows matched this
+ * fingerprint — Mobile Chrome UA, Accept-Language: en-US,en;q=0.9, no
+ * Sec-Fetch — probing fabricated paths (/login, /auth, /checkout, ...).
+ * Safari < 16.4 and old Firefox (< 90) also lack Sec-Fetch, but spoofers fake
+ * Chrome, not those browsers, so for them the rule stays penalty-free: they
+ * are only rejected when they omit Accept-Language too (nobrowser).
+ */
+const CHROMIUM_UA = /Chrome\/|CriOS\/|Edg\/|EdgiOS\/|EdgA\/|OPR\/|Chromium\/|SamsungBrowser\//;
+
+/**
+ * Refines the UA class with request headers. See the design note above.
  */
 export function classifyClient(headers: Pick<Headers, 'get'>): string {
-    const uaClass = classifyUserAgent(headers.get('user-agent'));
+    const ua = headers.get('user-agent');
+    const uaClass = classifyUserAgent(ua);
     if (uaClass === 'bot' || uaClass === 'automated') return uaClass;
 
     const purpose = `${headers.get('sec-purpose') || ''} ${headers.get('purpose') || ''}`;
@@ -111,6 +129,10 @@ export function classifyClient(headers: Pick<Headers, 'get'>): string {
 
     const fetchMode = headers.get('sec-fetch-mode');
     if (fetchMode && fetchMode !== 'navigate') return 'subrequest';
+
+    // Spoofed Chromium: claims Chrome/Edge/Opera but lacks the navigation
+    // headers that engine has sent for years. See CHROMIUM_UA above.
+    if (!fetchMode && CHROMIUM_UA.test(ua || '')) return 'fakebrowser';
 
     // Browsers without Sec-Fetch support (Safari < 16.4) still send
     // Accept-Language, so only the absence of both marks a non-browser.
@@ -134,8 +156,14 @@ export const SCORE_SOURCE = {
  * Bumped whenever the meaning of a blob/double column changes. Rows written
  * before the bot-score fix carry no double4 at all (reads back as 0), which
  * is exactly how the capture-rate query excludes them from human counts.
+ *
+ * v3 (2026-10-17): blob4's vocabulary gained 'fakebrowser' — Chromium-family
+ * UA with no Sec-Fetch-* header (spoofed-browser scanner). v2 rows claiming
+ * Chrome without Sec-Fetch were still counted human; v3 rows never are. The
+ * capture-rate SQL accepts double4 >= 2, so the version serves as the
+ * before/after boundary when measuring the rule's effect in Analytics Engine.
  */
-export const ROW_SCHEMA_VERSION = 2;
+export const ROW_SCHEMA_VERSION = 3;
 
 
 /**
