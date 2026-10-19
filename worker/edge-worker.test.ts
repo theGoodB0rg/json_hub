@@ -17,6 +17,8 @@ import {
     NON_HUMAN_CLIENT_CLASSES,
     classifyClient,
     looksHuman,
+    allowIngestRequest,
+    _resetIngestLimiter,
 } from './edge-worker';
 import { NON_HUMAN_SQL_LIST } from '../scripts/analytics/capture-rate';
 
@@ -220,5 +222,51 @@ describe('capture-rate SQL agrees with looksHuman()', () => {
         // hardcoded to 1, so they are unclassifiable and must be dropped
         // rather than counted either way.
         expect(sqlPredicate({ double2: 1, double3: 0, double4: 0, blob4: 'desktop' })).toBe(false);
+    });
+});
+
+describe('allowIngestRequest — per-IP ingest rate limiter', () => {
+    /**
+     * Added after the Oct 18 curl flood (1,900 forged events from one IP in
+     * 5 minutes). Best-effort in-isolate state, but it caps a single-origin
+     * flood immediately; the WAF rule backstop is provisioned separately.
+     * Tests use small windows/maxima so windows actually roll over.
+     */
+    beforeEach(() => _resetIngestLimiter());
+    afterEach(() => _resetIngestLimiter());
+
+    it('admits requests up to the per-IP allowance and then 429-blocks the rest of the window', () => {
+        // Window larg enough that every probe below lands in bucket 0.
+        const WIN = 1_000_000;
+        const t0 = 100;
+        for (let i = 0; i < 5; i++) {
+            expect(allowIngestRequest('203.0.113.1', t0 + i, 5, WIN)).toBe(true);
+        }
+        expect(allowIngestRequest('203.0.113.1', t0 + 30_000, 5, WIN)).toBe(false);
+        expect(allowIngestRequest('203.0.113.1', t0 + 999_000, 5, WIN)).toBe(false);
+    });
+
+    it('gives every IP an independent bucket (collateral users stay unaffected)', () => {
+        const WIN = 1_000_000;
+        const t0 = 100;
+        for (let i = 0; i < 5; i++) expect(allowIngestRequest('203.0.113.7', t0 + i, 5, WIN)).toBe(true);
+        // A different visitor sharing the minute window is untouched.
+        expect(allowIngestRequest('198.51.100.9', t0, 5, WIN)).toBe(true);
+    });
+
+    it('resets when the window rolls over', () => {
+        const WIN = 1_000_000;
+        const t0 = 100;
+        for (let i = 0; i < 5; i++) expect(allowIngestRequest('203.0.113.11', t0 + i, 5, WIN)).toBe(true);
+        expect(allowIngestRequest('203.0.113.11', t0 + 1_000, 5, WIN)).toBe(false);
+        // Next bucket: allowance restored.
+        expect(allowIngestRequest('203.0.113.11', t0 + WIN, 5, WIN)).toBe(true);
+    });
+
+    it('quarantines header-less IPs under an unknown key rather than exempting them', () => {
+        const WIN = 1_000_000;
+        const t0 = 100;
+        for (let i = 0; i < 3; i++) expect(allowIngestRequest(null, t0 + i, 3, WIN)).toBe(true);
+        expect(allowIngestRequest(null, t0 + 10, 3, WIN)).toBe(false);
     });
 });

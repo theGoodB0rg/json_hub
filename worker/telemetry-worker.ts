@@ -16,14 +16,53 @@ export interface ExecutionContext {
 export interface Env {
     DB: D1Database;
     ADMIN_SECRET?: string;
+    /**
+     * Worker-to-worker provenance secret for edge-fallback pageview writes
+     * (see EDGE_FALLBACK_SECRET.md or deploy-worker.yml). NEVER ships to
+     * browsers — it exists only in the edge worker's env, so a bundle reader
+     * cannot forge `page_view_edge` events the way the Oct 18 attacker did.
+     */
+    EDGE_FALLBACK_SECRET?: string;
 }
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Edge-Secret',
     'Access-Control-Max-Age': '86400',
 };
+
+/**
+ * User agents that have no business POSTing events. The client-proxy path
+ * (`/_i/<token>/i` on the edge worker) strips CF-internal headers but keeps
+ * the browser's real `user-agent`, so a genuine visitor always arrives with
+ * a browser UA here. A scripted-HTTP UA on an ingest POST means a direct
+ * API caller, exactly like the Oct 18 `curl` flood — reject out of hand.
+ * (jsdom-style test harnesses stay on the AUTOMATED_UA_SUBSTRINGS quarantine
+ * list instead: they are our own QA probes, store-and-exclude.)
+ */
+const SCRIPTED_UA_MARKERS = [
+    'curl/',
+    'python-requests',
+    'python-urllib',
+    'scrapy',
+    'wget/',
+    'go-http-client',
+    'node-fetch',
+    'okhttp/',
+    'axios/',
+    'java/',
+    'httpclient',
+];
+
+export function isScriptedHttpUserAgent(ua: unknown): boolean {
+    if (typeof ua !== 'string' || ua.length === 0) return false;
+    const lower = ua.toLowerCase();
+    return SCRIPTED_UA_MARKERS.some((sub) => lower.includes(sub));
+}
+
+/** Largest ingest body accepted. Real event batches are a few KB. */
+const MAX_BODY_BYTES = 64 * 1024;
 
 function jsonResponse(data: any, status = 200) {
     return new Response(JSON.stringify(data), {
@@ -108,6 +147,22 @@ export default {
                 request.method === 'POST' &&
                 (url.pathname === '/api/telemetry' || url.pathname === '/api/telemetry/batch')
             ) {
+                // Ingress gate 1 — scripted HTTP clients are rejected whole.
+                // A browser that loaded jsonexport.com arrives with a browser
+                // UA (direct or proxied); `curl`-class UAs here are direct
+                // API callers, the Oct 18 flood's exact shape.
+                if (isScriptedHttpUserAgent(userAgent)) {
+                    return jsonResponse({ error: 'Forbidden' }, 403);
+                }
+
+                // Ingress gate 2 — body size. The schema fields are capped
+                // downstream, so a legitimate batch fits in a few KB; a
+                // megabyte POST is abuse or a malfunctioning client.
+                const contentLength = Number(request.headers.get('content-length') || '0');
+                if (contentLength > MAX_BODY_BYTES) {
+                    return jsonResponse({ error: 'Payload too large' }, 413);
+                }
+
                 const body: any = await request.json();
                 const rawEvents = Array.isArray(body) ? body : Array.isArray(body?.events) ? body.events : [body];
                 const country = safeString((request as any).cf?.country || request.headers.get('cf-ipcountry'), 16) || 'Unknown';
@@ -115,6 +170,26 @@ export default {
 
                 // Cap batch at 100 events max to prevent DOS
                 const eventsList = rawEvents.slice(0, 100);
+
+                // Ingress gate 3 — provenance for edge-fallback pageviews.
+                // `page_view_edge` is a SERVER-generated event: only the edge
+                // worker should ever send it, and it proves itself with the
+                // EDGE_FALLBACK_SECRET header (worker secret, never in any
+                // bundle). Without a valid secret the whole request fails —
+                // we do not store the non-forged events next to an injected
+                // one, so a forged row can only ever arrive with no human
+                // event beside it. Fail-closed: no secret on our side means
+                // no edge-fallback writes at all.
+                const containsEdgeFallback = eventsList.some(
+                    (e: any) => e?.event_name === 'page_view_edge'
+                );
+                if (containsEdgeFallback) {
+                    const provided = request.headers.get('x-edge-secret');
+                    if (!env.EDGE_FALLBACK_SECRET || provided !== env.EDGE_FALLBACK_SECRET) {
+                        return jsonResponse({ error: 'Forbidden' }, 403);
+                    }
+                }
+
                 const statements: D1PreparedStatement[] = eventsList.map((e: any) => {
                     const id = safeString(e.id, 64) || crypto.randomUUID();
                     const eventTime = safeNumber(e.timestamp, 0, timestamp + 86400000) || timestamp;
@@ -156,6 +231,9 @@ export default {
 
             // POST /api/feedback - Record user output feedback
             if (request.method === 'POST' && url.pathname === '/api/feedback') {
+                if (isScriptedHttpUserAgent(userAgent)) {
+                    return jsonResponse({ error: 'Forbidden' }, 403);
+                }
                 const body: any = await request.json();
                 const id = safeString(body.id, 64) || crypto.randomUUID();
                 const rating = body.rating === 'positive' || body.rating === 'negative' ? body.rating : 'neutral';

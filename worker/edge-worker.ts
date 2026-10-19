@@ -36,6 +36,16 @@ export interface Env {
     TELEMETRY_UPSTREAM?: string;
     /** Build-time path token — rotates per deploy so adblock rules can't match a stable pattern. */
     TELEMETRY_TOKEN?: string;
+    /**
+     * Worker-to-worker provenance secret for page_view_edge fallback writes.
+     * Server-only (deploy-worker.yml --var on BOTH the edge and telemetry
+     * workers) — never in any client bundle. The telemetry worker rejects
+     * page_view_edge events without it, so a bundle reader cannot forge
+     * D1 edge-fallback rows like the Oct 18 curl flood did. Fail-closed:
+     * if unset here, the edge skips the fallback write entirely rather
+     * than posting unauthenticated.
+     */
+    EDGE_FALLBACK_SECRET?: string;
 }
 
 // Treat as "real HTML pageview" only when the request looks like a
@@ -181,6 +191,48 @@ export function looksHuman(botScore: number, scoreSource: number, uaClass: strin
     return !(NON_HUMAN_CLIENT_CLASSES as readonly string[]).includes(uaClass);
 }
 
+// --- Ingest rate limiting -------------------------------------------------
+//
+// Per-IP fixed-window limiter guarding the first-party ingest proxy. Cloudflare
+// free plan has no rate-limiting rules API usable from a Worker, so this is
+// best-effort in-memory state: each isolate keeps its own counters. It is NOT
+// a distributed budget — a determined multi-IP attack defeats it — but a
+// single exploit script (like the Oct 18 curl flood: 1,900 events in 5
+// minutes) will exhaust its per-IP allowance within seconds. The real backstop
+// is Cloudflare WAF rate limiting on /_i/*, which this complements.
+//
+// Limits apply to the ingest/batch/feedback/pixel proxy — never to page HTML,
+// which stays unlimited (a 429 there would break the site for real users).
+const INGEST_WINDOW_MS = 60_000;
+const MAX_INGEST_PER_WINDOW = 30;
+const ingestHits = new Map<string, number>();
+
+export function allowIngestRequest(
+    ip: string | null,
+    nowMs: number,
+    maxPerWindow = MAX_INGEST_PER_WINDOW,
+    windowMs = INGEST_WINDOW_MS
+): boolean {
+    const bucket = Math.floor(nowMs / windowMs);
+    const key = `${bucket}|${ip || 'unknown'}`;
+    const hits = (ingestHits.get(key) || 0) + 1;
+    ingestHits.set(key, hits);
+    // Drop stale buckets wholesale when the map grows; keys are monotonic.
+    if (ingestHits.size > 5_000) {
+        const cutoff = bucket - 1;
+        for (const k of ingestHits.keys()) {
+            const kBucket = Number(k.slice(0, k.indexOf('|')));
+            if (kBucket < cutoff) ingestHits.delete(k);
+        }
+    }
+    return hits <= maxPerWindow;
+}
+
+/** Test hook: clear limiter state between tests. */
+export function _resetIngestLimiter() {
+    ingestHits.clear();
+}
+
 // First-party telemetry ingest paths. The build-time token in the middle
 // segment rotates on every deploy — adblock rules targeting a stable
 // `/collect` or `/telemetry` substring can't match. The three sub-paths
@@ -265,6 +317,21 @@ export default {
         const token = env.TELEMETRY_TOKEN || 'i';
         const telemetry = matchTelemetryPath(url.pathname, token);
         if (telemetry) {
+            // Rate-limit the team of ingest proxies only. The IP is the
+            // CF-provided client address (never trust a spoofable header);
+            // the proxy deletes it from the upstream request, but HERE we
+            // still see the real socket-level value.
+            const sourceIp = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for');
+            if (!allowIngestRequest(sourceIp, Date.now())) {
+                return new Response(JSON.stringify({ ok: false, error: 'rate_limited' }), {
+                    status: 429,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-store, max-age=0',
+                        'Retry-After': '60',
+                    },
+                });
+            }
             const upstreamBase = (env.TELEMETRY_UPSTREAM || 'https://jsonexport-telemetry.idowue93.workers.dev').replace(/\/$/, '');
             if (telemetry.kind === 'pixel') {
                 return handlePixelProxy(request, upstreamBase);
@@ -418,7 +485,7 @@ export default {
                 // conversion metrics.
                 const isHumanLike = looksHuman(botScore, scoreSource, uaClass);
 
-                if (isHumanLike && env.TELEMETRY_UPSTREAM) {
+                if (isHumanLike && env.TELEMETRY_UPSTREAM && env.EDGE_FALLBACK_SECRET) {
                     const upstreamBase = env.TELEMETRY_UPSTREAM.replace(/\/$/, '');
                     const edgeEventBody = JSON.stringify({
                         event_name: 'page_view_edge',
@@ -442,6 +509,12 @@ export default {
                                 'Content-Type': 'application/json',
                                 'cf-ipcountry': country,
                                 'user-agent': request.headers.get('user-agent') || '',
+                                // Worker-to-worker provenance: proves this
+                                // edge pageview was generated by us, not
+                                // POSTed at the ingest endpoint directly.
+                                // The telemetry worker 403s page_view_edge
+                                // events without a matching secret.
+                                'x-edge-secret': env.EDGE_FALLBACK_SECRET,
                                 // Mark the request so the upstream can
                                 // distinguish genuine client beacons from
                                 // our server-side fallback if we ever add

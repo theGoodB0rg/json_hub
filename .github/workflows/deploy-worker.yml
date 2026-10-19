@@ -59,7 +59,12 @@ jobs:
           # TELEMETRY_TOKEN comes from the repo secret (never committed) so it
           # can rotate without touching code. Must match the site's
           # NEXT_PUBLIC_TELEMETRY_TOKEN at build time (deploy.yml).
-          command: deploy --config wrangler-edge.toml --var TELEMETRY_TOKEN:${{ secrets.NEXT_PUBLIC_TELEMETRY_TOKEN }}
+          # EDGE_FALLBACK_SECRET is worker-to-worker provenance: the telemetry
+          # worker rejects page_view_edge events unless they carry this
+          # header-matched secret, so bundle readers cannot forge D1
+          # edge-fallback rows (the Oct 18 curl-flood vector). Shared by both
+          # workers; server-only, never set on client code.
+          command: deploy --config wrangler-edge.toml --var TELEMETRY_TOKEN:${{ secrets.NEXT_PUBLIC_TELEMETRY_TOKEN }} --var EDGE_FALLBACK_SECRET:${{ secrets.EDGE_FALLBACK_SECRET }}
 
   license-worker:
     name: Deploy jsonexport-license + apply schema
@@ -120,7 +125,10 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_TELEMETRY_ACCOUNT_ID }}
         with:
           # Dedicated token — the shared one doesn't cover this account.
+          # EDGE_FALLBACK_SECRET mirrors the edge worker's copy (see below);
+          # both must deploy with the SAME value or every edge-fallback
+          # pageview is rejected.
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_TELEMETRY }}
           workingDirectory: worker
           wranglerVersion: "4.73.0"
-          command: deploy --config wrangler.toml
+          command: deploy --config wrangler.toml --var EDGE_FALLBACK_SECRET:${{ secrets.EDGE_FALLBACK_SECRET }}
