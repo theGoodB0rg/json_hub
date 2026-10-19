@@ -124,8 +124,34 @@ export async function pullTelemetryData(options: PullOptions = {}) {
             headers['Authorization'] = `Bearer ${adminSecret}`;
         }
 
-        const url = `${endpoint}?limit=${limit}${isIncremental ? `&since=${latestTimestamp}` : ''}`;
-        const data = await fetchHttps(url, headers);
+        // Drain until complete: the endpoint caps each response at `limit`
+        // rows. A single fetch silently returned a partial dataset whenever
+        // more had accumulated since the watermark (2026-10-18: an event
+        // flood made every report read +2000 rows of backfill while the live
+        // window read 0, producing a false "0 pageviews" pipeline verdict).
+        // Keep paging with the newest merged timestamp until a batch comes
+        // back under the cap. Bounded by maxPages so a runaway worker can't
+        // loop forever.
+        const maxPages = 200;
+        const data = { events: [] as any[], feedback: [] as any[] };
+        let watermark = latestTimestamp;
+        for (let page = 0; page < maxPages; page++) {
+            const url = `${endpoint}?limit=${limit}${watermark > 0 ? `&since=${watermark}` : ''}`;
+            const batch = await fetchHttps(url, headers);
+            const batchEvents: any[] = batch.events || [];
+            const batchFeedback: any[] = batch.feedback || [];
+            for (const e of batchEvents) (data as any).events.push(e);
+            for (const f of batchFeedback) (data as any).feedback.push(f);
+            if (batchEvents.length < limit && batchFeedback.length < limit) break;
+            const batchNewest = Math.max(0, ...batchEvents.map((e: any) => e.timestamp || 0));
+            if (batchNewest <= watermark) break; // guard against non-advancing pages
+            watermark = batchNewest;
+        }
+        if (data.events.length >= maxPages * limit) {
+            console.warn(
+                `[Telemetry Pull] Warning: hit the ${maxPages}-page safety bound; dataset may still be larger.`
+            );
+        }
 
         // Merge incoming delta with existing cache
         const eventMap = new Map<string, any>();
