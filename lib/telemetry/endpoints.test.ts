@@ -3,9 +3,15 @@
  *
  * Oct 2026: hardcoded production defaults meant every clone phoned prod
  * telemetry — and the jest suite itself live-fired feedback via the unmocked
- * XHR fallback. Endpoints now resolve to null unless explicitly configured;
- * these tests pin that contract. Note next/jest loads .env.local, so env is
- * scrubbed per-test for determinism.
+ * XHR fallback. Endpoints resolved to null unless explicitly configured;
+ * these tests pin that contract.
+ *
+ * Late Oct 2026 tightening: the telemetry bundle no longer knows ANY
+ * absolute URL. The Oct 18 curl flood proved that once a raw ingest URL
+ * ships in a bundle, scanners find it and hammer it. The client now
+ * integrates over the same-origin `/_i/<token>/...` path only, and the
+ * build token itself is fail-closed: unset means no-op, never a
+ * predictable placeholder. These tests pin the narrower contract.
  */
 import {
     resolveEndpoints,
@@ -13,32 +19,28 @@ import {
     ingestFallbackChain,
     feedbackFallbackChain,
     batchFallbackChain,
+    _setBuildToken,
 } from './endpoints';
 
-const ENV_KEY = 'NEXT_PUBLIC_TELEMETRY_URL';
 const PROD = 'https://jsonexport-telemetry.idowue93.workers.dev';
-let savedEnv: string | undefined;
-
-beforeEach(() => {
-    savedEnv = process.env[ENV_KEY];
-    delete process.env[ENV_KEY];
-});
-
-afterEach(() => {
-    if (savedEnv === undefined) delete process.env[ENV_KEY];
-    else process.env[ENV_KEY] = savedEnv;
-});
 
 describe('endpoint resolution', () => {
-    it('resolves nothing when neither origin nor env is configured (fail-closed)', () => {
-        const set = resolveEndpoints('');
+    beforeEach(() => {
+        // next/jest loads .env.local which may seed the token; scrub it so
+        // the fail-closed path is exercised deterministically.
+        _setBuildToken('');
+    });
+
+    afterEach(() => {
+        _setBuildToken('');
+    });
+
+    it('resolves nothing when the build token is unset (fail-closed)', () => {
+        const set = resolveEndpoints('https://jsonexport.com');
         expect(set).toEqual({
             firstPartyIngest: null,
             firstPartyBatch: null,
             firstPartyFeedback: null,
-            legacyIngest: null,
-            legacyBatch: null,
-            legacyFeedback: null,
         });
         expect(isTelemetryConfigured(set)).toBe(false);
         expect(ingestFallbackChain(set)).toEqual([]);
@@ -46,36 +48,45 @@ describe('endpoint resolution', () => {
         expect(batchFallbackChain(set)).toEqual([]);
     });
 
-    it('resolves same-origin first-party endpoints when an origin is known', () => {
+    it('does NOT fall back to a placeholder token', () => {
+        // Regression: an earlier revision defaulted to 'i', which shipped a
+        // guessable ingest path into any build that forgot the secret.
         const set = resolveEndpoints('https://jsonexport.com');
-        expect(set.firstPartyIngest).toBe('https://jsonexport.com/_i/i/i');
-        expect(set.firstPartyFeedback).toBe('https://jsonexport.com/_i/i/f');
-        expect(set.legacyIngest).toBeNull();
-        expect(isTelemetryConfigured(set)).toBe(true);
-        expect(ingestFallbackChain(set)).toEqual(['https://jsonexport.com/_i/i/i']);
+        expect(JSON.stringify(set)).not.toContain('/_i/i/');
     });
 
-    it('resolves legacy endpoints only when the build env provides the URL', () => {
-        process.env[ENV_KEY] = PROD;
+    it('resolves same-origin first-party endpoints around the build token', () => {
+        _setBuildToken('tok-123');
+        const set = resolveEndpoints('https://jsonexport.com');
+        expect(set.firstPartyIngest).toBe('https://jsonexport.com/_i/tok-123/i');
+        expect(set.firstPartyBatch).toBe('https://jsonexport.com/_i/tok-123/b');
+        expect(set.firstPartyFeedback).toBe('https://jsonexport.com/_i/tok-123/f');
+        expect(isTelemetryConfigured(set)).toBe(true);
+        expect(ingestFallbackChain(set)).toEqual(['https://jsonexport.com/_i/tok-123/i']);
+        expect(batchFallbackChain(set)).toEqual(['https://jsonexport.com/_i/tok-123/b']);
+        expect(feedbackFallbackChain(set)).toEqual(['https://jsonexport.com/_i/tok-123/f']);
+    });
+
+    it('resolves nothing without a known origin even when the token is set (SSR/tests)', () => {
+        _setBuildToken('tok-123');
         const set = resolveEndpoints('');
         expect(set.firstPartyIngest).toBeNull();
-        expect(set.legacyIngest).toBe(`${PROD}/api/telemetry`);
-        expect(set.legacyFeedback).toBe(`${PROD}/api/feedback`);
-        expect(isTelemetryConfigured(set)).toBe(true);
+        expect(isTelemetryConfigured(set)).toBe(false);
     });
 
-    it('orders first-party before legacy when both are configured', () => {
-        process.env[ENV_KEY] = PROD;
+    it('the token never reaches the URL unencoded', () => {
+        _setBuildToken('a/b c');
         const set = resolveEndpoints('https://jsonexport.com');
-        expect(feedbackFallbackChain(set)).toEqual([
-            'https://jsonexport.com/_i/i/f',
-            `${PROD}/api/feedback`,
-        ]);
+        expect(set.firstPartyIngest).toBe('https://jsonexport.com/_i/a%2Fb%20c/i');
     });
 
-    it('never embeds a production URL as a code default', () => {
-        // Regression: the old LEGACY_URL default pointed every clone at prod.
-        const set = resolveEndpoints('');
+    it('never embeds a telemetry worker URL in the client contract', () => {
+        // The Oct 18 flood vector: a bundle-visible URL to POST at directly.
+        _setBuildToken('tok-123');
+        const set = resolveEndpoints('https://jsonexport.com');
         expect(JSON.stringify(set)).not.toContain('workers.dev');
+        expect(JSON.stringify(set)).not.toContain(PROD);
+        expect(JSON.stringify(set)).not.toContain('api/telemetry');
+        expect(JSON.stringify(set)).not.toContain('api/feedback');
     });
 });

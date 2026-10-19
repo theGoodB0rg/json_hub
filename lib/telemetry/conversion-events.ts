@@ -90,13 +90,12 @@ function generateId(): string {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export function getTelemetryEndpoint(subpath: string): string {
-    // Backward-compat shim. New code resolves via endpoints.ts directly.
-    // Returns '' when unconfigured — callers must treat empty as disabled.
-    // (The old hardcoded production default was removed Oct 2026: it made
-    // every clone phone production telemetry. See endpoints.ts.)
-    const baseUrl = (process.env.NEXT_PUBLIC_TELEMETRY_URL || '').replace(/\/$/, '');
-    return baseUrl ? `${baseUrl}${subpath}` : '';
+export function getTelemetryEndpoint(_subpath: string): string {
+    // Disabled shim. Every production URL reference was removed from the
+    // client bundle after the Oct 18 ingest flood: the only client-safe
+    // destinations now come from endpoints.ts (same-origin opaque paths,
+    // token-gated). Callers must treat '' as disabled.
+    return '';
 }
 
 /**

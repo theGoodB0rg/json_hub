@@ -1,55 +1,46 @@
 /**
  * Endpoint resolution for the telemetry transport layer.
  *
- * We try endpoints in order and remember the first that answered successfully
- * this session, so each page load converges on the one that works. Priorities:
+ * SECURITY (Oct 2026): the client integrates over ONE kind of endpoint — the
+ * same-origin first-party path (`/_i/<build-token>/...`) proxied by the edge
+ * worker. There is deliberately:
  *
- *   1. First-party path on jsonexport.com (`/_i/<build-token>/i`)
- *      — same-origin, opaque path, doesn't match blocker filter rules
- *      — fastest and lowest-blocker-rate once CF proxy is enabled
+ *   - no hardcoded production URL (an early revision defaulted one, so every
+ *     clone phoned production telemetry and jest live-fired feedback),
+ *   - no fallback to the telemetry worker's workers.dev URL in the bundle.
+ *     The Oct 18 flood proved that once a raw ingest URL ships to browsers,
+ *     scanners will find it and hammer it; the only client-safe dest is an
+ *     opaque same-origin path whose backend WE control. Provenance secrets
+ *     live only on servers (EDGE_FALLBACK_SECRET worker-to-worker).
  *
- *   2. Legacy workers.dev endpoint
- *      — kept as fallback during migration
- *      — ~50% blocker-blocked in production (the problem we're fixing)
- *
- * SECURITY (Oct 2026): no production URL is hardcoded here anymore. An early
- * revision defaulted LEGACY_URL to the production worker, so every clone of
- * this public repo phoned production telemetry from localhost — and our own
- * jest suite live-fired real feedback on every run via the unmocked XHR
- * fallback. Now each endpoint resolves to null unless explicitly configured:
- * same-origin first-party needs a known origin, legacy needs
- * NEXT_PUBLIC_TELEMETRY_URL at build time. Unconfigured clients no-op
- * (see isTelemetryConfigured) instead of leaking dev traffic into prod.
- *
- * In production both values come from GitHub Secrets (deploy.yml), so the
- * token can rotate without touching code. The edge worker holds the matching
- * TELEMETRY_TOKEN the same way (deploy-worker.yml --var).
+ * The path token is build-time (deploy.yml consumes NEXT_PUBLIC_TELEMETRY_TOKEN)
+ * and rotates per deploy. It is obfuscation for adblock rules and dumb
+ * scanners — NOT authentication; the edge worker owns auth/z decisions.
+ * Fail-closed: an unset token resolves to no endpoint at all (client no-ops)
+ * rather than shipping a predictable placeholder path into production.
  */
 
-const BUILD_TOKEN = process.env.NEXT_PUBLIC_TELEMETRY_TOKEN || 'i';
+let BUILD_TOKEN = process.env.NEXT_PUBLIC_TELEMETRY_TOKEN || '';
 
-/** Build-time legacy base URL. Never defaulted — explicit or nothing. */
-function legacyBaseUrl(): string | null {
-    const raw = (process.env.NEXT_PUBLIC_TELEMETRY_URL || '').trim().replace(/\/$/, '');
-    return raw.length > 0 ? raw : null;
+/** Test hook: the module caches env at load; tests need to re-seed it. */
+export function _setBuildToken(token: string) {
+    BUILD_TOKEN = token;
 }
 
 export interface EndpointSet {
-    /** First-party ingest endpoint, or null when no origin is known (SSR/tests). */
+    /** Same-origin ingest endpoint, or null when unconfigured (SSR/tests). */
     firstPartyIngest: string | null;
-    /** First-party batch endpoint for queue flushing. */
+    /** Same-origin batch endpoint for queue flushing. */
     firstPartyBatch: string | null;
-    /** First-party user-feedback endpoint. */
+    /** Same-origin user-feedback endpoint. */
     firstPartyFeedback: string | null;
-    /** Legacy ingest endpoint, or null unless NEXT_PUBLIC_TELEMETRY_URL is set. */
-    legacyIngest: string | null;
-    /** Legacy batch endpoint. */
-    legacyBatch: string | null;
-    /** Legacy feedback endpoint. */
-    legacyFeedback: string | null;
 }
 
 export function resolveEndpoints(origin?: string): EndpointSet {
+    if (!BUILD_TOKEN) {
+        // Fail closed: no token configured → no endpoints → client no-ops.
+        return { firstPartyIngest: null, firstPartyBatch: null, firstPartyFeedback: null };
+    }
     // In the browser we always use the current origin — same-site requests
     // clear every browser's privacy heuristics. On SSR / tests we accept
     // an explicit origin arg; pass '' to force "no origin known" (fail-closed
@@ -59,15 +50,11 @@ export function resolveEndpoints(origin?: string): EndpointSet {
         base = window.location.origin;
     }
     const sameOrigin = base ? `${base}/_i/${encodeURIComponent(BUILD_TOKEN)}` : null;
-    const legacy = legacyBaseUrl();
 
     return {
         firstPartyIngest: sameOrigin ? `${sameOrigin}/i` : null,
         firstPartyBatch: sameOrigin ? `${sameOrigin}/b` : null,
         firstPartyFeedback: sameOrigin ? `${sameOrigin}/f` : null,
-        legacyIngest: legacy ? `${legacy}/api/telemetry` : null,
-        legacyBatch: legacy ? `${legacy}/api/telemetry/batch` : null,
-        legacyFeedback: legacy ? `${legacy}/api/feedback` : null,
     };
 }
 
@@ -77,21 +64,17 @@ export function isTelemetryConfigured(endpoints: EndpointSet): boolean {
     return Object.values(endpoints).some((e) => typeof e === 'string' && e.length > 0);
 }
 
-function chain(...endpoints: Array<string | null>): string[] {
-    return endpoints.filter((e): e is string => typeof e === 'string' && e.length > 0);
-}
-
 /**
- * Ordered list of ingest endpoints to try. Caller walks the list on failure.
+ * Ordered ingest endpoints to try. Callers walk the list on failure.
  */
 export function ingestFallbackChain(endpoints: EndpointSet): string[] {
-    return chain(endpoints.firstPartyIngest, endpoints.legacyIngest);
+    return [endpoints.firstPartyIngest].filter((e): e is string => e != null);
 }
 
 export function batchFallbackChain(endpoints: EndpointSet): string[] {
-    return chain(endpoints.firstPartyBatch, endpoints.legacyBatch);
+    return [endpoints.firstPartyBatch].filter((e): e is string => e != null);
 }
 
 export function feedbackFallbackChain(endpoints: EndpointSet): string[] {
-    return chain(endpoints.firstPartyFeedback, endpoints.legacyFeedback);
+    return [endpoints.firstPartyFeedback].filter((e): e is string => e != null);
 }

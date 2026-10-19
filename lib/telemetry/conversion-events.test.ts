@@ -7,6 +7,7 @@ import {
     flushPendingTelemetry,
     normalizeTelemetryPayload,
 } from './conversion-events';
+import { _setBuildToken } from './endpoints';
 
 describe('Telemetry Conversion Events', () => {
     const originalFetch = global.fetch;
@@ -16,6 +17,11 @@ describe('Telemetry Conversion Events', () => {
     beforeEach(() => {
         clearTrackedConversionEvents();
         jest.clearAllMocks();
+        // Endpoints are token fail-closed now (no .env.local token here);
+        // seed one so dispatch actually reaches the mocked fetch. Covers
+        // the whole transport suite: ingest + feedback resolve against the
+        // jsdom origin (http://localhost).
+        _setBuildToken('test-token');
         global.fetch = jest.fn().mockImplementation(() =>
             Promise.resolve({
                 ok: true,
@@ -43,14 +49,14 @@ describe('Telemetry Conversion Events', () => {
         Object.defineProperty(window, 'Image', { value: originalImage, configurable: true });
     });
 
-    it('returns empty string when no telemetry URL is configured (fail-closed, no prod default)', () => {
-        const saved = process.env.NEXT_PUBLIC_TELEMETRY_URL;
+    it('always returns empty (no prod URL may exist in the client bundle)', () => {
+        // The Oct 18 flood shipped a handlers-reachable ingest URL inside the
+        // bundle. This shim is pinned dead: whatever env exists at build
+        // time, no absolute URL may leave this module.
+        process.env.NEXT_PUBLIC_TELEMETRY_URL = 'https://jsonexport-telemetry.idowue93.workers.dev';
+        expect(getTelemetryEndpoint('/api/telemetry')).toBe('');
+        expect(getTelemetryEndpoint('/api/feedback')).toBe('');
         delete process.env.NEXT_PUBLIC_TELEMETRY_URL;
-        try {
-            expect(getTelemetryEndpoint('/api/telemetry')).toBe('');
-        } finally {
-            if (saved !== undefined) process.env.NEXT_PUBLIC_TELEMETRY_URL = saved;
-        }
     });
 
     it('tracks conversion event in localStorage and dispatches custom DOM event', () => {
