@@ -4,6 +4,7 @@ import { pullTelemetryData } from '../pull-telemetry';
 import { loadGscData, GscSummary, GscQuery, GscPage } from './gsc-parser';
 import { fetchLiveGscData, GscTrend } from './gsc-fetcher';
 import { computeCaptureRate, formatCaptureRateSection } from './capture-rate';
+import { computeMonetization, MonetizationFunnel } from '../../lib/analytics/monetization';
 
 interface TelemetryEvent {
     id: string;
@@ -41,52 +42,13 @@ const FEEDBACK_FLAG_EPOCH = Date.parse('2026-10-11T00:00:00Z');
 /** Events that mean someone used the converter, not just loaded a page. */
 const ACTIVITY_EVENTS = new Set(['parse_success', 'parse_error', 'export_success', 'export_complete', 'export_error']);
 
-/** Epoch at which every Gumroad link started firing `checkout_clicked`. */
-const CHECKOUT_EVENT_EPOCH = Date.parse('2026-10-15T00:00:00Z');
-
-/** Purchase intent, from first sight of Pro to a click on a Gumroad link.
- *  Sales themselves live in Gumroad — telemetry only sees the click. */
-interface MonetizationFunnel {
-    /** Client page_view beacons on /desktop (the Pro landing page). */
-    desktopPageViews: number;
-    upsellShown: number;
-    upsellDismissed: number;
-    /** `checkout_clicked` events, keyed by the link's source (sent as `format`). */
-    checkoutClicks: Record<string, number>;
-    totalCheckoutClicks: number;
-    /** Post-export upsell clicks logged before `checkout_clicked` existed. */
-    legacyUpsellClicks: number;
-    desktopDownloads: number;
-    activationAttempts: number;
-}
-
-/** `upsell_clicked` has carried three meanings, distinguishable only by path
- *  because D1 drops the `upsell_type` payload field. */
-function computeMonetization(events: Array<TelemetryEvent & { is_sample?: unknown }>): MonetizationFunnel {
-    const real = events.filter(e => !(e.is_sample === 1 || e.is_sample === true || e.is_sample === 'true'));
-    const upsellClicks = real.filter(e => e.event_name === 'upsell_clicked');
-    const checkoutClicks: Record<string, number> = {};
-    for (const e of real) {
-        if (e.event_name !== 'checkout_clicked') continue;
-        const source = e.format || 'unknown';
-        checkoutClicks[source] = (checkoutClicks[source] || 0) + 1;
-    }
-    return {
-        desktopPageViews: real.filter(e => e.event_name === 'page_view' && e.path === '/desktop').length,
-        upsellShown: real.filter(e => e.event_name === 'upsell_shown').length,
-        upsellDismissed: real.filter(e => e.event_name === 'upsell_dismissed').length,
-        checkoutClicks,
-        totalCheckoutClicks: Object.values(checkoutClicks).reduce((a, b) => a + b, 0),
-        // Post-export upsell now also fires checkout_clicked, so only rows from
-        // before that change count here.
-        legacyUpsellClicks: upsellClicks.filter(e => e.path !== '/desktop' && e.path !== '/activate' && e.timestamp < CHECKOUT_EVENT_EPOCH).length,
-        desktopDownloads: upsellClicks.filter(e => e.path === '/desktop').length,
-        activationAttempts: upsellClicks.filter(e => e.path === '/activate').length,
-    };
-}
-
 function formatMonetizationSection(m: MonetizationFunnel): string {
     const sources = Object.entries(m.checkoutClicks).sort((a, b) => b[1] - a[1]);
+    const failureRows = Object.entries(m.activationFailureReasons).sort((a, b) => b[1] - a[1]);
+    // Attempts logged before license_activated / license_activation_failed
+    // existed carry no outcome. Showing them as neither is honest; folding
+    // them into "rejected" would invent an incident.
+    const unaccounted = Math.max(0, m.activationAttempts - m.activationSucceeded - m.activationFailed);
     return `
 ---
 
@@ -101,7 +63,17 @@ function formatMonetizationSection(m: MonetizationFunnel): string {
 | Post-export upsell clicks (before buy tracking) | ${m.legacyUpsellClicks} |
 | Desktop app downloads | ${m.desktopDownloads} |
 | License activation attempts | ${m.activationAttempts} |
+| ↳ activated successfully | ${m.activationSucceeded} |
+| ↳ rejected | ${m.activationFailed} |
+${unaccounted > 0 ? `| ↳ outcome not recorded (pre-instrumentation) | ${unaccounted} |
+` : ''}
+${failureRows.length > 0 ? `### Activation failures by reason
+| Reason | Count |
+| :--- | :--- |
+${failureRows.map(([r, n]) => `| \`${r}\` | ${n} |`).join('\n')}
 
+> \`server_error\`, \`not_found\` or \`network\` here means a buyer was blocked by us, not by a bad key. Check Gumroad for a sale at the same time.
+` : ''}
 ${sources.length > 0 ? `### Buy-button clicks by source
 | Source | Clicks |
 | :--- | :--- |
@@ -124,6 +96,20 @@ function printMonetizationBlock(m: MonetizationFunnel): void {
     console.log(`• Upsell Clicks (pre-tracking): ${m.legacyUpsellClicks}`);
     console.log(`• Desktop Downloads:            ${m.desktopDownloads}`);
     console.log(`• License Activation Attempts:  ${m.activationAttempts}`);
+    if (m.activationAttempts > 0) {
+        const unaccounted = Math.max(0, m.activationAttempts - m.activationSucceeded - m.activationFailed);
+        console.log(`    ↳ activated                 ${m.activationSucceeded}`);
+        console.log(`    ↳ rejected                  ${m.activationFailed}`);
+        if (unaccounted > 0) {
+            console.log(`    ↳ outcome not recorded      ${unaccounted}  (logged before outcome tracking)`);
+        }
+        for (const [reason, n] of Object.entries(m.activationFailureReasons).sort((a, b) => b[1] - a[1])) {
+            console.log(`        · ${reason.padEnd(22)} ${n}`);
+        }
+        if (m.activationFailureReasons.server_error || m.activationFailureReasons.not_found || m.activationFailureReasons.network) {
+            console.log('    ⚠ A rejection we caused, not a bad key. Cross-check Gumroad for a sale at that time.');
+        }
+    }
     console.log('  ↳ Sales live in Gumroad. Clicks without sales = offer/price problem; no clicks = traffic problem.');
 }
 

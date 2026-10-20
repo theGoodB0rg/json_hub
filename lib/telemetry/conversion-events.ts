@@ -30,6 +30,20 @@ export type ConversionEventName =
     | 'upsell_clicked'
     // Any click on a Gumroad "buy Pro" link. Source rides in `format`.
     | 'checkout_clicked'
+    // Licensing. These were all `upsell_clicked`, told apart only by the
+    // page they fired on, because D1 persists a fixed column set and drops
+    // the `upsell_type` payload field. A path is not a meaning: "2 activation
+    // attempts" could not be distinguished from "2 buy clicks" without
+    // reading the component. Distinct names fix that without a migration,
+    // since `event_name` is a real column.
+    //
+    // `license_activation_failed` carries its reason in `error_type`, drawn
+    // from the closed set in ./license-events. Nothing about the key is ever
+    // sent.
+    | 'desktop_download_clicked'
+    | 'license_activation_started'
+    | 'license_activated'
+    | 'license_activation_failed'
     // What visitors actually do on a /test-data page. The cluster is ~24% of
     // organic clicks and had never emitted a single event, so "they take the
     // sample and leave" could be inferred but never measured. `platform`

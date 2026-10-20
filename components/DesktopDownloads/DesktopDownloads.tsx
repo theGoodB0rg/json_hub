@@ -205,12 +205,15 @@ export function DesktopDownloads() {
 
     const { release, buckets } = state;
 
-    const trackDownload = (osKey: OsKey, assetName: string) => {
-        trackConversionEvent('upsell_clicked', {
-            upsell_type: 'desktop_download',
-            os: osKey,
-            asset_name: assetName,
-            release_tag: release.tag_name,
+    // `os`, `asset_name` and `release_tag` were all dropped on arrival: D1
+    // persists a fixed column set, so only `platform` and `format` survive.
+    // The event used to be `upsell_clicked`, indistinguishable from an
+    // activation submit except by path. The asset name is not sent because
+    // os + release tag already identify it.
+    const trackDownload = (osKey: OsKey, _assetName: string) => {
+        trackConversionEvent('desktop_download_clicked', {
+            platform: osKey,
+            format: release.tag_name,
         });
     };
 

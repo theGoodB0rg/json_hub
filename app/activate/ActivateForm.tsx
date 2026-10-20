@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
 import { activateLicense } from '@/lib/license/activation';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
+import { activationFailurePayload } from '@/lib/telemetry/license-events';
 
 type Status =
     | { kind: 'idle' }
@@ -54,10 +55,10 @@ export function ActivateForm() {
 
     async function submit(value: string) {
         setStatus({ kind: 'loading' });
-        trackConversionEvent('upsell_clicked', {
-            upsell_type: 'activate_submit',
-            key_length: value.length,
-        });
+        // `key_length` used to ride along here. It told us nothing we would
+        // act on and handed anyone with table access a hint about the key,
+        // so it is gone; the event itself is the measurement.
+        trackConversionEvent('license_activation_started');
         const result = await activateLicense(value);
         if (result.ok) {
             setStatus({
@@ -66,14 +67,20 @@ export function ActivateForm() {
                 devicesAllowed: result.devicesAllowed,
                 email: result.email,
             });
-            trackConversionEvent('feedback_submitted', {
-                rating: 'positive',
-                comment: 'license_activated',
-                has_comment: true,
-            });
+            // Was a `feedback_submitted` with rating 'positive'. It never
+            // reached the user_feedback table, so it did not move the
+            // satisfaction rate, but it did put rows named "feedback" in the
+            // events table for something nobody rated — and it is exactly
+            // the kind of thing a later aggregate would miscount.
+            trackConversionEvent('license_activated');
             // Give the user ~3s to read the confirmation before auto-redirect
             setTimeout(() => router.push('/?pro=activated'), 3000);
         } else {
+            // A paying customer who cannot activate was previously invisible:
+            // failure emitted nothing at all, so the only trace was the
+            // absence of a success. The reason is a fixed enum — never the
+            // server's message, which is unbounded text.
+            trackConversionEvent('license_activation_failed', activationFailurePayload(result.error));
             setStatus({ kind: 'error', message: friendlyError(result.error, result.message) });
         }
     }
