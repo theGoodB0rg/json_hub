@@ -38,7 +38,9 @@
         "node_modules",
         "worker",
         "**/*.test.ts",
+        "**/*.test.tsx",
         "**/*.spec.ts",
+        "**/*.spec.tsx",
         "tests",
         "temp_old_*.tsx",
         "old_platform_data_temp.ts"
