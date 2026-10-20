@@ -29,7 +29,14 @@ export type ConversionEventName =
     | 'upsell_dismissed'
     | 'upsell_clicked'
     // Any click on a Gumroad "buy Pro" link. Source rides in `format`.
-    | 'checkout_clicked';
+    | 'checkout_clicked'
+    // What visitors actually do on a /test-data page. The cluster is ~24% of
+    // organic clicks and had never emitted a single event, so "they take the
+    // sample and leave" could be inferred but never measured. `platform`
+    // carries the dataset, `file_size_bytes` its size.
+    | 'sample_copied'
+    | 'sample_downloaded'
+    | 'converter_bridge_clicked';
 
 export interface ConversionEventPayload {
     [key: string]: string | number | boolean | null | undefined;
