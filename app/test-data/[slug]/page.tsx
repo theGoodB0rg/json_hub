@@ -22,8 +22,12 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     if (!dataset) return { title: 'Dataset Not Found' };
 
     return buildPageMetadata({
-        title: `${dataset.title} (Download & Convert to Excel) | JsonExport`,
-        description: `${dataset.description} Download raw JSON or convert into formatted Excel/CSV tables in 1-click.`,
+        // seoTitle/seoDescription win where query data showed the default
+        // template losing the click — see the note on the dataset itself.
+        title: dataset.seoTitle ?? `${dataset.title} (Download & Convert to Excel) | JsonExport`,
+        description:
+            dataset.seoDescription ??
+            `${dataset.description} Download raw JSON or convert into formatted Excel/CSV tables in 1-click.`,
         canonicalPath: testDataPath(dataset.slug),
     });
 }

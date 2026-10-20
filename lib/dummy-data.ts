@@ -5,6 +5,12 @@ export interface DummyDataset {
     description: string;
     data: any;
     converterSlug: string; // The URL slug to link them back to the tool
+    /** SERP title, when the on-page heading is the wrong thing to show in
+     *  search. Set it only with query data behind it; the default template
+     *  in app/test-data/[slug]/page.tsx handles the rest. */
+    seoTitle?: string;
+    /** SERP description to match an overridden seoTitle. */
+    seoDescription?: string;
 }
 
 export const dummyDatasets: DummyDataset[] = [
@@ -492,6 +498,17 @@ export const dummyDatasets: DummyDataset[] = [
         title: 'Highly Complex Nested JSON Dummy Dataset',
         description: 'A generic, incredibly messy JSON structure containing arrays of objects, objects containing arrays, missing keys, and diverse data types to test JSON flattening edge cases.',
         converterSlug: 'nested-arrays-to-excel',
+        // This page earns clicks from "complex json example" (2.82%) and
+        // "complex json" (4.55%) — the wording its title already carries —
+        // but nothing at all from "nested json example", its largest query
+        // by far: 385 impressions, 0 clicks, position 12.6 (GSC, Apr-Oct
+        // 2026). The default template put "Highly Complex Nested JSON Dummy
+        // Dataset (Download & Convert to Excel) | JsonExport" in front of
+        // them, which is 82 characters, so Google cut it mid-phrase and the
+        // word the searcher typed — "example" — never appeared at all.
+        seoTitle: 'Nested JSON Example: Complex Sample to Copy or Download',
+        seoDescription:
+            'A deliberately messy, deeply nested JSON example — arrays inside objects, objects inside arrays, missing keys and mixed types. Copy the raw JSON, download the .json file, or preview it as a flat table. No sign-up.',
         data: [
             {
                 "id": "REC-001",
