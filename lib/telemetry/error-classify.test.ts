@@ -17,6 +17,23 @@ describe('classifyErrorMessage', () => {
         ['File read error: NotReadableError: The file could not be read', 'file_read'],
         ['Invalid string length', 'out_of_memory'],
         ['Maximum call stack size exceeded', 'stack_overflow'],
+        // REGRESSION: a chunk-load failure quotes the asset URL, and
+        // "jsonexport.com" contains "json". These were all booked as
+        // json_syntax, i.e. as the user's malformed input.
+        [
+            'Loading chunk 7416 failed. (error: https://jsonexport.com/_next/static/chunks/7416-a1b2c3.js)',
+            'chunk_load',
+        ],
+        ['Loading chunk 7416 failed.', 'chunk_load'],
+        ['ChunkLoadError: Loading chunk app/layout failed.', 'chunk_load'],
+        [
+            'Failed to fetch dynamically imported module: https://jsonexport.com/_next/static/chunks/x.js',
+            'chunk_load',
+        ],
+        ['error loading dynamically imported module', 'chunk_load'],
+        ['Importing a module script failed.', 'chunk_load'],
+        // A bare mention of a JSON-named asset is not a syntax error either.
+        ['Failed to load https://jsonexport.com/sample.json', 'unknown'],
         ['something odd happened', 'unknown'],
         ['', 'unknown'],
     ])('%s → %s', (message, expected) => {

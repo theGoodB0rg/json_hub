@@ -9,6 +9,7 @@ import type { OutputViewMode } from '@/types/converter.types';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { trackFunnelStep } from '@/lib/analytics';
 import { pluginRegistry } from '@/lib/plugins/registry';
+import { importWithRetry, isChunkLoadError, stashForRecovery } from '@/lib/platform/chunkRecovery';
 
 /** When the current parse started, for the duration_ms telemetry column. */
 let parseStartedAt = 0;
@@ -585,42 +586,42 @@ export const useAppStore = create<AppState>()(
 
                             switch (format) {
                                 case 'csv': {
-                                    const { downloadCsv } = await import('@/lib/converters/jsonToCsv');
+                                    const { downloadCsv } = await importWithRetry(() => import('@/lib/converters/jsonToCsv'));
                                     saveResult = await downloadCsv(rows, effectiveSchema, `${fileName}.csv`);
                                     break;
                                 }
                                 case 'xlsx': {
                                     if (exportSettings.structure === 'table') {
-                                        const { jsonToXlsxTableView } = await import('@/lib/converters/jsonToXlsxTableView');
+                                        const { jsonToXlsxTableView } = await importWithRetry(() => import('@/lib/converters/jsonToXlsxTableView'));
                                         saveResult = await jsonToXlsxTableView(dataToExport, `${fileName}.xlsx`);
                                     } else if (isHierarchical) {
-                                        const { downloadXlsxHierarchical } = await import('@/lib/converters/jsonToXlsx');
+                                        const { downloadXlsxHierarchical } = await importWithRetry(() => import('@/lib/converters/jsonToXlsx'));
                                         saveResult = await downloadXlsxHierarchical(dataToExport, `${fileName}.xlsx`);
                                     } else {
-                                        const { downloadXlsx } = await import('@/lib/converters/jsonToXlsx');
+                                        const { downloadXlsx } = await importWithRetry(() => import('@/lib/converters/jsonToXlsx'));
                                         saveResult = await downloadXlsx(rows, effectiveSchema, `${fileName}.xlsx`);
                                     }
                                     break;
                                 }
                                 case 'html': {
                                     if (exportSettings.structure === 'table') {
-                                        const { downloadHtmlTableView } = await import('@/lib/converters/jsonToHtmlTableView');
+                                        const { downloadHtmlTableView } = await importWithRetry(() => import('@/lib/converters/jsonToHtmlTableView'));
                                         saveResult = await downloadHtmlTableView(dataToExport, `${fileName}.html`);
                                     } else {
-                                        const { downloadHtml } = await import('@/lib/converters/jsonToHtml');
+                                        const { downloadHtml } = await importWithRetry(() => import('@/lib/converters/jsonToHtml'));
                                         saveResult = await downloadHtml(rows, effectiveSchema, `${fileName}.html`);
                                     }
                                     break;
                                 }
                                 case 'zip': {
-                                    const { downloadZip } = await import('@/lib/converters/zipExporter');
+                                    const { downloadZip } = await importWithRetry(() => import('@/lib/converters/zipExporter'));
                                     savedFilename = `json-hub-${fileName}.zip`;
                                     saveResult = await downloadZip(rows, schema, parsedData, savedFilename);
                                     break;
                                 }
                                 case 'json': {
                                     const jsonStr = get().formattedOutput || JSON.stringify(parsedData, null, 2);
-                                    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
+                                    const { saveWithDialog } = await importWithRetry(() => import('@/lib/platform/downloadHelper'));
                                     saveResult = await saveWithDialog(jsonStr, `${fileName}.json`, 'application/json;charset=utf-8');
                                     break;
                                 }
@@ -669,17 +670,45 @@ export const useAppStore = create<AppState>()(
                             });
                             set({ isLoading: false, downloadProgress: 100 });
                         } catch (error) {
+                            const message = error instanceof Error ? error.message : 'Unknown error';
                             trackConversionEvent('export_error', {
                                 platform,
                                 format,
                                 structure: exportSettings.structure,
-                                error_message: error instanceof Error ? error.message : 'Unknown error',
+                                error_message: message,
                             });
+
+                            // A chunk that will not load is an app-delivery
+                            // failure, not a problem with the user's JSON:
+                            // say so, keep their input, and offer the reload
+                            // that is the only real fix.
+                            const chunkFailure = isChunkLoadError(error);
+                            const inputPreserved = chunkFailure && stashForRecovery(get().rawInput);
+
                             set({
                                 isLoading: false,
                                 downloadProgress: 0,
-                                parseErrors: [{ message: `Export error: ${error instanceof Error ? error.message : 'Unknown error'}` }],
+                                parseErrors: [{
+                                    message: chunkFailure
+                                        ? 'Part of the converter could not load, usually because the app was updated while this tab was open. Reload the page and export again.'
+                                        : `Export error: ${message}`,
+                                }],
                             });
+
+                            void (async () => {
+                                try {
+                                    const toasts = await import('@/lib/platform/exportErrorToast');
+                                    if (chunkFailure) {
+                                        toasts.showChunkRecoveryToast(inputPreserved);
+                                    } else {
+                                        toasts.showExportErrorToast(message);
+                                    }
+                                } catch {
+                                    // The toast module is itself code-split. If
+                                    // it cannot load either, parseErrors above
+                                    // is still set.
+                                }
+                            })();
                         }
                     },
 

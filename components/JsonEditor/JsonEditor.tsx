@@ -22,6 +22,7 @@ const HARD_MAX_SIZE = 100 * 1024 * 1024; // 100MB - show upsell (device-dependen
 
 import { FormatSwitcher } from '@/components/FormatSwitcher/FormatSwitcher';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
+import { takeRecoveryStash } from '@/lib/platform/chunkRecovery';
 
 /** A file the browser could not read (moved, locked, permission denied) used
  *  to fail silently: no message to the user, nothing in telemetry. */
@@ -63,6 +64,17 @@ export function JsonEditor({ platform }: { platform?: string }) {
     const [isDiagnosing, setIsDiagnosing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const skipNextAutoParseRef = useRef(false);
+
+    // Put back the input that a chunk-recovery reload was holding. The store
+    // persists settings only, so without this the reload we offer on a failed
+    // chunk load would throw away the user's JSON — which is why the old code
+    // could not simply tell them to refresh.
+    useEffect(() => {
+        const stashed = takeRecoveryStash();
+        if (stashed) setRawInput(stashed);
+        // Mount only: a later run would re-read an already-cleared stash.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Auto-parse with debounce
     useEffect(() => {

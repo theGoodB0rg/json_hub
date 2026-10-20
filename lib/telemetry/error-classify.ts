@@ -22,10 +22,18 @@ export type TelemetryErrorType =
     | 'stack_overflow'
     | 'worker_crash'
     | 'flatten_failed'
+    | 'chunk_load'
     | 'unknown';
 
 const RULES: Array<[RegExp, TelemetryErrorType]> = [
     [/input is empty/i, 'empty_input'],
+    // Must precede every JSON rule. A chunk-load failure quotes the asset URL,
+    // and our own host name contains "json", so a looser rule below would
+    // otherwise book an app-delivery failure as the user's bad syntax.
+    [
+        /loading chunk \S+ failed|chunkloaderror|(failed to fetch|error loading) dynamically imported module|importing a module script failed/i,
+        'chunk_load',
+    ],
     [/looks like an HTML page/i, 'not_json_html'],
     [/looks like XML/i, 'not_json_xml'],
     [/looks like CSV/i, 'not_json_csv'],
@@ -35,7 +43,12 @@ const RULES: Array<[RegExp, TelemetryErrorType]> = [
     [/out of memory|allocation failed|invalid string length|invalid array length/i, 'out_of_memory'],
     [/maximum call stack|too much recursion/i, 'stack_overflow'],
     [/unexpected end|end of (json )?(data|input)|unterminated|incomplete/i, 'json_truncated'],
-    [/json|unexpected (token|character|identifier|non-whitespace)|expected .* after|bad control character/i, 'json_syntax'],
+    [
+        // Anchored on real parser phrasing rather than a bare "json", which
+        // matched any message that merely mentioned a JSON-named URL or file.
+        /is not valid json|json parse error|in json at position|of the json data|unexpected (token|character|identifier|non-whitespace)|expected .* after|bad control character/i,
+        'json_syntax',
+    ],
 ];
 
 export function classifyErrorMessage(message: string | null | undefined): TelemetryErrorType {
