@@ -4,6 +4,10 @@ import { smartUnwrap } from '@/lib/parsers/unwrapper';
 
 const ctx: Worker = self as any;
 
+// Imports have evaluated by now. The store uses this to tell "the script never
+// loaded" (fall back to the main thread) from "it died mid-parse" (too large).
+ctx.postMessage({ type: 'READY' });
+
 ctx.addEventListener('message', (event) => {
     const { type, payload } = event.data;
 

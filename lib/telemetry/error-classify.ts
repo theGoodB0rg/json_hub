@@ -21,6 +21,7 @@ export type TelemetryErrorType =
     | 'out_of_memory'
     | 'stack_overflow'
     | 'worker_crash'
+    | 'worker_unavailable'
     | 'flatten_failed'
     | 'chunk_load'
     | 'unknown';

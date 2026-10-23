@@ -12,6 +12,10 @@ import { validateAndParse } from '@/lib/parsers/smartParse';
 
 const ctx: Worker = self as unknown as Worker;
 
+// Imports have evaluated: lets the store tell a script that never loaded from
+// a worker that died mid-file.
+ctx.postMessage({ type: 'READY' });
+
 let parser: JSONParser | null = null;
 let collectedItems: unknown[] = [];
 /** Top-level properties, for files whose root is an object (e.g. a Trello board). */

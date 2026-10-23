@@ -14,6 +14,9 @@ export type ConversionEventName =
     | 'parse_success'
     | 'sample_preview'
     | 'parse_error'
+    // The parser worker never finished loading. Not a parse failure, so it must
+    // not count toward the parse-error rate; parsing falls back to the main thread.
+    | 'worker_init_failed'
     | 'export_success'
     | 'export_error'
     | 'feedback_submitted'

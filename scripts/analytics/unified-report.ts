@@ -319,7 +319,8 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
 
     // Only real error events. page_view_edge rows carry an `edge:bot_score=…`
     // breadcrumb in error_type and used to dominate this list.
-    const errorEvents = events.filter(e => e.event_name.endsWith('_error') && !isSampleEvent(e));
+    // worker_init_failed is listed here but is not a parse_error, so it stays out of the parse failure rate.
+    const errorEvents = events.filter(e => (e.event_name.endsWith('_error') || e.event_name === 'worker_init_failed') && !isSampleEvent(e));
     const errorMap: Record<string, { count: number; samplePath?: string; example?: string }> = {};
     for (const e of errorEvents) {
         // Rows from before 2026-10-15 reached D1 with no message or type.

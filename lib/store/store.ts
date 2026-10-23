@@ -16,8 +16,47 @@ let parseStartedAt = 0;
 /** Size of the file currently being streamed (the streaming worker is reused). */
 let streamingFileBytes = 0;
 
+/** Shown when the streaming worker script could not be loaded at all. */
+const WORKER_UNAVAILABLE_MESSAGE =
+    'The converter engine could not start, so your file was not read. Reload the page and try again; if it keeps happening, a browser extension may be blocking it, or use the desktop app.';
+
+/** Reader for the file being streamed, so a dead worker can stop the read. */
+let streamingReader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+
+/** Set once the parser worker fails to start; parsing then runs on the main thread. */
+let workerUnavailable = false;
+
 function parseElapsedMs(): number | undefined {
     return parseStartedAt > 0 ? Math.round(performance.now() - parseStartedAt) : undefined;
+}
+
+function parseOnMainThread(get: () => AppState, set: (partial: Partial<AppState>) => void): void {
+    const { rawInput, isSample, activePluginId } = get();
+    let result: ReturnType<typeof validateAndParse>;
+    try {
+        result = validateAndParse(rawInput);
+    } catch (e) {
+        result = { success: false, errors: [{ message: e instanceof Error ? e.message : 'Parse error' }] } as typeof result;
+    }
+    const fields = {
+        source: 'main-thread',
+        platform: activePluginId,
+        file_size_bytes: rawInput.length,
+        duration_ms: parseElapsedMs(),
+    };
+    if (result.success) {
+        set({ parsedData: result.data, isParsed: true, parseErrors: [], isLoading: false });
+        if (isSample) {
+            trackConversionEvent('sample_preview', { ...fields, is_sample: true });
+        } else {
+            trackConversionEvent('parse_success', { ...fields, is_sample: false });
+            trackFunnelStep('parse_success', { is_sample: false });
+        }
+        get().flattenData();
+    } else {
+        set({ parsedData: null, isParsed: false, parseErrors: result.errors, flatData: [], schema: [], columnOrder: [], isLoading: false });
+        trackConversionEvent('parse_error', { ...fields, error_message: result.errors?.[0]?.message ?? 'Parse error' });
+    }
 }
 
 /** Shown when a parser worker dies (usually out of memory on a huge file). */
@@ -99,14 +138,17 @@ export const useAppStore = create<AppState>()(
                     futureStates: [],
 
                     initWorker: () => {
-                        if (typeof window === 'undefined' || get().worker) return;
+                        if (typeof window === 'undefined' || get().worker || workerUnavailable) return;
 
                         const worker = new Worker(new URL('../workers/parser.worker.ts', import.meta.url));
+                        let ready = false;
 
                         worker.onmessage = (event) => {
                             const { type, payload } = event.data;
 
-                            if (type === 'PARSE_SUCCESS') {
+                            if (type === 'READY') {
+                                ready = true;
+                            } else if (type === 'PARSE_SUCCESS') {
                                 const currentRawInput = get().rawInput;
                                 const isSample = get().isSample ?? false;
                                 set({
@@ -174,6 +216,22 @@ export const useAppStore = create<AppState>()(
                         // dependency) fires no message, so without this the UI
                         // stayed on its spinner forever and nothing was logged.
                         const handleCrash = (detail: string) => {
+                            if (!ready) {
+                                // Never finished loading, so no file is to blame: the
+                                // script was blocked or failed to fetch. Stop rebuilding
+                                // it and parse on the main thread instead.
+                                worker.terminate();
+                                workerUnavailable = true;
+                                set({ worker: null });
+                                trackConversionEvent('worker_init_failed', {
+                                    source: 'worker',
+                                    platform: get().activePluginId,
+                                    error_type: 'worker_unavailable',
+                                    error_message: detail,
+                                });
+                                if (get().isLoading) parseOnMainThread(get, set);
+                                return;
+                            }
                             set({ isLoading: false, worker: null, parseErrors: [{ message: WORKER_CRASH_MESSAGE }] });
                             trackConversionEvent('parse_error', {
                                 source: 'worker',
@@ -215,7 +273,9 @@ export const useAppStore = create<AppState>()(
 
                         const isStandardJsonPlugin = activePluginId === 'json-to-excel' || activePluginId === 'json-to-csv';
 
-                        if (worker && isStandardJsonPlugin) {
+                        if (isStandardJsonPlugin && workerUnavailable) {
+                            parseOnMainThread(get, set);
+                        } else if (worker && isStandardJsonPlugin) {
                             worker.postMessage({ type: 'PARSE', payload: rawInput });
                         } else {
                             try {
@@ -289,10 +349,13 @@ export const useAppStore = create<AppState>()(
                         if (!streamingWorker) {
                             streamingWorker = new Worker(new URL('../workers/streaming-parser.worker.ts', import.meta.url));
 
+                            let streamingReady = false;
                             streamingWorker.onmessage = (event) => {
                                 const { type, payload } = event.data;
 
-                                if (type === 'STREAM_PROGRESS') {
+                                if (type === 'READY') {
+                                    streamingReady = true;
+                                } else if (type === 'STREAM_PROGRESS') {
                                     set({ streamingProgress: payload });
                                 } else if (type === 'STREAM_COMPLETE') {
                                     set({
@@ -334,6 +397,22 @@ export const useAppStore = create<AppState>()(
                             };
 
                             const handleStreamingCrash = (detail: string) => {
+                                // Stop feeding chunks to a worker that is gone.
+                                void streamingReader?.cancel().catch(() => undefined);
+                                if (!streamingReady) {
+                                    // The script never loaded, so the file is not the
+                                    // problem. A fresh attempt builds a new worker.
+                                    streamingWorker!.terminate();
+                                    set({ isLoading: false, streamingProgress: null, streamingWorker: null, parseErrors: [{ message: WORKER_UNAVAILABLE_MESSAGE }] });
+                                    trackConversionEvent('worker_init_failed', {
+                                        source: 'streaming-worker',
+                                        platform: get().activePluginId,
+                                        file_size_bytes: streamingFileBytes,
+                                        error_type: 'worker_unavailable',
+                                        error_message: detail,
+                                    });
+                                    return;
+                                }
                                 set({ isLoading: false, streamingProgress: null, streamingWorker: null, parseErrors: [{ message: WORKER_CRASH_MESSAGE }] });
                                 trackConversionEvent('parse_error', {
                                     source: 'streaming-worker',
@@ -357,6 +436,7 @@ export const useAppStore = create<AppState>()(
                         streamingWorker.postMessage({ type: 'STREAM_START', payload: { totalSize: file.size } });
 
                         const reader = file.stream().getReader();
+                        streamingReader = reader;
 
                         const readChunks = async () => {
                             try {
