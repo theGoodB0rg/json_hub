@@ -23,7 +23,6 @@ function loadStore() {
     FakeWorker.instances = [];
     tracked.length = 0;
     (global as any).Worker = FakeWorker;
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require('./store').useAppStore as typeof import('./store').useAppStore;
 }
 
