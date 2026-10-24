@@ -5,6 +5,7 @@ import { loadGscData, GscSummary, GscQuery, GscPage } from './gsc-parser';
 import { fetchLiveGscData, GscTrend } from './gsc-fetcher';
 import { computeCaptureRate, formatCaptureRateSection } from './capture-rate';
 import { computeMonetization, MonetizationFunnel } from '../../lib/analytics/monetization';
+import { snapshotFromReport, loadPreviousSnapshot, saveSnapshot, formatSnapshotComparison } from './snapshots';
 
 interface TelemetryEvent {
     id: string;
@@ -435,6 +436,12 @@ export async function generateUnifiedAnalyticsReport(): Promise<UnifiedReportDat
 
     // 6. Terminal Output Dashboard
     await printTerminalDashboard(reportData);
+
+    // 7. Dated snapshot + comparison against the last earlier-dated one
+    const snapshot = snapshotFromReport(reportData);
+    const previous = loadPreviousSnapshot(outDir, snapshot.date);
+    saveSnapshot(outDir, snapshot);
+    console.log(formatSnapshotComparison(snapshot, previous) + '\n');
 
     return reportData;
 }
