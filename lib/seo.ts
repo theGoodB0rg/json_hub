@@ -1,6 +1,23 @@
 import type { Metadata } from 'next';
 import { ROUTES, SITE_ORIGIN, toAbsoluteUrl } from '@/lib/routes';
 
+/** Roughly where a search result cuts a title off (~600px). */
+export const TITLE_MAX = 60;
+
+/**
+ * First candidate that fits in a search result, else the shortest one.
+ *
+ * Titles were composed as `<headline> - JsonExport`, so the brand suffix was
+ * often what pushed a headline past the cut and the closing words — the ones
+ * a searcher scans for — were lost. List candidates longest-to-shortest and
+ * the brand only appears when there is room for it.
+ */
+export function fitTitle(candidates: string[], max: number = TITLE_MAX): string {
+    const fits = candidates.find((c) => c.length <= max);
+    if (fits) return fits;
+    return candidates.reduce((a, b) => (b.length < a.length ? b : a));
+}
+
 interface BuildPageMetadataInput {
     title: string;
     description?: string;

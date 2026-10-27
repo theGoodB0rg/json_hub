@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Metadata } from 'next';
 import { FAQSchema } from '@/components/FAQSchema';
-import { buildArticleMetadata } from '@/lib/seo';
+import { buildArticleMetadata, fitTitle } from '@/lib/seo';
 import { ROUTES, blogPostPath } from '@/lib/routes';
 import { RelatedLinks } from '@/components/RelatedLinks';
 import { relatedForBlogPost } from '@/lib/internal-links';
@@ -29,8 +29,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         return {};
     }
 
+    const headline = postData.seoTitle ?? postData.title;
     return buildArticleMetadata({
-        title: `${postData.title} - JsonExport`,
+        title: fitTitle([`${headline} - JsonExport`, headline]),
         description: postData.description,
         publishedTime: postData.date,
         canonicalPath: blogPostPath(params.slug),

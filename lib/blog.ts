@@ -14,9 +14,24 @@ export type BlogPost = {
     title: string;
     date: string;
     description?: string;
+    /** Overrides the <title> only; the page keeps `title` as its H1. For posts
+     *  whose headline is too long for a search result. */
+    seoTitle?: string;
     content?: string;
     faqs?: FAQItem[];
 };
+
+type Frontmatter = { date: string; title: string; description?: string; excerpt?: string; seoTitle?: string };
+
+/**
+ * Four posts wrote `excerpt:` and no `description:`, so they shipped with no
+ * meta description at all and Google composed its own snippet. `excerpt` is
+ * the same kind of sentence, so it stands in when `description` is absent.
+ */
+function readFrontmatter(data: Record<string, unknown>): Omit<BlogPost, 'id'> {
+    const { excerpt, ...rest } = data as Frontmatter;
+    return { ...rest, description: rest.description ?? excerpt };
+}
 
 /**
  * Extract FAQ items from markdown content.
@@ -80,7 +95,7 @@ export function getSortedPostsData(): BlogPost[] {
         // Combine the data with the id
         return {
             id,
-            ...(matterResult.data as { date: string; title: string; description?: string }),
+            ...readFrontmatter(matterResult.data),
         };
     });
     // Sort posts by date
@@ -112,6 +127,6 @@ export async function getPostData(id: string): Promise<BlogPost | null> {
         id,
         content: matterResult.content,
         faqs: faqs.length > 0 ? faqs : undefined,
-        ...(matterResult.data as { date: string; title: string; description?: string }),
+        ...readFrontmatter(matterResult.data),
     };
 }
