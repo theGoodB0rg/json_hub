@@ -87,6 +87,48 @@ describe('PostExportUpsell', () => {
         expect(screen.getAllByRole('dialog')).toHaveLength(1);
     });
 
+    it('leads with the file size for a large export', async () => {
+        render(<PostExportUpsell />);
+        fireExport({ platform: 'json-to-excel', format: 'xlsx', file_size_bytes: 3 * 1024 * 1024 });
+
+        const dialog = await waitForToast();
+        expect(dialog).toHaveTextContent(/3\.0 MB file/);
+        expect(dialog).toHaveTextContent(/1 GB\+/);
+    });
+
+    it('speaks to workflow once the browser has exported before', async () => {
+        localStorage.setItem('jsonexport:real-export-count', '2');
+        render(<PostExportUpsell />);
+        fireExport({ platform: 'json-to-excel', format: 'xlsx', file_size_bytes: 120_000 });
+
+        const dialog = await waitForToast();
+        expect(dialog).toHaveTextContent(/Converting these regularly/);
+        expect(dialog).toHaveTextContent(/folder/i);
+    });
+
+    it('keeps the first-time small-file message free of big-file claims', async () => {
+        render(<PostExportUpsell />);
+        fireExport({ platform: 'json-to-excel', format: 'xlsx', file_size_bytes: 120_000 });
+
+        const dialog = await waitForToast();
+        expect(dialog).toHaveTextContent(/never left your browser/);
+        expect(dialog).not.toHaveTextContent(/MB file/);
+    });
+
+    it('counts exports the cooldown suppresses so history is not lost', async () => {
+        localStorage.setItem(COOLDOWN_KEY, String(Date.now() - 60_000));
+        render(<PostExportUpsell />);
+        fireExport({ platform: 'trello', format: 'xlsx' });
+        fireExport({ platform: 'trello', format: 'csv' });
+        expect(localStorage.getItem('jsonexport:real-export-count')).toBe('2');
+    });
+
+    it('does not count sample exports toward history', async () => {
+        render(<PostExportUpsell />);
+        fireExport({ platform: 'jira', format: 'xlsx', is_sample: true });
+        expect(localStorage.getItem('jsonexport:real-export-count')).toBeNull();
+    });
+
     it('ignores non-export events', async () => {
         render(<PostExportUpsell />);
         act(() => {

@@ -17,24 +17,99 @@
  * - 24-hour cooldown after shown — a user who exports five files in one
  *   session isn't shown five toasts. Dismissal and click both set the
  *   cooldown (click because they already engaged).
- * - Opens Gumroad with ?src=post_export_upsell so revenue is attributable
- *   to this surface vs the LargeFileUpsell surface in future reporting.
+ * - The message follows observed behavior (see lib/growth/upsell-variant.ts):
+ *   a large export, a returning exporter, or a first-time small export each
+ *   get their own copy, and shown/dismissed/clicked are tagged with the
+ *   variant so the report can compare them.
+ * - Opens Gumroad with ?src=post_export_upsell_<variant> so revenue is
+ *   attributable to this surface and variant vs the LargeFileUpsell surface.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { useProStore } from '@/lib/store/proStore';
 import { checkoutUrl, trackCheckoutClick } from '@/components/BuyProLink';
+import {
+    chooseUpsellVariant,
+    checkoutSourceFor,
+    formatMegabytes,
+    type UpsellVariant,
+} from '@/lib/growth/upsell-variant';
 
 const COOLDOWN_KEY = 'jsonexport:post-export-upsell-last';
+const EXPORT_COUNT_KEY = 'jsonexport:real-export-count';
 const COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24h — one impression per day max
-const CHECKOUT_SOURCE = 'post_export_upsell';
 
 interface ExportDetails {
     platform?: string;
     format?: string;
     fileSizeBytes?: number;
+    variant: UpsellVariant;
+}
+
+const DEFAULT_DETAILS: ExportDetails = { variant: 'first' };
+
+interface UpsellCopy {
+    title: string;
+    body: ReactNode;
+}
+
+/** One message per observed behavior. Each leads with what the visitor just
+ *  did, and every claim is one the desktop page already makes. */
+function copyFor(details: ExportDetails): UpsellCopy {
+    switch (details.variant) {
+        case 'large':
+            return {
+                title: details.fileSizeBytes
+                    ? `That was a ${formatMegabytes(details.fileSizeBytes)} MB file.`
+                    : 'That was a big file.',
+                body: (
+                    <>
+                        Big files are where the browser strains. The <strong>desktop app</strong> streams
+                        1 GB+ files without freezing and converts whole folders in batch. One-time $29,
+                        lifetime license.
+                    </>
+                ),
+            };
+        case 'returning':
+            return {
+                title: 'Converting these regularly?',
+                body: (
+                    <>
+                        Skip the upload-and-wait loop. The <strong>desktop app</strong> batch-converts
+                        folders and can watch a folder for new files, all offline. One-time $29, lifetime
+                        license.
+                    </>
+                ),
+            };
+        default:
+            return {
+                title: 'Nice — your file’s ready.',
+                body: (
+                    <>
+                        It never left your browser. The <strong>desktop app</strong> keeps it that way for
+                        any file size, fully offline. One-time $29, lifetime license.
+                    </>
+                ),
+            };
+    }
+}
+
+function readExportCount(): number {
+    try {
+        return Number(window.localStorage.getItem(EXPORT_COUNT_KEY) || '0') || 0;
+    } catch {
+        return 0;
+    }
+}
+
+function writeExportCount(n: number) {
+    try {
+        window.localStorage.setItem(EXPORT_COUNT_KEY, String(n));
+    } catch {
+        // ignore
+    }
 }
 
 function readLastShown(): number {
@@ -55,7 +130,7 @@ function writeLastShown() {
 
 export function PostExportUpsell() {
     const [visible, setVisible] = useState(false);
-    const [details, setDetails] = useState<ExportDetails>({});
+    const [details, setDetails] = useState<ExportDetails>(DEFAULT_DETAILS);
     const isPro = useProStore((s) => s.isPro);
 
     useEffect(() => {
@@ -72,24 +147,36 @@ export function PostExportUpsell() {
             // defensively re-check via the store accessor below.
             if (useProStore.getState().isPro) return;
 
+            // Count every real export, including ones the cooldown suppresses:
+            // "has exported before" must not depend on having been pitched.
+            const priorExports = readExportCount();
+            writeExportCount(priorExports + 1);
+
             // Respect the cooldown so one session with many exports shows
             // the toast exactly once.
             if (Date.now() - readLastShown() < COOLDOWN_MS) return;
 
+            const fileSizeBytes = Number(detail.payload?.file_size_bytes) || undefined;
+            const variant = chooseUpsellVariant({ fileSizeBytes, priorExports });
             setDetails({
                 platform: detail.payload?.platform,
                 format: detail.payload?.format,
-                fileSizeBytes: detail.payload?.file_size_bytes,
+                fileSizeBytes,
+                variant,
             });
             // Delay the toast a touch so it doesn't collide with the file
             // download prompt in the browser chrome.
             setTimeout(() => {
                 setVisible(true);
                 writeLastShown();
+                // The variant rides in `format`: D1 drops unknown payload
+                // keys, and this is the column checkout_clicked already uses
+                // for its source, so shown/dismissed/clicked line up per variant.
                 trackConversionEvent('upsell_shown', {
                     upsell_type: 'post_export',
                     platform: detail.payload?.platform,
-                    format: detail.payload?.format,
+                    format: variant,
+                    file_size_bytes: fileSizeBytes,
                 });
             }, 800);
         };
@@ -105,21 +192,25 @@ export function PostExportUpsell() {
         trackConversionEvent('upsell_dismissed', {
             upsell_type: 'post_export',
             platform: details.platform,
+            format: details.variant,
             dismiss_reason: reason,
         });
     };
+
+    const checkoutSource = checkoutSourceFor(details.variant);
+    const copy = copyFor(details);
 
     const click = () => {
         trackConversionEvent('upsell_clicked', {
             upsell_type: 'post_export',
             platform: details.platform,
-            format: details.format,
+            format: details.variant,
         });
-        trackCheckoutClick(CHECKOUT_SOURCE);
+        trackCheckoutClick(checkoutSource);
         // Open outside the current tab so we don't interrupt the user who
         // might be about to open their fresh download.
         if (typeof window !== 'undefined') {
-            window.open(checkoutUrl(CHECKOUT_SOURCE), '_blank', 'noopener,noreferrer');
+            window.open(checkoutUrl(checkoutSource), '_blank', 'noopener,noreferrer');
         }
         setVisible(false);
     };
@@ -148,11 +239,10 @@ export function PostExportUpsell() {
                 id="post-export-upsell-title"
                 className="pr-6 text-sm font-semibold text-neutral-900 dark:text-neutral-100"
             >
-                Nice — your file&apos;s ready.
+                {copy.title}
             </h3>
             <p className="mt-1.5 text-xs leading-relaxed text-neutral-600 dark:text-neutral-300">
-                Converting a lot more? The <strong>desktop app</strong> handles 1 GB+ files, batch
-                mode, and folder-watch. One-time $29, lifetime license.
+                {copy.body}
             </p>
             <div className="mt-3 flex items-center gap-2">
                 <button

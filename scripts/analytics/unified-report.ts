@@ -60,7 +60,8 @@ function formatMonetizationSection(m: MonetizationFunnel): string {
 | Pro landing page views (/desktop) | ${m.desktopPageViews} |
 | Post-export upsell shown | ${m.upsellShown} |
 | Post-export upsell dismissed | ${m.upsellDismissed} |
-| **Buy-button clicks (all sources)** | **${m.totalCheckoutClicks}** |
+${Object.entries(m.upsellByVariant).filter(([, v]) => v.shown + v.dismissed + v.clicks > 0).map(([name, v]) => `| ↳ \`${name}\` variant: shown / dismissed / buy clicks | ${v.shown} / ${v.dismissed} / ${v.clicks} |
+`).join('')}| **Buy-button clicks (all sources)** | **${m.totalCheckoutClicks}** |
 | Post-export upsell clicks (before buy tracking) | ${m.legacyUpsellClicks} |
 | Desktop app downloads | ${m.desktopDownloads} |
 | License activation attempts | ${m.activationAttempts} |
@@ -90,6 +91,10 @@ function printMonetizationBlock(m: MonetizationFunnel): void {
     console.log('└───────────────────────────────────────────────────────────────────┘');
     console.log(`• Pro Landing Views (/desktop): ${m.desktopPageViews}`);
     console.log(`• Post-export Upsell Shown:     ${m.upsellShown} (dismissed ${m.upsellDismissed})`);
+    for (const [variant, v] of Object.entries(m.upsellByVariant)) {
+        if (v.shown + v.dismissed + v.clicks === 0) continue;
+        console.log(`    ↳ ${variant.padEnd(26)} shown ${v.shown} | dismissed ${v.dismissed} | buy clicks ${v.clicks}`);
+    }
     console.log(`• Buy-button Clicks:            ${m.totalCheckoutClicks}`);
     for (const [source, n] of Object.entries(m.checkoutClicks).sort((a, b) => b[1] - a[1])) {
         console.log(`    ↳ ${source.padEnd(26)} ${n}`);

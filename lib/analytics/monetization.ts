@@ -7,6 +7,8 @@
  * part that was wrong before, so they are the part that needs tests.
  */
 
+import { UPSELL_VARIANTS, checkoutSourceFor, type UpsellVariant } from '../growth/upsell-variant';
+
 /** The subset of the D1 `events` row this module reads. */
 export interface MonetizationEvent {
     event_name: string;
@@ -27,6 +29,11 @@ export interface MonetizationFunnel {
     desktopPageViews: number;
     upsellShown: number;
     upsellDismissed: number;
+    /** Post-export upsell results per behavior variant. Counts only rows that
+     *  carry a variant in `format`; shown/dismissed rows from before variants
+     *  existed carried the export format and stay in the totals above only.
+     *  `clicks` is the variant's own checkout source. */
+    upsellByVariant: Record<UpsellVariant, { shown: number; dismissed: number; clicks: number }>;
     /** `checkout_clicked` events, keyed by the link's source (sent as `format`). */
     checkoutClicks: Record<string, number>;
     totalCheckoutClicks: number;
@@ -59,10 +66,19 @@ export function computeMonetization(events: MonetizationEvent[]): MonetizationFu
         const source = e.format || 'unknown';
         checkoutClicks[source] = (checkoutClicks[source] || 0) + 1;
     }
+    const upsellByVariant = {} as MonetizationFunnel['upsellByVariant'];
+    for (const v of UPSELL_VARIANTS) {
+        upsellByVariant[v] = {
+            shown: real.filter(e => e.event_name === 'upsell_shown' && e.format === v).length,
+            dismissed: real.filter(e => e.event_name === 'upsell_dismissed' && e.format === v).length,
+            clicks: checkoutClicks[checkoutSourceFor(v)] || 0,
+        };
+    }
     return {
         desktopPageViews: real.filter(e => e.event_name === 'page_view' && e.path === '/desktop').length,
         upsellShown: real.filter(e => e.event_name === 'upsell_shown').length,
         upsellDismissed: real.filter(e => e.event_name === 'upsell_dismissed').length,
+        upsellByVariant,
         checkoutClicks,
         totalCheckoutClicks: Object.values(checkoutClicks).reduce((a, b) => a + b, 0),
         // Post-export upsell now also fires checkout_clicked, so only rows from

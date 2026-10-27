@@ -3,6 +3,32 @@ import { computeMonetization } from './monetization';
 const base = { id: 'x', platform: null, format: null, path: '/', timestamp: 1, is_sample: 0 };
 const ev = (over: Record<string, unknown>) => ({ ...base, ...over }) as never;
 
+describe('computeMonetization upsell variants', () => {
+    it('splits shown, dismissed and buy clicks per variant', () => {
+        const m = computeMonetization([
+            ev({ event_name: 'upsell_shown', format: 'large' }),
+            ev({ event_name: 'upsell_shown', format: 'large' }),
+            ev({ event_name: 'upsell_dismissed', format: 'large' }),
+            ev({ event_name: 'upsell_shown', format: 'first' }),
+            ev({ event_name: 'checkout_clicked', format: 'post_export_upsell_large' }),
+        ]);
+        expect(m.upsellByVariant.large).toEqual({ shown: 2, dismissed: 1, clicks: 1 });
+        expect(m.upsellByVariant.first).toEqual({ shown: 1, dismissed: 0, clicks: 0 });
+        expect(m.upsellByVariant.returning).toEqual({ shown: 0, dismissed: 0, clicks: 0 });
+    });
+
+    it('keeps pre-variant shown rows in the totals but out of every variant', () => {
+        const m = computeMonetization([ev({ event_name: 'upsell_shown', format: 'xlsx' })]);
+        expect(m.upsellShown).toBe(1);
+        expect(Object.values(m.upsellByVariant).every(v => v.shown === 0)).toBe(true);
+    });
+
+    it('ignores sample rows', () => {
+        const m = computeMonetization([ev({ event_name: 'upsell_shown', format: 'large', is_sample: 1 })]);
+        expect(m.upsellByVariant.large.shown).toBe(0);
+    });
+});
+
 describe('computeMonetization', () => {
     it('counts legacy upsell_clicked rows and new named events together', () => {
         // Rows written before the event split, told apart only by path.
