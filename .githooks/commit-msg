@@ -1,0 +1,4 @@
+#!/bin/sh
+# Keep commit messages to the author's own words: drop co-author trailers
+# and tool-added "generated with" footers.
+sed -i -E '/^[[:space:]]*co-authored-by:/Id; /^[[:space:]]*.{0,8}generated with /Id' "$1"
