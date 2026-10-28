@@ -24,6 +24,7 @@ export type TelemetryErrorType =
     | 'worker_unavailable'
     | 'flatten_failed'
     | 'chunk_load'
+    | 'excel_limit'
     | 'unknown';
 
 const RULES: Array<[RegExp, TelemetryErrorType]> = [
@@ -35,6 +36,8 @@ const RULES: Array<[RegExp, TelemetryErrorType]> = [
         /loading chunk \S+ failed|chunkloaderror|(failed to fetch|error loading) dynamically imported module|importing a module script failed/i,
         'chunk_load',
     ],
+    // SheetJS: "Text length must not exceed 32767 characters", "Sheet names cannot exceed 31 chars".
+    [/must not exceed 32767|sheet names? cannot exceed/i, 'excel_limit'],
     [/looks like an HTML page/i, 'not_json_html'],
     [/looks like XML/i, 'not_json_xml'],
     [/looks like CSV/i, 'not_json_csv'],

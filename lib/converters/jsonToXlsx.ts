@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import { appendSheet, buildSheet, writeXlsx } from './xlsxWriter';
 
 /**
  * Converts flat JSON data to Excel format
@@ -17,20 +18,21 @@ export function jsonToXlsx(
     ];
 
     // Create worksheet
-    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const { worksheet, report } = buildSheet(worksheetData);
 
     // Auto-size columns based on content
     const columnWidths = schema.map((header, colIndex) => {
         const headerLength = header.length;
-        const maxDataLength = Math.max(
-            ...data.map((row) => {
-                const value = row[header];
-                return value !== null && value !== undefined
-                    ? String(value).length
-                    : 0;
-            })
-        );
-        return { wch: Math.max(headerLength, maxDataLength, 10) };
+        // A loop, not Math.max(...spread): spreading hundreds of thousands of
+        // rows overflows the call stack. Width is capped at Excel's own max (255).
+        let maxDataLength = 0;
+        for (const row of data) {
+            const value = row[header];
+            if (value === null || value === undefined) continue;
+            const len = String(value).length;
+            if (len > maxDataLength) maxDataLength = len;
+        }
+        return { wch: Math.min(Math.max(headerLength, maxDataLength, 10), 255) };
     });
 
     worksheet['!cols'] = columnWidths;
@@ -49,7 +51,7 @@ export function jsonToXlsx(
 
     // Create workbook
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+    appendSheet(workbook, worksheet, 'Data', report);
 
     return workbook;
 }
@@ -66,7 +68,7 @@ export async function downloadXlsx(
     filename: string = 'export.xlsx'
 ) {
     const workbook = jsonToXlsx(data, schema);
-    const bytes = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
+    const bytes = writeXlsx(workbook);
     const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(
         bytes,
@@ -168,7 +170,7 @@ export function jsonToXlsxHierarchical(data: any): XLSX.WorkBook {
     processNode(null, data, 0);
 
     // Create Sheets
-    const worksheet = XLSX.utils.aoa_to_sheet(rows);
+    const { worksheet, report } = buildSheet(rows);
     worksheet['!merges'] = merges;
 
     // Auto-size columns (simple heuristic)
@@ -214,7 +216,7 @@ export function jsonToXlsxHierarchical(data: any): XLSX.WorkBook {
     }
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Nested Data');
+    appendSheet(workbook, worksheet, 'Nested Data', report);
     return workbook;
 }
 
@@ -226,7 +228,7 @@ export async function downloadXlsxHierarchical(
     filename: string = 'nested-export.xlsx'
 ) {
     const workbook = jsonToXlsxHierarchical(data);
-    const bytes = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
+    const bytes = writeXlsx(workbook);
     const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(
         bytes,

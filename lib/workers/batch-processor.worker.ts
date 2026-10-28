@@ -12,6 +12,7 @@
 import { flattenJSON } from '@/lib/parsers/flattener';
 import { smartUnwrap } from '@/lib/parsers/unwrapper';
 import * as XLSX from 'xlsx';
+import { appendSheet, buildSheet, writeXlsx } from '@/lib/converters/xlsxWriter';
 import JSZip from 'jszip';
 
 const ctx: Worker = self as unknown as Worker;
@@ -123,12 +124,12 @@ async function processBatch({ files, format }: BatchStartPayload) {
                     schema,
                     ...rows.map(row => schema.map(col => row[col] ?? null))
                 ];
-                const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+                const { worksheet, report } = buildSheet(worksheetData);
                 const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+                appendSheet(workbook, worksheet, 'Data', report);
 
                 // Write to buffer
-                const excelBuffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' });
+                const excelBuffer = writeXlsx(workbook);
                 zip.file(`${baseName}.xlsx`, excelBuffer);
             } else {
                 // Generate CSV

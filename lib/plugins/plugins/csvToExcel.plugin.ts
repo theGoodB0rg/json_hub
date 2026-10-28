@@ -3,7 +3,7 @@ import { parseCsvToJson } from '@/lib/parsers/csv/csvParser';
 import { jsonToXlsx } from '@/lib/converters/jsonToXlsx';
 import { jsonToCsv } from '@/lib/converters/jsonToCsv';
 
-import * as XLSX from 'xlsx';
+import { writeXlsx } from '@/lib/converters/xlsxWriter';
 
 export const csvToExcelPlugin: ConverterPlugin = {
     id: 'csv-to-excel',
@@ -36,7 +36,7 @@ export const csvToExcelPlugin: ConverterPlugin = {
         const schema = options?.schema || (data[0] ? Object.keys(data[0]) : []);
         if (format === 'xlsx') {
             const wb = jsonToXlsx(data, schema);
-            const arrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const arrayBuffer = writeXlsx(wb);
             const blob = new Blob([arrayBuffer], {
                 type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             });

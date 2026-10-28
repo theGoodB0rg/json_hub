@@ -46,3 +46,11 @@ export function showChunkRecoveryToast(inputPreserved: boolean) {
         ),
     });
 }
+
+/** The export succeeded, but Excel's format limits forced some content to be shortened. */
+export function showExcelLimitToast(description: string) {
+    toast({
+        title: 'Some cells were shortened',
+        description,
+    });
+}

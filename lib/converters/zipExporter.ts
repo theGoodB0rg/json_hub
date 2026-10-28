@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import { jsonToCsv } from './jsonToCsv';
 import { jsonToXlsx } from './jsonToXlsx';
 import { jsonToHtml } from './jsonToHtml';
-import * as XLSX from 'xlsx';
+import { writeXlsx } from './xlsxWriter';
 
 /**
  * Creates a ZIP file containing all export formats
@@ -25,7 +25,7 @@ export async function createZipExport(
 
     // Add Excel
     const workbook = jsonToXlsx(data, schema);
-    const excelBuffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' });
+    const excelBuffer = writeXlsx(workbook);
     zip.file(`export-${timestamp}.xlsx`, excelBuffer);
 
     // Add HTML

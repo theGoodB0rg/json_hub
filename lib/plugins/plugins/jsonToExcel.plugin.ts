@@ -4,7 +4,7 @@ import { flattenJSON } from '@/lib/parsers/flattener';
 import { smartUnwrap } from '@/lib/parsers/unwrapper';
 import { jsonToXlsx } from '@/lib/converters/jsonToXlsx';
 
-import * as XLSX from 'xlsx';
+import { writeXlsx } from '@/lib/converters/xlsxWriter';
 
 export const jsonToExcelPlugin: ConverterPlugin = {
     id: 'json-to-excel',
@@ -57,7 +57,7 @@ export const jsonToExcelPlugin: ConverterPlugin = {
         if (format === 'xlsx') {
             const schema = options?.schema || Object.keys(data[0] || {});
             const wb = jsonToXlsx(data, schema);
-            const arrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const arrayBuffer = writeXlsx(wb);
             const blob = new Blob([arrayBuffer], {
                 type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             });

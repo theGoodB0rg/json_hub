@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import { appendSheet, buildSheet, writeXlsx } from './xlsxWriter';
 
 /**
  * Converts JSON to Excel with nested table structure using merged cells
@@ -135,7 +136,7 @@ export function generateTableXlsx(data: any): XLSX.WorkBook | null {
     console.log('Worksheet data sample:', wsData.slice(0, 3));
 
     // Create worksheet
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const { worksheet: ws, report } = buildSheet(wsData);
 
     // Set column widths
     const colWidths = columnHeaders.map(() => ({ wch: 15 }));
@@ -143,7 +144,7 @@ export function generateTableXlsx(data: any): XLSX.WorkBook | null {
 
     // Create workbook and export
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Data');
+    appendSheet(wb, ws, 'Data', report);
 
     return wb;
 }
@@ -154,7 +155,7 @@ export function generateTableXlsx(data: any): XLSX.WorkBook | null {
 export async function jsonToXlsxTableView(data: any, filename: string = 'table-export.xlsx') {
     const wb = generateTableXlsx(data);
     if (!wb) return;
-    const bytes = XLSX.write(wb, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
+    const bytes = writeXlsx(wb);
     const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(
         bytes,
