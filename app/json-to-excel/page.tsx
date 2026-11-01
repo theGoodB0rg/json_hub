@@ -6,10 +6,13 @@ import { FAQSchema } from '@/components/FAQSchema';
 import Link from 'next/link';
 
 export const metadata: Metadata = buildPageMetadata({
-    // "json to xlsx" sits at pos 7.2 with 222 impressions in GSC — moving
-    // it into the title (not just the body) is the cheapest lever to lift
-    // CTR on that spelling without affecting the "json to excel" ranking.
-    title: 'JSON to XLSX / Excel Converter — Free, Private, No Upload',
+    // GSC Oct 4–Nov 1: "json to excel converter" (735 impr, 1.5% CTR) is the
+    // phrasing searchers use most after the head term, and the "online free"
+    // variants earn the best CTR (5.8–7.9%). "Large files" is backed by
+    // telemetry: 51 of 160 real exports were over 1 MB. Previous title
+    // ('JSON to XLSX / Excel Converter — Free, Private, No Upload', from
+    // 2026-10-10) is the baseline to compare CTR against.
+    title: 'JSON to Excel Converter Online — Free, Handles Large Files',
     description: 'Convert JSON to Excel (.xlsx) in one click. Auto-flattens nested arrays, fixes [object Object] errors, handles 100 MB+ files. 100% in your browser, no sign-up, no upload.',
     canonicalPath: ROUTES.jsonToExcel,
 });

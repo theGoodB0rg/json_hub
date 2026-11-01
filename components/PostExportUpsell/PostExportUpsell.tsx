@@ -164,11 +164,14 @@ export function PostExportUpsell() {
                 fileSizeBytes,
                 variant,
             });
+            // Claim the cooldown now, before the delay. Writing it inside the
+            // timeout let a burst of export events (11 in one millisecond on
+            // 2026-10-25) all pass the check above and each log a showing.
+            writeLastShown();
             // Delay the toast a touch so it doesn't collide with the file
             // download prompt in the browser chrome.
             setTimeout(() => {
                 setVisible(true);
-                writeLastShown();
                 // The variant rides in `format`: D1 drops unknown payload
                 // keys, and this is the column checkout_clicked already uses
                 // for its source, so shown/dismissed/clicked line up per variant.

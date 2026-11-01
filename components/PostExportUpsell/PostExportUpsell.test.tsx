@@ -87,6 +87,24 @@ describe('PostExportUpsell', () => {
         expect(screen.getAllByRole('dialog')).toHaveLength(1);
     });
 
+    it('logs one showing for a burst of exports inside the toast delay', async () => {
+        const shown: unknown[] = [];
+        const listener = (e: Event) => {
+            if ((e as CustomEvent).detail?.name === 'upsell_shown') shown.push(e);
+        };
+        window.addEventListener(EVENT, listener);
+        try {
+            render(<PostExportUpsell />);
+            // Production saw 11 in one millisecond — all before the 800ms
+            // delay elapsed, when the cooldown used to be written.
+            for (let i = 0; i < 11; i++) fireExport({ platform: 'json-to-excel', format: 'xlsx' });
+            await waitForToast();
+            expect(shown).toHaveLength(1);
+        } finally {
+            window.removeEventListener(EVENT, listener);
+        }
+    });
+
     it('leads with the file size for a large export', async () => {
         render(<PostExportUpsell />);
         fireExport({ platform: 'json-to-excel', format: 'xlsx', file_size_bytes: 3 * 1024 * 1024 });
