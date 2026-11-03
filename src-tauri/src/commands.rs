@@ -226,6 +226,17 @@ pub fn write_bytes_to_path(path: String, bytes: Vec<u8>) -> Result<(), String> {
     write_bytes_impl(path, bytes)
 }
 
+fn check_write_size(len: usize) -> Result<(), String> {
+    if len > MAX_WRITE_BYTES {
+        return Err(format!(
+            "Save failed: file is {} MB, which is above the {} MB in-memory cap. Use the desktop app's streaming converter for files this large.",
+            len / (1024 * 1024),
+            MAX_WRITE_BYTES / (1024 * 1024)
+        ));
+    }
+    Ok(())
+}
+
 // Split from the #[command] wrapper so unit tests can call it directly
 // without needing a Tauri app handle.
 pub(crate) fn write_bytes_impl(path: String, bytes: Vec<u8>) -> Result<(), String> {
@@ -233,17 +244,13 @@ pub(crate) fn write_bytes_impl(path: String, bytes: Vec<u8>) -> Result<(), Strin
         warn!("write_bytes rejected: empty path");
         return Err("Save failed: no destination was selected.".to_string());
     }
-    if bytes.len() > MAX_WRITE_BYTES {
+    if let Err(e) = check_write_size(bytes.len()) {
         warn!(
             "write_bytes rejected: size {} exceeds cap {}",
             bytes.len(),
             MAX_WRITE_BYTES
         );
-        return Err(format!(
-            "Save failed: file is {} MB, which is above the {} MB in-memory cap. Use the desktop app's streaming converter for files this large.",
-            bytes.len() / (1024 * 1024),
-            MAX_WRITE_BYTES / (1024 * 1024)
-        ));
+        return Err(e);
     }
     let target = Path::new(&path);
     match target.parent() {
@@ -364,29 +371,11 @@ mod write_bytes_tests {
 
     #[test]
     fn oversize_bytes_rejected_without_touching_disk() {
-        // Build a path we expect NOT to be created
-        let path = tmp_file("too-big.csv");
-        let _ = fs::remove_file(&path); // make sure it isn't lying around
-
-        // Can't actually allocate 2GB in a unit test — fake it by making the
-        // check path testable. We'll call with a `MAX_WRITE_BYTES + 1`-length
-        // Vec via with_capacity; the Vec itself is empty but len() check
-        // runs before any write, so this exercises the guard without alloc.
-        //
-        // In practice `vec![0u8; MAX_WRITE_BYTES + 1]` would OOM the CI,
-        // so we take advantage of the fact that write_bytes_impl inspects
-        // bytes.len() first and short-circuits. This is intentional: the
-        // test asserts the guardrail, not Rust's allocator.
-        let mut bytes = Vec::new();
-        unsafe {
-            // SAFETY: we only ever call .len() on this vec, never read it.
-            // Setting len past capacity is UB if we touched the buffer;
-            // write_bytes_impl's early-return avoids any access.
-            bytes.set_len(MAX_WRITE_BYTES + 1);
-        }
-        let err = write_bytes_impl(path.to_string_lossy().into_owned(), bytes).unwrap_err();
+        // Allocating 2 GB in a unit test would OOM CI, so test the size
+        // guard on its own; write_bytes_impl calls it before touching disk.
+        let err = check_write_size(MAX_WRITE_BYTES + 1).unwrap_err();
         assert!(err.to_lowercase().contains("cap"), "got: {}", err);
-        assert!(!path.exists(), "write guardrail should not create a file");
+        assert!(check_write_size(MAX_WRITE_BYTES).is_ok());
     }
 
     #[test]
