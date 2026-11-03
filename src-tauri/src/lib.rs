@@ -39,6 +39,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             commands::get_desktop_info,
+            commands::is_store_install,
             commands::convert_file_streaming,
             commands::batch_convert_files,
             commands::start_folder_watcher,

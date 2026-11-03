@@ -57,6 +57,20 @@ pub fn get_desktop_info() -> DesktopInfo {
     }
 }
 
+/// True when the app runs from an MSIX package installed by the Microsoft
+/// Store. Packaged apps live under `...\WindowsApps\`, which is read-only,
+/// and the Store delivers updates itself, so the in-app updater must stay off.
+#[tauri::command]
+pub fn is_store_install() -> bool {
+    std::env::current_exe()
+        .map(|p| is_windows_apps_path(&p.to_string_lossy()))
+        .unwrap_or(false)
+}
+
+pub fn is_windows_apps_path(path: &str) -> bool {
+    path.to_ascii_lowercase().contains(r"\windowsapps\")
+}
+
 #[tauri::command]
 pub async fn convert_file_streaming(
     app: AppHandle,
@@ -392,3 +406,21 @@ mod write_bytes_tests {
     }
 }
 
+
+#[cfg(test)]
+mod store_install_tests {
+    use super::is_windows_apps_path;
+
+    #[test]
+    fn detects_msix_install_location() {
+        assert!(is_windows_apps_path(
+            r"C:\Program Files\WindowsApps\JsonExport_0.1.5.0_x64__abc123\JsonExport.exe"
+        ));
+    }
+
+    #[test]
+    fn ignores_regular_installs() {
+        assert!(!is_windows_apps_path(r"C:\Users\HP\AppData\Local\JsonExport\JsonExport.exe"));
+        assert!(!is_windows_apps_path(r"C:\Program Files\JsonExport\JsonExport.exe"));
+    }
+}

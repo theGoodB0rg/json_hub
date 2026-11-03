@@ -11,6 +11,9 @@ jest.mock('@tauri-apps/plugin-updater', () => ({
 jest.mock('@tauri-apps/plugin-process', () => ({
   relaunch: jest.fn(),
 }));
+jest.mock('@tauri-apps/api/core', () => ({
+  invoke: jest.fn().mockResolvedValue(false),
+}));
 
 describe('AppUpdater Component', () => {
   beforeEach(() => {
@@ -66,5 +69,13 @@ describe('AppUpdater Component', () => {
       expect(mockUpdate.downloadAndInstall).toHaveBeenCalledTimes(1);
       expect(relaunch).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('never checks for updates in a Microsoft Store install', async () => {
+    const { invoke } = jest.requireMock('@tauri-apps/api/core');
+    (invoke as jest.Mock).mockResolvedValueOnce(true);
+    render(<AppUpdater />);
+    await waitFor(() => expect(invoke).toHaveBeenCalledWith('is_store_install'));
+    expect(check).not.toHaveBeenCalled();
   });
 });
