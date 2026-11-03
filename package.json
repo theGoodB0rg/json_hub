@@ -1,6 +1,6 @@
 {
   "name": "json-hub",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "description": "Convert complex JSON to Excel/CSV with auto-unescape and smart flattening. 100% client-side, privacy-first JSON to spreadsheet converter.",
   "keywords": [
@@ -50,6 +50,7 @@
     "trend-research": "node scripts/trend-research/index.js",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
+    "msix": "pwsh -NoProfile -File scripts/build-msix.ps1",
     "tauri": "tauri"
   },
   "dependencies": {
