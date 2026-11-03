@@ -23,11 +23,29 @@ import { useProStore } from '@/lib/store/proStore';
 // Served from a Worker route on jsonexport.com/_l/* — same-origin so the
 // client POST isn't tagged cross-origin by blockers and no new domain is
 // in play. NEXT_PUBLIC_LICENSE_URL overrides for local dev / staging.
-const LICENSE_ENDPOINT =
-    process.env.NEXT_PUBLIC_LICENSE_URL ||
-    (typeof window !== 'undefined'
-        ? `${window.location.origin}/_l`
-        : 'https://jsonexport.com/_l');
+//
+// The desktop app's webview origin is http://tauri.localhost (Windows) or
+// tauri://localhost (macOS/Linux), which has no /_l route, so activation
+// from the desktop app has to go to the production origin. The license
+// Worker answers with Access-Control-Allow-Origin: *.
+const PRODUCTION_LICENSE_ENDPOINT = 'https://jsonexport.com/_l';
+
+export function resolveLicenseEndpoint(
+    override: string | undefined,
+    location: { protocol: string; hostname: string; origin: string } | undefined,
+): string {
+    if (override) return override;
+    if (!location) return PRODUCTION_LICENSE_ENDPOINT;
+    const isDesktopWebview =
+        location.protocol === 'tauri:' || location.hostname === 'tauri.localhost';
+    if (isDesktopWebview) return PRODUCTION_LICENSE_ENDPOINT;
+    return `${location.origin}/_l`;
+}
+
+const LICENSE_ENDPOINT = resolveLicenseEndpoint(
+    process.env.NEXT_PUBLIC_LICENSE_URL,
+    typeof window !== 'undefined' ? window.location : undefined,
+);
 
 const JWT_STORAGE_KEY = 'jsonexport:license-jwt';
 const DEVICE_STORAGE_KEY = 'jsonexport:device-id';
