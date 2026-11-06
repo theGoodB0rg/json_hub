@@ -74,3 +74,13 @@ scripts/market-research/output/
 scripts/trend-research/output/
 .agent_rules.md
 .agent_todo.md
+
+# Internal growth / analytics tooling — local only (capture-rate.ts stays tracked: worker tests import it)
+scripts/market-research/
+scripts/trend-research/
+scripts/analytics/*
+!scripts/analytics/capture-rate.ts
+scripts/pull-telemetry.ts
+scripts/analyze-telemetry.ts
+scripts/generate_pdf_kit.py
+.github/workflows/weekly-trend-research.yml
