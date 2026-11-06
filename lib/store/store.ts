@@ -9,7 +9,11 @@ import type { OutputViewMode } from '@/types/converter.types';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { trackFunnelStep } from '@/lib/analytics';
 import { pluginRegistry } from '@/lib/plugins/registry';
-import { importWithRetry, isChunkLoadError, stashForRecovery } from '@/lib/platform/chunkRecovery';
+import { importWithRetry, isChunkLoadError, reloadForFreshChunks, stashForRecovery } from '@/lib/platform/chunkRecovery';
+// Static on purpose: these run exactly when lazy chunks are failing to load,
+// so they cannot themselves be a lazy chunk.
+import { showChunkRecoveryToast, showExportErrorToast } from '@/lib/platform/exportErrorToast';
+import { toast } from '@/hooks/use-toast';
 
 /** When the current parse started, for the duration_ms telemetry column. */
 let parseStartedAt = 0;
@@ -369,6 +373,12 @@ export const useAppStore = create<AppState>()(
                                         isLoading: false,
                                         streamingProgress: null
                                     });
+                                    // The worker kept the rows of a file that stops
+                                    // mid-value; say so rather than pass partial data
+                                    // off as the whole file.
+                                    if (payload.warning) {
+                                        toast({ title: 'This file looks incomplete', description: payload.warning });
+                                    }
                                     trackConversionEvent('parse_success', {
                                         source: 'streaming-worker',
                                         platform: get().activePluginId,
@@ -775,20 +785,18 @@ export const useAppStore = create<AppState>()(
                                 }],
                             });
 
-                            void (async () => {
-                                try {
-                                    const toasts = await import('@/lib/platform/exportErrorToast');
-                                    if (chunkFailure) {
-                                        toasts.showChunkRecoveryToast(inputPreserved);
-                                    } else {
-                                        toasts.showExportErrorToast(message);
-                                    }
-                                } catch {
-                                    // The toast module is itself code-split. If
-                                    // it cannot load either, parseErrors above
-                                    // is still set.
-                                }
-                            })();
+                            if (!chunkFailure) {
+                                showExportErrorToast(message);
+                            } else if (!(inputPreserved && reloadForFreshChunks())) {
+                                // A stale chunk manifest only heals with fresh
+                                // HTML, so when the input is safely stashed we
+                                // reload straight away. Waiting for a tap on a
+                                // toast failed in practice: an iPhone user hit
+                                // this 8 times in 5 minutes on 2026-11-04. The
+                                // toast is the fallback for input too big to
+                                // stash, or a second failure after one reload.
+                                showChunkRecoveryToast(inputPreserved);
+                            }
                         }
                     },
 

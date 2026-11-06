@@ -22,7 +22,8 @@ const HARD_MAX_SIZE = 100 * 1024 * 1024; // 100MB - show upsell (device-dependen
 
 import { FormatSwitcher } from '@/components/FormatSwitcher/FormatSwitcher';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
-import { takeRecoveryStash } from '@/lib/platform/chunkRecovery';
+import { didReloadForChunks, takeRecoveryStash } from '@/lib/platform/chunkRecovery';
+import { toast } from '@/hooks/use-toast';
 
 /** A file the browser could not read (moved, locked, permission denied) used
  *  to fail silently: no message to the user, nothing in telemetry. */
@@ -71,7 +72,16 @@ export function JsonEditor({ platform }: { platform?: string }) {
     // could not simply tell them to refresh.
     useEffect(() => {
         const stashed = takeRecoveryStash();
-        if (stashed) setRawInput(stashed);
+        if (stashed) {
+            setRawInput(stashed);
+            // The reload happened without a tap, so say why the page jumped.
+            if (didReloadForChunks()) {
+                toast({
+                    title: 'Updated to the latest version',
+                    description: 'Your data is back. Press Export again to download it.',
+                });
+            }
+        }
         // Mount only: a later run would re-read an already-cleared stash.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

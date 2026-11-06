@@ -88,12 +88,19 @@ export function stashForRecovery(rawInput: string): boolean {
     }
 }
 
-/** Reads the stash exactly once; a second call returns null. */
+/**
+ * Reads the stash exactly once; a second call returns null.
+ *
+ * The reload flag is deliberately left set for the rest of the tab session:
+ * the store reloads automatically on a chunk failure, so clearing the flag
+ * here would turn a chunk that never loads (content blocker, broken proxy)
+ * into a reload on every export click. One automatic reload per session, then
+ * the toast.
+ */
 export function takeRecoveryStash(): string | null {
     try {
         const stashed = sessionStorage.getItem(STASH_KEY);
         sessionStorage.removeItem(STASH_KEY);
-        sessionStorage.removeItem(RELOAD_FLAG);
         return stashed;
     } catch {
         return null;

@@ -4,6 +4,7 @@ import {
     stashForRecovery,
     takeRecoveryStash,
     didReloadForChunks,
+    reloadForFreshChunks,
 } from './chunkRecovery';
 
 describe('isChunkLoadError', () => {
@@ -95,5 +96,25 @@ describe('recovery stash', () => {
 
     it('reports no reload happened on a clean load', () => {
         expect(didReloadForChunks()).toBe(false);
+    });
+});
+
+describe('reloadForFreshChunks', () => {
+    beforeEach(() => sessionStorage.clear());
+
+    it('reloads once per tab session, even after the stash is read back', () => {
+        // jsdom cannot navigate; silence its "not implemented" report.
+        const err = jest.spyOn(console, 'error').mockImplementation(() => {});
+        expect(reloadForFreshChunks()).toBe(true);
+        expect(didReloadForChunks()).toBe(true);
+
+        // The page comes back and the editor restores the input...
+        stashForRecovery('{"a":1}');
+        expect(takeRecoveryStash()).toBe('{"a":1}');
+
+        // ...but a chunk that still fails must not reload on every click.
+        expect(didReloadForChunks()).toBe(true);
+        expect(reloadForFreshChunks()).toBe(false);
+        err.mockRestore();
     });
 });
