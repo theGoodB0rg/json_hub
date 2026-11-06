@@ -1,3 +1,4 @@
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
 import { Metadata } from 'next';
 import { ConverterApp } from '@/components/ConverterApp';
 import { Card } from '@/components/ui/card';
@@ -128,9 +129,9 @@ export default function PrivacyPage() {
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <Card className="p-6">
                             <Database className="w-10 h-10 text-blue-500 mb-4" />
-                            <h3 className="font-semibold text-lg mb-2">Unlimited File Size</h3>
+                            <h3 className="font-semibold text-lg mb-2">Large Files, Still Private</h3>
                             <p className="text-muted-foreground text-sm">
-                                Since we don&apos;t pay for server storage, we don&apos;t cap your file size. Convert 500MB+ JSON files legally and for free.
+                                Nothing is uploaded, so there is no server-side size cap. Files up to {FREE_EXPORT_LIMIT_LABEL} convert free; 500MB+ files export with Pro, still entirely on your device.
                             </p>
                         </Card>
                         <Card className="p-6">

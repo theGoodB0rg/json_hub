@@ -1,3 +1,4 @@
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
 import {
     Check,
     X,
@@ -23,7 +24,7 @@ const comparisonData: ComparisonItem[] = [
         tool: "JsonExport",
         codingRequired: false,
         privacy: "Excellent",
-        fileSizeLimit: "Up to 100MB",
+        fileSizeLimit: `${FREE_EXPORT_LIMIT_LABEL} free, any size with Pro`,
         cost: "Free (Web) / Pro",
         learningCurve: "Easy",
         highlight: true,
@@ -156,7 +157,7 @@ export function ComparisonTable() {
                 <p className="font-semibold">Why JsonExport?</p>
                 <ul className="space-y-1 list-disc list-inside text-muted-foreground">
                     <li><strong>100% Client-side privacy:</strong> Your data never leaves your browser — zero server uploads</li>
-                    <li><strong>Handles heavy files:</strong> Converts up to 100MB directly in your browser memory without server timeouts</li>
+                    <li><strong>Handles heavy files:</strong> Converts up to {FREE_EXPORT_LIMIT_LABEL} free in your browser, and any size with Pro, without server timeouts</li>
                     <li><strong>Zero coding required:</strong> Visual interface with auto-unescaping and smart nesting detection</li>
                     <li><strong>Free web app:</strong> Convert instantly with no signup; optional Pro desktop app for offline power users</li>
                 </ul>

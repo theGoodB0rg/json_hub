@@ -14,7 +14,7 @@
 export type UpsellVariant = 'large' | 'returning' | 'first';
 
 /** Where the browser starts to feel slow on a conversion. Well under the
- *  10 MB LargeFileUpsell gate, which fires before processing and not after. */
+ *  free-tier paywall (FREE_EXPORT_LIMIT_BYTES), which fires at export. */
 export const LARGE_EXPORT_BYTES = 1024 * 1024;
 
 export const UPSELL_VARIANTS: readonly UpsellVariant[] = ['large', 'returning', 'first'];

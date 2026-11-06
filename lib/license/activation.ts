@@ -47,7 +47,7 @@ const LICENSE_ENDPOINT = resolveLicenseEndpoint(
     typeof window !== 'undefined' ? window.location : undefined,
 );
 
-const JWT_STORAGE_KEY = 'jsonexport:license-jwt';
+export const JWT_STORAGE_KEY = 'jsonexport:license-jwt';
 const DEVICE_STORAGE_KEY = 'jsonexport:device-id';
 const LICENSE_KEY_STORAGE_KEY = 'jsonexport:license-key';
 

@@ -9,7 +9,6 @@ import { LargeFileViewer } from './LargeFileViewer';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TemplateSelector } from '@/components/TemplateSelector/TemplateSelector';
 import { LightJsonEditor } from './LightJsonEditor';
-import { LargeFileUpsell } from '@/components/LargeFileUpsell/LargeFileUpsell';
 import { DiagnosticOverlay } from './DiagnosticOverlay';
 import { cn } from "@/lib/utils";
 import { Progress } from '@/components/ui/progress';
@@ -18,7 +17,7 @@ import { pluginRegistry } from '@/lib/plugins/registry';
 // Realistic file size limits based on testing (January 2026)
 const RECOMMENDED_MAX_SIZE = 10 * 1024 * 1024; // 10MB - works instantly
 const WARNING_SIZE = 50 * 1024 * 1024; // 50MB - tested, works smoothly
-const HARD_MAX_SIZE = 100 * 1024 * 1024; // 100MB - show upsell (device-dependent above this)
+const HARD_MAX_SIZE = 100 * 1024 * 1024; // 100MB - stream instead of parsing in one go
 
 import { FormatSwitcher } from '@/components/FormatSwitcher/FormatSwitcher';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
@@ -60,8 +59,6 @@ export function JsonEditor({ platform }: { platform?: string }) {
 
     const [isMaximized, setIsMaximized] = useState(false);
     const [fileSize, setFileSize] = useState<number>(0);
-    const [showUpsell, setShowUpsell] = useState(false);
-    const [pendingFile, setPendingFile] = useState<File | null>(null);
     const [isDiagnosing, setIsDiagnosing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const skipNextAutoParseRef = useRef(false);
@@ -122,16 +119,11 @@ export function JsonEditor({ platform }: { platform?: string }) {
         setIsDiagnosing(false);
     }, []);
 
-    const processFile = useCallback((file: File, bypassWarning: boolean = false) => {
+    // Every file loads and previews free; the free-tier limit applies at export
+    // (see FREE_EXPORT_LIMIT_BYTES), after the user has seen their data.
+    const processFile = useCallback((file: File) => {
         setFileSize(file.size);
         setSourceFilename(file.name);
-
-        // Check if file is too large
-        if (!bypassWarning && file.size > HARD_MAX_SIZE) {
-            setPendingFile(file);
-            setShowUpsell(true);
-            return;
-        }
 
         // OPTIMIZATION: For large files (>2MB), verify we can read it AND parse it
         if (file.size > HARD_MAX_SIZE) {
@@ -196,14 +188,6 @@ export function JsonEditor({ platform }: { platform?: string }) {
         try {
             const text = await navigator.clipboard.readText();
 
-            // Check paste size
-            if (text.length > HARD_MAX_SIZE) {
-                setFileSize(text.length);
-                setPendingFile(null);
-                setShowUpsell(true);
-                return;
-            }
-
             setRawInput(text);
             setSourceFilename('clipboard_data');
             setFileSize(text.length);
@@ -213,14 +197,6 @@ export function JsonEditor({ platform }: { platform?: string }) {
             alert('Could not access clipboard. Please paste manually (Ctrl+V or Cmd+V).');
         }
     }, [setRawInput, setSourceFilename]);
-
-    const handleProceedAnyway = useCallback(() => {
-        setShowUpsell(false);
-        if (pendingFile) {
-            processFile(pendingFile, true);
-            setPendingFile(null);
-        }
-    }, [pendingFile, processFile]);
 
     const handleManualParse = useCallback(() => {
         parseInput();
@@ -421,13 +397,6 @@ export function JsonEditor({ platform }: { platform?: string }) {
                 )}
             </Card>
 
-            {/* Large file upsell modal */}
-            <LargeFileUpsell
-                isOpen={showUpsell}
-                onClose={() => setShowUpsell(false)}
-                onProceedAnyway={handleProceedAnyway}
-                fileSize={fileSize || pendingFile?.size || 0}
-            />
         </>
     );
 }

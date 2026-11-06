@@ -14,6 +14,8 @@ import { importWithRetry, isChunkLoadError, reloadForFreshChunks, stashForRecove
 // so they cannot themselves be a lazy chunk.
 import { showChunkRecoveryToast, showExportErrorToast } from '@/lib/platform/exportErrorToast';
 import { toast } from '@/hooks/use-toast';
+import { useProStore } from '@/lib/store/proStore';
+import { FREE_EXPORT_LIMIT_BYTES } from '@/lib/license/limits';
 
 /** When the current parse started, for the duration_ms telemetry column. */
 let parseStartedAt = 0;
@@ -70,6 +72,8 @@ const WORKER_CRASH_MESSAGE =
 const initialState = {
     // Input State
     rawInput: '',
+    sourceBytes: 0,
+    paywall: null,
     isParsed: false,
     parseErrors: [] as ParseError[],
     sourceFilename: null as string | null,
@@ -257,7 +261,7 @@ export const useAppStore = create<AppState>()(
                     },
 
                     setRawInput: (input: string, options?: { isSample?: boolean }) => {
-                        set({ rawInput: input, isParsed: false, parseErrors: [], isSample: options?.isSample ?? false });
+                        set({ rawInput: input, sourceBytes: input.length, isParsed: false, parseErrors: [], isSample: options?.isSample ?? false });
                     },
 
                     setSourceFilename: (name: string | null) => {
@@ -346,7 +350,7 @@ export const useAppStore = create<AppState>()(
                     parseInputStreaming: (file: File) => {
                         parseStartedAt = performance.now();
                         streamingFileBytes = file.size;
-                        set({ isLoading: true, parseErrors: [], streamingProgress: { itemCount: 0, bytesProcessed: 0, totalBytes: file.size, percent: 0 } });
+                        set({ sourceBytes: file.size, isLoading: true, parseErrors: [], streamingProgress: { itemCount: 0, bytesProcessed: 0, totalBytes: file.size, percent: 0 } });
                         trackFunnelStep('parse_initiated', { method: 'streaming', fileName: file.name });
 
                         let streamingWorker = get().streamingWorker;
@@ -622,13 +626,25 @@ export const useAppStore = create<AppState>()(
                         });
                     },
 
-                    exportData: async (format: ExportFormat) => {
-                        const { parsedData, exportSettings, rawInput, sourceFilename, columnOrder, excludedColumns, flatData, activePluginId } = get();
+                    setPaywall: (reason) => set({ paywall: reason }),
+
+                    exportData: async (format: ExportFormat, options?: { sampleRows?: number }) => {
+                        const { parsedData, exportSettings, rawInput, sourceFilename, columnOrder, excludedColumns, flatData, activePluginId, sourceBytes } = get();
 
                         if (!parsedData) {
                             set({ parseErrors: [{ message: 'No data to export' }] });
                             return;
                         }
+
+                        // The one free-tier check: every export button lands here.
+                        const sampleRows = options?.sampleRows;
+                        if (!sampleRows && sourceBytes > FREE_EXPORT_LIMIT_BYTES && !useProStore.getState().isPro) {
+                            set({ paywall: 'large_file' });
+                            trackConversionEvent('paywall_shown', { format: 'large_file', file_size_bytes: sourceBytes, platform: activePluginId });
+                            return;
+                        }
+                        const sample = <T,>(value: T): T =>
+                            (sampleRows && Array.isArray(value) ? value.slice(0, sampleRows) : value) as T;
 
                         const exportStartTime = Date.now();
                         const fileSizeBytes = rawInput ? new Blob([rawInput]).size : 0;
@@ -646,7 +662,7 @@ export const useAppStore = create<AppState>()(
                             const fileName = `jsonExport.com_${cleanSourceName}_${dateStr}`;
 
                             const { smartUnwrap } = require('@/lib/parsers/unwrapper');
-                            const { data: dataToExport } = smartUnwrap(parsedData);
+                            const dataToExport = sample(smartUnwrap(parsedData).data);
 
                             let rows = [], schema = [];
 
@@ -656,7 +672,7 @@ export const useAppStore = create<AppState>()(
                                 rows = result.rows;
                                 schema = result.schema;
                             } else {
-                                rows = flatData;
+                                rows = sample(flatData);
                                 schema = get().schema;
                             }
 
@@ -706,11 +722,13 @@ export const useAppStore = create<AppState>()(
                                 case 'zip': {
                                     const { downloadZip } = await importWithRetry(() => import('@/lib/converters/zipExporter'));
                                     savedFilename = `json-hub-${fileName}.zip`;
-                                    saveResult = await downloadZip(rows, schema, parsedData, savedFilename);
+                                    saveResult = await downloadZip(rows, schema, sampleRows ? dataToExport : parsedData, savedFilename);
                                     break;
                                 }
                                 case 'json': {
-                                    const jsonStr = get().formattedOutput || JSON.stringify(parsedData, null, 2);
+                                    const jsonStr = sampleRows
+                                        ? JSON.stringify(dataToExport, null, 2)
+                                        : get().formattedOutput || JSON.stringify(parsedData, null, 2);
                                     const { saveWithDialog } = await importWithRetry(() => import('@/lib/platform/downloadHelper'));
                                     saveResult = await saveWithDialog(jsonStr, `${fileName}.json`, 'application/json;charset=utf-8');
                                     break;

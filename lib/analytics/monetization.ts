@@ -28,6 +28,8 @@ export interface MonetizationFunnel {
     /** Client page_view beacons on /desktop (the Pro landing page). */
     desktopPageViews: number;
     upsellShown: number;
+    /** Free-tier paywall opens, keyed by reason (`large_file`, `batch`, sent as `format`). */
+    paywallShown: Record<string, number>;
     upsellDismissed: number;
     /** Post-export upsell results per behavior variant. Counts only rows that
      *  carry a variant in `format`; shown/dismissed rows from before variants
@@ -77,6 +79,13 @@ export function computeMonetization(events: MonetizationEvent[]): MonetizationFu
     return {
         desktopPageViews: real.filter(e => e.event_name === 'page_view' && e.path === '/desktop').length,
         upsellShown: real.filter(e => e.event_name === 'upsell_shown').length,
+        paywallShown: real
+            .filter(e => e.event_name === 'paywall_shown')
+            .reduce<Record<string, number>>((acc, e) => {
+                const reason = e.format || 'unknown';
+                acc[reason] = (acc[reason] || 0) + 1;
+                return acc;
+            }, {}),
         upsellDismissed: real.filter(e => e.event_name === 'upsell_dismissed').length,
         upsellByVariant,
         checkoutClicks,

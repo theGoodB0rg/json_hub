@@ -26,7 +26,7 @@ export const metadata: Metadata = {
         canonical: ROUTES.home,
     },
     title: 'JsonExport — Free JSON Exporter for Excel & CSV',
-    description: 'Convert JSON to Excel, CSV, or XLSX instantly. 100% free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
+    description: 'Convert JSON to Excel, CSV, or XLSX instantly. Free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
     applicationName: 'JsonExport',
     authors: [{ name: 'JsonExport Team' }],
     keywords: ['json to excel', 'json to excel converter', 'convert json to xlsx', 'json to csv', 'data analyst tools', 'json converter for data analysts', 'no-code json converter', 'secure json converter', 'json to excel free', 'flatten nested json', 'json to excel no upload', 'json to excel offline'],
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     },
     openGraph: {
         title: 'JsonExport — Free JSON Exporter for Excel & CSV',
-        description: 'Convert JSON to Excel, CSV, or XLSX instantly. 100% free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
+        description: 'Convert JSON to Excel, CSV, or XLSX instantly. Free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
         url: SITE_ORIGIN,
         siteName: 'JsonExport',
         locale: 'en_US',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     twitter: {
         card: 'summary_large_image',
         title: 'JsonExport — Free JSON Exporter for Excel & CSV',
-        description: 'Convert JSON to Excel, CSV, or XLSX instantly. 100% free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
+        description: 'Convert JSON to Excel, CSV, or XLSX instantly. Free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
         creator: '@jsonexport',
     },
     manifest: '/manifest.json',

@@ -1,4 +1,5 @@
 import type { OutputViewMode } from './converter.types';
+import type { PaywallReason } from '@/lib/license/limits';
 
 export interface StreamingProgress {
     itemCount: number;
@@ -10,6 +11,10 @@ export interface StreamingProgress {
 export interface AppState {
     // Input State
     rawInput: string;
+    /** Size of the loaded source: pasted text or a streamed file. */
+    sourceBytes: number;
+    /** Which Pro paywall is open, if any. */
+    paywall: PaywallReason | null;
     isParsed: boolean;
     parseErrors: ParseError[];
     sourceFilename: string | null;
@@ -64,7 +69,9 @@ export interface AppState {
     flattenData: () => void;
     updateCell: (rowIndex: number, column: string, value: any) => void;
     updateData: (path: string, value: any) => void;
-    exportData: (format: ExportFormat) => Promise<void>;
+    /** `sampleRows` exports only the first N rows (the free sample of a large file). */
+    exportData: (format: ExportFormat, options?: { sampleRows?: number }) => Promise<void>;
+    setPaywall: (reason: PaywallReason | null) => void;
     resetState: () => void;
     setActiveTab: (tab: 'input' | 'preview' | 'export') => void;
     setSelectedFormat: (format: ExportFormat) => void;

@@ -1,3 +1,4 @@
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
 import { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES } from '@/lib/routes';
@@ -41,9 +42,9 @@ export default function DesktopPage() {
                     Convert <em className="not-italic text-primary">any</em> JSON file.
                 </h1>
                 <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg text-muted-foreground">
-                    The free web app handles files up to 10 MB. The desktop app handles
-                    gigabytes, converts entire folders at once, and watches directories
-                    for new files you drop in. <strong>$29 one-time. Lifetime license.</strong>
+                    The free web app converts files up to {FREE_EXPORT_LIMIT_LABEL}. Pro exports files of any
+                    size and converts entire folders at once — in your browser, or in the desktop
+                    app, which also handles gigabytes offline and watches folders for new files. <strong>$29 one-time. Lifetime license.</strong>
                 </p>
                 <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                     <BuyProLink
@@ -80,10 +81,10 @@ export default function DesktopPage() {
                         </thead>
                         <tbody className="divide-y divide-border">
                             {[
-                                ['Max file size', '10 MB', 'Unlimited', 'Unlimited (streamed)'],
+                                ['Max export size', FREE_EXPORT_LIMIT_LABEL, 'Unlimited', 'Unlimited (streamed)'],
                                 ['Format support', 'XLSX, CSV, JSON, HTML, DOCX, ZIP', 'All formats', 'All formats'],
                                 ['Nested JSON flattening', 'Yes', 'Yes', 'Yes'],
-                                ['Batch convert folders', '—', '—', 'Yes'],
+                                ['Batch convert folders', '—', 'Yes', 'Yes'],
                                 ['Watch folder for new files', '—', '—', 'Yes'],
                                 ['Streaming parser for huge files', '—', '—', 'Yes (Rust engine)'],
                                 ['Works offline', '—', '—', 'Yes'],

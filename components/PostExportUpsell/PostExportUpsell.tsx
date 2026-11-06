@@ -22,7 +22,7 @@
  *   get their own copy, and shown/dismissed/clicked are tagged with the
  *   variant so the report can compare them.
  * - Opens Gumroad with ?src=post_export_upsell_<variant> so revenue is
- *   attributable to this surface and variant vs the LargeFileUpsell surface.
+ *   attributable to this surface and variant vs the free-tier paywall.
  */
 
 import { useEffect, useState, type ReactNode } from 'react';
@@ -30,6 +30,7 @@ import { X } from 'lucide-react';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { useProStore } from '@/lib/store/proStore';
 import { checkoutUrl, trackCheckoutClick } from '@/components/BuyProLink';
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
 import {
     chooseUpsellVariant,
     checkoutSourceFor,
@@ -58,40 +59,31 @@ interface UpsellCopy {
 /** One message per observed behavior. Each leads with what the visitor just
  *  did, and every claim is one the desktop page already makes. */
 function copyFor(details: ExportDetails): UpsellCopy {
+    // Pitch only what Pro actually adds over the free tier: bigger files and
+    // whole folders. The free export just worked, so never imply it didn't.
+    const offer = (
+        <>
+            Pro exports files of any size and converts whole folders at once, in your browser or the
+            desktop app. One-time $29, lifetime license.
+        </>
+    );
     switch (details.variant) {
         case 'large':
             return {
                 title: details.fileSizeBytes
                     ? `That was a ${formatMegabytes(details.fileSizeBytes)} MB file.`
                     : 'That was a big file.',
-                body: (
-                    <>
-                        Big files are where the browser strains. The <strong>desktop app</strong> streams
-                        1 GB+ files without freezing and converts whole folders in batch. One-time $29,
-                        lifetime license.
-                    </>
-                ),
+                body: <>Free covers files up to {FREE_EXPORT_LIMIT_LABEL}. {offer}</>,
             };
         case 'returning':
             return {
                 title: 'Converting these regularly?',
-                body: (
-                    <>
-                        Skip the upload-and-wait loop. The <strong>desktop app</strong> batch-converts
-                        folders and can watch a folder for new files, all offline. One-time $29, lifetime
-                        license.
-                    </>
-                ),
+                body: offer,
             };
         default:
             return {
-                title: 'Nice — your file’s ready.',
-                body: (
-                    <>
-                        It never left your browser. The <strong>desktop app</strong> keeps it that way for
-                        any file size, fully offline. One-time $29, lifetime license.
-                    </>
-                ),
+                title: 'Done — and it never left your browser.',
+                body: <>Free covers files up to {FREE_EXPORT_LIMIT_LABEL}. {offer}</>,
             };
     }
 }
@@ -253,7 +245,7 @@ export function PostExportUpsell() {
                     onClick={click}
                     className="flex-1 rounded bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition hover:opacity-90"
                 >
-                    Get Desktop Pro — $29
+                    Get Pro — $29
                 </button>
                 <button
                     type="button"

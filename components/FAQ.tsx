@@ -1,5 +1,6 @@
 'use client';
 
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
 import { Card } from '@/components/ui/card';
 import { HelpCircle, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
@@ -20,7 +21,7 @@ const faqs: FAQItem[] = [
     },
     {
         question: "What file sizes work best?",
-        answer: "JsonExport handles files up to 100MB (tested with ~100,000 rows). Files under 50MB process in seconds. For files over 100MB, we recommend Python with Pandas - see our guide for instructions."
+        answer: `Files up to ${FREE_EXPORT_LIMIT_LABEL} convert free and process in seconds. Larger files preview free and export with JsonExport Pro, which handles 1 GB+ files in the desktop app.`
     },
     {
         question: "What's the difference between flat and nested export?",

@@ -102,7 +102,7 @@ export function GrowthSourceBanner() {
                     </div>
                     <div className="inline-flex items-center gap-2 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-400">
                         <Star className="h-3.5 w-3.5" />
-                        Free forever
+                        Free, no signup
                     </div>
                 </div>
             </div>

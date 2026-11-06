@@ -138,7 +138,7 @@ JsonExport automatically detects nested objects and flattens them using **dot no
 
 #### Step 1: Go to [JsonExport.com](https://jsonexport.com)
 
-No signup required. 100% free.
+No signup required. Free for files up to 50 MB.
 
 #### Step 2: Upload Your JSON File
 

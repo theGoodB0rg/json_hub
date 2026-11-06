@@ -44,7 +44,7 @@ describe('PostExportUpsell', () => {
 
         const dialog = await waitForToast();
         expect(dialog).toBeInTheDocument();
-        expect(dialog).toHaveTextContent(/Get Desktop Pro/i);
+        expect(dialog).toHaveTextContent(/Get Pro — \$29/);
     });
 
     it('skips sample/demo exports', async () => {
@@ -111,7 +111,7 @@ describe('PostExportUpsell', () => {
 
         const dialog = await waitForToast();
         expect(dialog).toHaveTextContent(/3\.0 MB file/);
-        expect(dialog).toHaveTextContent(/1 GB\+/);
+        expect(dialog).toHaveTextContent(/up to 50 MB/);
     });
 
     it('speaks to workflow once the browser has exported before', async () => {

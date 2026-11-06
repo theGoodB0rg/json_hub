@@ -8,8 +8,6 @@ import { FileSpreadsheet, FileText, FileCode, FolderArchive, FileJson, Download,
 import { useState } from 'react';
 import { ExportSettingsDialog } from './ExportSettingsDialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useProStore } from '@/lib/store/proStore';
-import { LicenseModal } from '../LicenseModal';
 import { pluginRegistry } from '@/lib/plugins/registry';
 import { ConversionFeedback } from '@/components/FeedbackWidget/ConversionFeedback';
 import { JiraChangelogNotice } from './JiraChangelogNotice';
@@ -27,14 +25,11 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
         exportData,
         exportSettings,
         updateExportSettings,
-        rawInput,
         activePluginId,
         parsedData,
     } = useAppStore();
 
-    const { isPro, setIsPro } = useProStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isLicenseModalOpen, setIsLicenseModalOpen] = useState(false);
     const [hasExported, setHasExported] = useState(false);
 
     const currentPlugin = pluginRegistry.getOrDefault(activePluginId);
@@ -52,12 +47,6 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
     );
 
     const handleExportClick = () => {
-        const isOversized = rawInput.length > 10 * 1024 * 1024;
-        if (isOversized && !isPro) {
-            setIsLicenseModalOpen(true);
-            return;
-        }
-
         if (exportSettings.askForPreference) {
             setIsDialogOpen(true);
         } else {
@@ -157,22 +146,6 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
                 }}
             />
 
-            <LicenseModal 
-                isOpen={isLicenseModalOpen}
-                onOpenChange={setIsLicenseModalOpen}
-                onSuccess={async (key) => {
-                    setIsLicenseModalOpen(false);
-                    setIsPro(true);
-                    try {
-                        const { load } = await import('@tauri-apps/plugin-store');
-                        const store = await load('store.bin', { autoSave: false });
-                        await store.set('gumroad_license', key);
-                        await store.save();
-                    } catch (e) {
-                        // ignore error
-                    }
-                }}
-            />
         </Card>
     );
 }

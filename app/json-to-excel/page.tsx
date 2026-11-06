@@ -1,3 +1,4 @@
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
 import { ConverterApp } from "@/components/ConverterApp";
 import { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/seo';
@@ -24,7 +25,7 @@ const faqs = [
     },
     {
         question: 'Can I convert JSON to XLSX online for free?',
-        answer: 'Yes. JsonExport is 100% free with no limits on file size or conversions. Your data is processed entirely in your browser — nothing is uploaded to any server.'
+        answer: `Yes. There is no signup and no limit on the number of conversions, and files up to ${FREE_EXPORT_LIMIT_LABEL} export free. Your data is processed entirely in your browser — nothing is uploaded to any server.`
     },
     {
         question: 'How do I open a JSON file in Excel?',
@@ -36,7 +37,7 @@ const faqs = [
     },
     {
         question: 'What is the maximum JSON file size supported?',
-        answer: 'JsonExport handles files up to 100MB+ directly in your browser. For very large files, processing happens in Web Workers to prevent UI freezing.'
+        answer: `Files up to ${FREE_EXPORT_LIMIT_LABEL} convert free, directly in your browser. Larger files (100 MB+) preview free and export with JsonExport Pro. Processing runs in Web Workers so the page never freezes.`
     },
     {
         question: 'Why does my JSON show [object Object] in Excel?',
@@ -156,7 +157,7 @@ export default function JsonToExcelPage() {
                             </tr>
                             <tr className="border-t border-border/40 bg-muted/20">
                                 <td className="p-3">File Size Limit</td>
-                                <td className="p-3 text-center text-green-600 font-semibold">100MB+</td>
+                                <td className="p-3 text-center text-green-600 font-semibold">{FREE_EXPORT_LIMIT_LABEL} free, any size with Pro</td>
                                 <td className="p-3 text-center">Depends on RAM</td>
                                 <td className="p-3 text-center text-green-600">Unlimited</td>
                                 <td className="p-3 text-center text-red-500">5-10MB</td>

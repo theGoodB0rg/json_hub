@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ShieldCheck, Zap } from 'lucide-react';
@@ -13,9 +13,23 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { MobileNav } from '@/components/MobileNav';
 import { useProStore } from '@/lib/store/proStore';
 import { ROUTES } from '@/lib/routes';
+import { ProPaywall } from '@/components/ProPaywall';
+import { JWT_STORAGE_KEY, verifyCachedLicense } from '@/lib/license/activation';
 
 export function Navbar() {
     const { isPro } = useProStore();
+
+    // Restore a web license on every page (the navbar is on all of them), and
+    // pick up an activation done in another tab, so a buyer who activates on
+    // /activate can return to their data and export without reloading.
+    useEffect(() => {
+        void verifyCachedLicense();
+        const onStorage = (e: StorageEvent) => {
+            if (e.key === JWT_STORAGE_KEY) void verifyCachedLicense();
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, []);
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
@@ -112,6 +126,7 @@ export function Navbar() {
                     </div>
                 </div>
             </div>
+            <ProPaywall />
         </header>
     );
 }

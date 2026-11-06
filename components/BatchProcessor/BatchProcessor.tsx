@@ -14,6 +14,9 @@ import {
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { useProStore } from '@/lib/store/proStore';
+import { useAppStore } from '@/lib/store/store';
+import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 
 interface BatchProcessorProps {
     className?: string;
@@ -35,6 +38,18 @@ const LARGE_FILE_WARNING_SIZE = 50 * 1024 * 1024;
 
 export function BatchProcessor({ className }: BatchProcessorProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const isPro = useProStore((s) => s.isPro);
+    const setPaywall = useAppStore((s) => s.setPaywall);
+
+    // Batch is Pro. Free users get the shared paywall instead of the dialog.
+    const handleOpenChange = (open: boolean) => {
+        if (open && !isPro) {
+            setPaywall('batch');
+            trackConversionEvent('paywall_shown', { format: 'batch' });
+            return;
+        }
+        setIsOpen(open);
+    };
     const [files, setFiles] = useState<BatchFile[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [exportFormat, setExportFormat] = useState<'xlsx' | 'csv'>('xlsx');
@@ -229,7 +244,7 @@ export function BatchProcessor({ className }: BatchProcessorProps) {
     const largeFilesCount = files.filter(f => f.file.size > LARGE_FILE_WARNING_SIZE).length;
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className={cn("gap-2", className)}>
                     <Files className="h-4 w-4" />

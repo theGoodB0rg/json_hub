@@ -129,7 +129,7 @@ df.to_excel('output.xlsx', index=False)
 
 - **Very powerful** – Can handle any JSON structure
 - **Scriptable** – Automate conversions in data pipelines
-- **Unlimited file size** – Can process 100MB+ files
+- **Large files** – Free up to 50 MB; 100MB+ files with Pro
 - **Customizable** – Full control over transformations
 
 ### Cons ❌
@@ -252,7 +252,7 @@ JsonExport is a **client-side web app** that processes JSON entirely in your bro
 ### Pros ✅
 
 - **100% private** – Client-side processing (GDPR/HIPAA compliant)
-- **No file size limit** – Handles 100MB+ files smoothly
+- **Large files** – Free up to 50 MB, 100MB+ with Pro
 - **Free to use** – No signup required, no premium tiers
 - **No coding required** – Visual interface
 - **Auto-unescape** – Fixes double-encoded JSON automatically
