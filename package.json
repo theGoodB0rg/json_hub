@@ -2,6 +2,7 @@
   "name": "json-hub",
   "version": "0.1.5",
   "private": true,
+  "license": "PolyForm-Shield-1.0.0",
   "description": "Convert complex JSON to Excel/CSV with auto-unescape and smart flattening. 100% client-side, privacy-first JSON to spreadsheet converter.",
   "keywords": [
     "json",

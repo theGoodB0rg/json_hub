@@ -143,7 +143,7 @@ JsonExport.com is publicly accessible. Your data still never leaves your browser
 
 For maximum control, host JsonExport on your own infrastructure:
 
-1. Clone the repository (MIT licensed, fully open source)
+1. Clone the repository (source-available; see its LICENSE for terms)
 2. Deploy to internal servers or corporate cloud
 3. Users access only internal URLs
 
