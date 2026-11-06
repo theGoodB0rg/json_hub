@@ -21,23 +21,18 @@ This dataset mimics a full Shopify order export, including nested line items, cu
 
 - **Structure**: Deeply nested (Orders -> Line Items -> Tax Lines)
 - **Complexity**: High
-- **Size**: ~85 MB
-- **Records**: 100,000+ orders
-
-- **Records**: 100,000+ orders
 
 ![Shopify JSON Order Object Example](/images/blog/shopify-json-sample.png)
 
-[Download shopify_orders.json](/test-data/shopify_orders.json) | [View in Excel](https://jsonexport.com)
+[Get the Shopify order JSON](/test-data/shopify-line-items-json) (copy or download) | [View in Excel](https://jsonexport.com)
 
-### 2. Stripe Payments (simulated)
-Simulated Stripe API objects including charges, refunds, and customer metadata.
+### 2. Stripe Invoices (simulated)
+Simulated Stripe invoice objects including line items, customer details, and metadata.
 
 - **Structure**: Nested metadata and payment method details
 - **Complexity**: Medium
-- **Size**: ~5 MB
 
-[Download test-5mb.json](/test-data/test-5mb.json)
+[Get the Stripe invoice JSON](/test-data/stripe-invoice-json-example)
 
 ---
 
@@ -48,36 +43,42 @@ A complex export simulating Jira issues, including comments, worklogs, history, 
 
 - **Structure**: Issues -> Fields -> Worklogs -> Authors
 - **Complexity**: Very High
-- **Size**: ~40 MB
-
-- **Size**: ~40 MB
 
 ![Jira Issue JSON Example](/images/blog/jira-json-sample.png)
 
-[Download jira_issues.json](/test-data/jira_issues.json) | [View in Excel](https://jsonexport.com)
+[Get the Jira issues JSON](/test-data/jira-issues-sprints-json) | [View in Excel](https://jsonexport.com)
 
-### 4. MongoDB Logs
-Raw server logs in JSON format, typical of what you'd export from MongoDB or ELK stack. Great for testing performance with massive numbers of keys.
+### 4. MongoDB Collection
+A MongoDB collection export in Extended JSON, with `$oid` ObjectIds and `$date` ISODates, the wrappers that trip up most converters.
 
-- **Structure**: Flat but wide (hundreds of potential keys)
-- **Complexity**: Low (but high volume)
-- **Size**: ~38 MB
+- **Structure**: Documents with nested objects and Extended JSON types
+- **Complexity**: Medium
 
-[Download mongodb_logs.json](/test-data/mongodb_logs.json)
+[Get the MongoDB collection JSON](/test-data/mongodb-collection-json-example)
+
+More datasets (HubSpot, Salesforce, Slack, Trello, Typeform and others) are in the [dummy JSON data library](/test-data).
 
 ---
 
 ## 🏋️ Large File Testing
 
-Need to stress-test your parser? We have generated standardized files of various sizes.
+Need to stress-test your parser with a file of a specific size? Files this large are better generated than downloaded. Paste this into Node.js (or your browser console, minus the `fs` line) and set the target size:
 
-| File Size | Record Count | Link |
-|-----------|--------------|------|
-| **1 MB** | ~1k records | [Download 1MB](/test-data/test-1mb.json) |
-| **5 MB** | ~5k records | [Download 5MB](/test-data/test-5mb.json) |
-| **10 MB** | ~10k records | [Download 10MB](/test-data/test-10mb.json) |
-| **50 MB** | ~50k records | [Download 50MB](/test-data/test-50mb.json) |
-| **500 MB** | ~500k records | [Download 500MB](/test-data/test-500mb.json) |
+```js
+const targetMB = 50;
+const rows = [];
+let bytes = 2, i = 0;
+while (bytes < targetMB * 1024 * 1024) {
+  const row = { id: ++i, sku: `SKU-${i}`, price: +(Math.random() * 500).toFixed(2),
+    customer: { name: `Customer ${i}`, country: ["US", "DE", "IN", "BR"][i % 4] },
+    tags: ["sale", "new"].slice(0, i % 3) };
+  bytes += JSON.stringify(row).length + 1;
+  rows.push(row);
+}
+require("fs").writeFileSync(`test-${targetMB}mb.json`, JSON.stringify(rows));
+```
+
+Roughly 1,000 rows per 100 KB, so 1 MB is about 10k records and 50 MB about 500k.
 
 **Note:** Most online converters crash with files over 10MB. [JsonExport](https://jsonexport.com) handles files up to 100MB+ primarily because it runs 100% in your browser—no server upload required.
 
@@ -88,7 +89,7 @@ These datasets are generated programmatically and are free for any use (commerci
 
 ## Want to convert these to Excel?
 You don't need Python or Power Query.
-1. Download a file above.
+1. Download a dataset above (or generate a large one).
 2. Go to the [converter](https://jsonexport.com).
 3. Drop the file.
 4. Click **Export to Excel**.

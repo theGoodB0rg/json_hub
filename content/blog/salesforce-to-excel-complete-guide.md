@@ -322,7 +322,7 @@ No SOQL. No Data Loader permissions drama. No monthly SaaS fees.
 ---
 
 **Related Guides:**
-- [HubSpot to Excel Complete Guide](/blog/hubspot-complete-export-guide)
+- [HubSpot to Excel Complete Guide](/blog/hubspot-export-excel-complete-guide)
 - [CRM Data Analysis Best Practices](/blog/json-data-analysis-excel-guide)
 
 **Tools:**
