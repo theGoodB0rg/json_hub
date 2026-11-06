@@ -265,7 +265,7 @@ All processing happens client-side. Your data never leaves your browser. See [SE
 
 ## License
 
-Source-available under the [PolyForm Shield License 1.0.0](LICENSE). You may read, run and modify the code, but not use it to build a product that competes with JsonExport. Earlier versions published under MIT remain under MIT.
+Source-available under the [PolyForm Shield License 1.0.0](LICENSE). You may read, run and modify the code, but not use it to build a product that competes with JsonExport.
 
 ---
 
