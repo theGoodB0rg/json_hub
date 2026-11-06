@@ -1,4 +1,7 @@
 import type { ParseResult, ParseError } from '@/types/parser.types';
+import { escapeControlCharsInStrings } from './controlChars';
+
+export { escapeControlCharsInStrings };
 
 const MAX_RECURSION_DEPTH = 10;
 
@@ -74,7 +77,13 @@ export function validateAndParse(
             return { success: true, data: jsonLines };
         }
 
-        const errors: ParseError[] = [];
+        // Several documents saved one after another — pretty-printed API
+        // responses, or pages of results appended to one file. Telemetry shows
+        // these failing at "line N column 1" right after a complete value.
+        const documents = parseConcatenatedJson(input);
+        if (documents) {
+            return { success: true, data: documents };
+        }
 
         // Get error message
         let errorMessage = 'Invalid JSON';
@@ -83,6 +92,18 @@ export function validateAndParse(
         } else if (typeof error === 'string') {
             errorMessage = error;
         }
+
+        // Raw tabs and line breaks inside strings (common in exported logs
+        // and descriptions) are invalid JSON but unambiguous to repair.
+        if (/bad control character/i.test(errorMessage)) {
+            const repaired = escapeControlCharsInStrings(input);
+            if (repaired !== null) {
+                const retry = validateAndParse(repaired, depth + 1);
+                if (retry.success) return retry;
+            }
+        }
+
+        const errors: ParseError[] = [];
 
         const hint = describeNonJsonInput(input);
         if (hint) {
@@ -124,7 +145,75 @@ export function parseJsonLines(input: string): unknown[] | null {
             return null;
         }
     }
+    return joinDocuments(rows);
+}
+
+/**
+ * Combines several top-level JSON values into one list of rows. An array of
+ * records (a page of API results) contributes its records; any other array —
+ * a row of values like ["bob", 3] — stays a single row.
+ */
+function joinDocuments(values: unknown[]): unknown[] {
+    const isRecordPage = (v: unknown) =>
+        Array.isArray(v) &&
+        v.length > 0 &&
+        v.every((item) => item !== null && typeof item === 'object' && !Array.isArray(item));
+    const rows: unknown[] = [];
+    for (const value of values) {
+        if (isRecordPage(value)) rows.push(...(value as unknown[]));
+        else rows.push(value);
+    }
     return rows;
+}
+
+/**
+ * Splits input made of two or more top-level JSON objects/arrays written one
+ * after another (optionally comma-separated) and parses each. Objects become
+ * records; arrays of records contribute their items, so paginated responses
+ * join up.
+ * Returns null unless every piece is a valid object or array, so ordinary
+ * invalid JSON is never misread.
+ */
+export function parseConcatenatedJson(input: string): unknown[] | null {
+    const pieces: string[] = [];
+    let depth = 0;
+    let inString = false;
+    let escaped = false;
+    let start = -1;
+
+    for (let i = 0; i < input.length; i++) {
+        const ch = input[i];
+        if (inString) {
+            if (escaped) escaped = false;
+            else if (ch === '\\') escaped = true;
+            else if (ch === '"') inString = false;
+            continue;
+        }
+        if (ch === '"') {
+            if (depth === 0) return null; // a bare top-level string
+            inString = true;
+        } else if (ch === '{' || ch === '[') {
+            if (depth === 0) start = i;
+            depth++;
+        } else if (ch === '}' || ch === ']') {
+            depth--;
+            if (depth < 0) return null;
+            if (depth === 0) pieces.push(input.slice(start, i + 1));
+        } else if (depth === 0 && ch !== ',' && !/\s/.test(ch)) {
+            return null; // anything else between documents
+        }
+    }
+    if (depth !== 0 || pieces.length < 2) return null;
+
+    const values: unknown[] = [];
+    for (const piece of pieces) {
+        try {
+            values.push(JSON.parse(piece));
+        } catch {
+            return null;
+        }
+    }
+    return joinDocuments(values);
 }
 
 /**

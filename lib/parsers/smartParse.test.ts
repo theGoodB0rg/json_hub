@@ -1,4 +1,4 @@
-import { validateAndParse, isValidJSON, getEncodingDepth } from './smartParse';
+import { validateAndParse, isValidJSON, getEncodingDepth, escapeControlCharsInStrings } from './smartParse';
 
 describe('smartParse', () => {
     describe('validateAndParse', () => {
@@ -228,5 +228,56 @@ describe('smartParse', () => {
         it('should return 0 for invalid JSON', () => {
             expect(getEncodingDepth('invalid')).toBe(0);
         });
+    });
+});
+
+describe('back-to-back JSON documents', () => {
+    const doc = (id: number) => JSON.stringify({ id, tags: ['a', 'b'], text: 'has } and ] inside' }, null, 2);
+
+    it('reads pretty-printed documents written one after another', () => {
+        const result = validateAndParse(`${doc(1)}\n${doc(2)}\n${doc(3)}`);
+        expect(result.success).toBe(true);
+        expect((result.data as any[]).map((r) => r.id)).toEqual([1, 2, 3]);
+    });
+
+    it('joins pages of results saved into one file', () => {
+        const result = validateAndParse('[{"p":1},{"p":1}]\n\n[{"p":2}]');
+        expect(result.success).toBe(true);
+        expect(result.data).toHaveLength(3);
+    });
+
+    it('accepts objects separated by commas without outer brackets', () => {
+        const result = validateAndParse('{"a":1},\n{"a":2}');
+        expect(result.success).toBe(true);
+        expect(result.data).toEqual([{ a: 1 }, { a: 2 }]);
+    });
+
+    it.each([
+        ['trailing junk after one document', '{"a":1} oops'],
+        ['an unclosed second document', '{"a":1}\n{"a":'],
+        ['a single invalid document', '{"a":1,}'],
+        ['an extra closing brace', '{"a":1}}'],
+    ])('still rejects %s', (_label, input) => {
+        expect(validateAndParse(input).success).toBe(false);
+    });
+});
+
+describe('raw control characters inside strings', () => {
+    it('repairs tabs and line breaks pasted into string values', () => {
+        const result = validateAndParse('[{"note":"line one\nline two\tTabbed"}]');
+        expect(result.success).toBe(true);
+        expect((result.data as any[])[0].note).toBe('line one\nline two\tTabbed');
+    });
+
+    it('escapes other control characters as unicode escapes', () => {
+        expect(escapeControlCharsInStrings('{"x":"a' + String.fromCharCode(1) + 'b"}')).toBe('{"x":"a\\u0001b"}');
+    });
+
+    it('leaves whitespace between tokens alone and reports no change', () => {
+        expect(escapeControlCharsInStrings('{\n\t"x": "ok"\n}')).toBeNull();
+    });
+
+    it('still reports other syntax errors', () => {
+        expect(validateAndParse('{"x":"a\nb",}').success).toBe(false);
     });
 });
