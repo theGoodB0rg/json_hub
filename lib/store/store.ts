@@ -4,6 +4,7 @@ import { temporal } from 'zundo';
 import { validateAndParse } from '@/lib/parsers/smartParse';
 import { flattenJSON } from '@/lib/parsers/flattener';
 import { smartUnwrap } from '@/lib/parsers/unwrapper';
+import { unpackRows } from '@/lib/workers/rowTransfer';
 import type { AppState, ParseError, ExportFormat } from '@/types/store.types';
 import type { OutputViewMode } from '@/types/converter.types';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
@@ -197,7 +198,7 @@ export const useAppStore = create<AppState>()(
                                 });
                             } else if (type === 'FLATTEN_SUCCESS') {
                                 set({
-                                    flatData: payload.rows,
+                                    flatData: unpackRows(payload),
                                     schema: payload.schema,
                                     columnOrder: payload.schema,
                                     excludedColumns: [],

@@ -1,6 +1,7 @@
 import { validateAndParse } from '@/lib/parsers/smartParse';
 import { flattenJSON } from '@/lib/parsers/flattener';
 import { smartUnwrap } from '@/lib/parsers/unwrapper';
+import { packRows } from '@/lib/workers/rowTransfer';
 
 const ctx: Worker = self as any;
 
@@ -40,12 +41,10 @@ ctx.addEventListener('message', (event) => {
 
             const result = flattenJSON(dataToFlatten, { mode });
 
+            // Column names once, rows as arrays: see rowTransfer.ts.
             ctx.postMessage({
                 type: 'FLATTEN_SUCCESS',
-                payload: {
-                    rows: result.rows,
-                    schema: result.schema
-                }
+                payload: packRows(result.rows, result.schema)
             });
         }
     } catch (error) {
