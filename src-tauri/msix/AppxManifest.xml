@@ -18,7 +18,7 @@
     ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>JsonExport</DisplayName>
+    <DisplayName>JSON to Excel Converter – JsonExport</DisplayName>
     <PublisherDisplayName>UtilityGuard</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -34,7 +34,7 @@
   <Applications>
     <Application Id="JsonExport" Executable="JsonExport.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="JsonExport"
+        DisplayName="JSON to Excel Converter – JsonExport"
         Description="Convert JSON files to Excel and CSV on your own computer."
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"

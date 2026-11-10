@@ -17,7 +17,10 @@ $version = "$($conf.version).0"   # Store versions have four parts; the last mus
 
 $makeappx = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\makeappx.exe" -ErrorAction SilentlyContinue |
     Sort-Object { [version]$_.Directory.Parent.Name } -Descending | Select-Object -First 1
-if (-not $makeappx) { throw 'makeappx.exe not found. Install the Windows 10/11 SDK.' }
+# Fallbacks: $env:MAKEAPPX, or makeappx on PATH (e.g. from the Microsoft.Windows.SDK.BuildTools NuGet package).
+if (-not $makeappx -and $env:MAKEAPPX) { $makeappx = Get-Item $env:MAKEAPPX }
+if (-not $makeappx) { $cmd = Get-Command makeappx.exe -ErrorAction SilentlyContinue; if ($cmd) { $makeappx = Get-Item $cmd.Source } }
+if (-not $makeappx) { throw 'makeappx.exe not found. Install the Windows 10/11 SDK, or set MAKEAPPX to its path.' }
 
 Push-Location $root
 try {
