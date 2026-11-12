@@ -1,3 +1,4 @@
+import { saveWithDialog } from '@/lib/platform/downloadHelper';
 import JSZip from 'jszip';
 import { jsonToCsv } from './jsonToCsv';
 import { jsonToXlsx } from './jsonToXlsx';
@@ -55,6 +56,5 @@ export async function downloadZip(
     filename: string = 'json-hub-export.zip'
 ) {
     const zipBlob = await createZipExport(data, schema, parsedData);
-    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(zipBlob, filename, 'application/zip');
 }

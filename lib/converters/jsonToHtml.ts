@@ -1,3 +1,5 @@
+import { saveWithDialog } from '@/lib/platform/downloadHelper';
+
 /**
  * Converts flat JSON data to HTML table
  * @param data - Array of flat objects
@@ -255,6 +257,5 @@ export async function downloadHtml(
 ) {
     const htmlContent = jsonToHtml(data, schema);
     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
-    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(blob, filename, 'text/html;charset=utf-8');
 }

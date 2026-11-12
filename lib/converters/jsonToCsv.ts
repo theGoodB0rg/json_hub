@@ -1,3 +1,5 @@
+import { saveWithDialog } from '@/lib/platform/downloadHelper';
+
 /**
  * Converts flat JSON data to CSV format
  * @param data - Array of flat objects
@@ -59,6 +61,5 @@ export async function downloadCsv(
 ) {
     const csvContent = jsonToCsv(data, schema);
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(blob, filename, 'text/csv;charset=utf-8');
 }

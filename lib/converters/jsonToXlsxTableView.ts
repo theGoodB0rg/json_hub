@@ -1,3 +1,4 @@
+import { saveWithDialog } from '@/lib/platform/downloadHelper';
 import * as XLSX from 'xlsx';
 import { appendSheet, buildSheet, writeXlsx } from './xlsxWriter';
 
@@ -156,7 +157,6 @@ export async function jsonToXlsxTableView(data: any, filename: string = 'table-e
     const wb = generateTableXlsx(data);
     if (!wb) return;
     const bytes = writeXlsx(wb);
-    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(
         bytes,
         filename,

@@ -14,6 +14,12 @@ import { importWithRetry, isChunkLoadError, reloadForFreshChunks, stashForRecove
 // Static on purpose: these run exactly when lazy chunks are failing to load,
 // so they cannot themselves be a lazy chunk.
 import { showChunkRecoveryToast, showExportErrorToast } from '@/lib/platform/exportErrorToast';
+// Also static: everything that runs once the file is handed to the browser.
+// WebKit cancels fetches that start while a download begins, so a lazy chunk
+// here failed after a successful save and reported it as an export error.
+import { saveWithDialog, type SaveResult } from '@/lib/platform/downloadHelper';
+import { showSaveResultToast } from '@/lib/platform/saveResultToast';
+import { conversionHistory } from '@/lib/storage/conversionHistory';
 import { toast } from '@/hooks/use-toast';
 import { useProStore } from '@/lib/store/proStore';
 import { FREE_EXPORT_LIMIT_BYTES } from '@/lib/license/limits';
@@ -688,7 +694,7 @@ export const useAppStore = create<AppState>()(
                             // All exporters return a SaveResult so the UI can show
                             // a "Reveal in folder" toast on desktop. undefined means
                             // the branch bailed early (e.g. table-view with no data).
-                            let saveResult: Awaited<ReturnType<typeof import('@/lib/platform/downloadHelper').saveWithDialog>> | undefined;
+                            let saveResult: SaveResult | undefined;
                             let savedFilename = `${fileName}.${format}`;
 
                             switch (format) {
@@ -730,7 +736,6 @@ export const useAppStore = create<AppState>()(
                                     const jsonStr = sampleRows
                                         ? JSON.stringify(dataToExport, null, 2)
                                         : get().formattedOutput || JSON.stringify(parsedData, null, 2);
-                                    const { saveWithDialog } = await importWithRetry(() => import('@/lib/platform/downloadHelper'));
                                     saveResult = await saveWithDialog(jsonStr, `${fileName}.json`, 'application/json;charset=utf-8');
                                     break;
                                 }
@@ -739,12 +744,10 @@ export const useAppStore = create<AppState>()(
                             }
 
                             if (saveResult) {
-                                const { showSaveResultToast } = await import('@/lib/platform/saveResultToast');
                                 showSaveResultToast(saveResult, savedFilename);
                             }
 
                             try {
-                                const { conversionHistory } = await import('@/lib/storage/conversionHistory');
                                 const exportMode = exportSettings.structure === 'nested' ? 'relational' :
                                     exportSettings.structure === 'table' ? 'table' : 'flat';
                                 await conversionHistory.saveConversion({

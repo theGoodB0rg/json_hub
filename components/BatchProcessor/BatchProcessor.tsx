@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils';
 import { useProStore } from '@/lib/store/proStore';
 import { useAppStore } from '@/lib/store/store';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
+import { saveWithDialog } from '@/lib/platform/downloadHelper';
+import { showSaveResultToast } from '@/lib/platform/saveResultToast';
 
 interface BatchProcessorProps {
     className?: string;
@@ -108,12 +110,8 @@ export function BatchProcessor({ className }: BatchProcessorProps) {
                         // instead of silently dropping the ZIP into
                         // %USERPROFILE%\Downloads.
                         const batchName = `batch-conversion-${Date.now()}.zip`;
-                        void (async () => {
-                            const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
-                            const { showSaveResultToast } = await import('@/lib/platform/saveResultToast');
-                            const result = await saveWithDialog(payload.zipBlob, batchName, 'application/zip');
-                            showSaveResultToast(result, batchName);
-                        })();
+                        void saveWithDialog(payload.zipBlob, batchName, 'application/zip')
+                            .then((result) => showSaveResultToast(result, batchName));
                         setIsProcessing(false);
                         setOverallProgress(100);
                         break;

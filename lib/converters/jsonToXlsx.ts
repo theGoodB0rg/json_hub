@@ -1,3 +1,4 @@
+import { saveWithDialog } from '@/lib/platform/downloadHelper';
 import * as XLSX from 'xlsx';
 import { appendSheet, buildSheet, writeXlsx } from './xlsxWriter';
 
@@ -69,7 +70,6 @@ export async function downloadXlsx(
 ) {
     const workbook = jsonToXlsx(data, schema);
     const bytes = writeXlsx(workbook);
-    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(
         bytes,
         filename,
@@ -229,7 +229,6 @@ export async function downloadXlsxHierarchical(
 ) {
     const workbook = jsonToXlsxHierarchical(data);
     const bytes = writeXlsx(workbook);
-    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(
         bytes,
         filename,

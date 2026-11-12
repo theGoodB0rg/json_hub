@@ -1,3 +1,5 @@
+import { saveWithDialog } from '@/lib/platform/downloadHelper';
+
 /**
  * Converts JSON to HTML with nested tables (like TableViewGrid component)
  * @param data - JSON data (object or array)
@@ -179,6 +181,5 @@ export async function downloadHtmlTableView(
 ) {
     const htmlContent = jsonToHtmlTableView(data);
     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
-    const { saveWithDialog } = await import('@/lib/platform/downloadHelper');
     return saveWithDialog(blob, filename, 'text/html;charset=utf-8');
 }
