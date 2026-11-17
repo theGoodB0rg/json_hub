@@ -21,6 +21,7 @@
 
 import { HUMAN_BOT_SCORE_THRESHOLD, NON_HUMAN_CLIENT_CLASSES } from '../../worker/human-classification';
 import { captureVerdict, sourcesDisagreeOnPillar1, type CaptureVerdict } from '../../lib/analytics/captureVerdict';
+import { isReferrerSpam } from '../../lib/analytics/referrerSpam';
 
 const ACCOUNT_ID = 'ea158eac6035716195ee97831b85562c';
 const AE_DATASET = 'jsonexport_pageviews';
@@ -226,7 +227,7 @@ async function fetchD1Pageviews(startMs: number, endMs: number): Promise<D1Pagev
     const file = path.resolve(process.cwd(), 'performance_data/telemetry_latest.json');
     if (!fs.existsSync(file)) throw new Error('telemetry_latest.json missing (run `npm run telemetry:pull` first)');
     const data = JSON.parse(fs.readFileSync(file, 'utf8'));
-    const events = data.events || [];
+    const events = (data.events || []).filter((e: any) => !isReferrerSpam(e.referrer));
     const inWindow = (e: any) => e.timestamp >= startMs && e.timestamp < endMs;
 
     const client = events.filter((e: any) =>
