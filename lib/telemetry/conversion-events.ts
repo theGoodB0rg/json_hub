@@ -6,6 +6,7 @@ import {
 } from './endpoints';
 import { resolveSampleFlag } from './sample-detection';
 import { classifyErrorMessage, redactErrorMessage } from './error-classify';
+import { desktopReferrer } from '@/lib/platform/siteOrigin';
 
 export type ConversionEventName =
     | 'page_view'
@@ -211,7 +212,9 @@ export function trackConversionEvent(
         timestamp: Date.now(),
         payload: normalizeTelemetryPayload({
             path: typeof window !== 'undefined' ? window.location.pathname : undefined,
-            referrer: typeof document !== 'undefined' ? document.referrer || '(direct)' : undefined,
+            referrer: typeof document !== 'undefined'
+                ? desktopReferrer(window.location) ?? (document.referrer || '(direct)')
+                : undefined,
             ...payload,
         }),
     };

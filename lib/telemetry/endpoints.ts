@@ -20,6 +20,8 @@
  * rather than shipping a predictable placeholder path into production.
  */
 
+import { siteOrigin } from '@/lib/platform/siteOrigin';
+
 let BUILD_TOKEN = process.env.NEXT_PUBLIC_TELEMETRY_TOKEN || '';
 
 /** Test hook: the module caches env at load; tests need to re-seed it. */
@@ -45,9 +47,10 @@ export function resolveEndpoints(origin?: string): EndpointSet {
     // clear every browser's privacy heuristics. On SSR / tests we accept
     // an explicit origin arg; pass '' to force "no origin known" (fail-closed
     // path) even where window exists.
+    // The desktop webview's own origin serves no /_i route (see siteOrigin).
     let base = origin;
     if (base === undefined && typeof window !== 'undefined') {
-        base = window.location.origin;
+        base = siteOrigin(window.location);
     }
     const sameOrigin = base ? `${base}/_i/${encodeURIComponent(BUILD_TOKEN)}` : null;
 

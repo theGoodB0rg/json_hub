@@ -55,6 +55,9 @@ jobs:
         run: npm install
 
       - name: build Next.js export
+        # Without the token the desktop app's telemetry switches itself off.
+        env:
+          NEXT_PUBLIC_TELEMETRY_TOKEN: ${{ secrets.NEXT_PUBLIC_TELEMETRY_TOKEN }}
         run: npm run build
 
       - uses: tauri-apps/tauri-action@v0

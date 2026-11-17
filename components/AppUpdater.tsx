@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { check, Update } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
-import { invoke } from '@tauri-apps/api/core';
+import { detectDesktopChannel } from '@/lib/platform/siteOrigin';
 
 export default function AppUpdater() {
   const [update, setUpdate] = useState<Update | null>(null);
@@ -21,8 +21,7 @@ export default function AppUpdater() {
     try {
       // Microsoft Store installs are updated by the Store; self-updating an
       // MSIX package is against Store policy and fails in WindowsApps anyway.
-      const storeInstall = await invoke<boolean>('is_store_install').catch(() => false);
-      if (storeInstall) return;
+      if ((await detectDesktopChannel()) === 'app:store') return;
       const availableUpdate = await check();
       if (availableUpdate) {
         setUpdate(availableUpdate);

@@ -22,6 +22,14 @@ if (-not $makeappx -and $env:MAKEAPPX) { $makeappx = Get-Item $env:MAKEAPPX }
 if (-not $makeappx) { $cmd = Get-Command makeappx.exe -ErrorAction SilentlyContinue; if ($cmd) { $makeappx = Get-Item $cmd.Source } }
 if (-not $makeappx) { throw 'makeappx.exe not found. Install the Windows 10/11 SDK, or set MAKEAPPX to its path.' }
 
+# Without the token the Store app's telemetry switches itself off, which is
+# why Store installs were invisible in analytics until Nov 2026.
+$envLocal = Join-Path $root '.env.local'
+$hasToken = $env:NEXT_PUBLIC_TELEMETRY_TOKEN -or ((Test-Path $envLocal) -and (Select-String -Path $envLocal -Pattern '^NEXT_PUBLIC_TELEMETRY_TOKEN=.+' -Quiet))
+if (-not $SkipWeb -and -not $hasToken) {
+    throw 'NEXT_PUBLIC_TELEMETRY_TOKEN is not set. Add it to .env.local (same value as the GitHub secret) so the Store build sends telemetry.'
+}
+
 Push-Location $root
 try {
     if (-not $SkipWeb) {
