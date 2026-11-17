@@ -14,7 +14,7 @@ export const metadata: Metadata = buildPageMetadata({
     // ('JSON to XLSX / Excel Converter — Free, Private, No Upload', from
     // 2026-10-10) is the baseline to compare CTR against.
     title: 'JSON to Excel Converter Online — Free, Handles Large Files',
-    description: 'Convert JSON to Excel (.xlsx) in one click. Auto-flattens nested arrays, fixes [object Object] errors, handles 100 MB+ files. 100% in your browser, no sign-up, no upload.',
+    description: `Convert JSON to Excel (.xlsx) in one click. Auto-flattens nested arrays, fixes [object Object] errors. Free up to ${FREE_EXPORT_LIMIT_LABEL}, any size with Pro. 100% in your browser, no sign-up, no upload.`,
     canonicalPath: ROUTES.jsonToExcel,
 });
 
@@ -37,7 +37,7 @@ const faqs = [
     },
     {
         question: 'What is the maximum JSON file size supported?',
-        answer: `Files up to ${FREE_EXPORT_LIMIT_LABEL} convert free, directly in your browser. Larger files (100 MB+) preview free and export with JsonExport Pro. Processing runs in Web Workers so the page never freezes.`
+        answer: `Files up to ${FREE_EXPORT_LIMIT_LABEL} convert free, directly in your browser. Larger files preview free and export with JsonExport Pro. Processing runs in Web Workers so the page never freezes.`
     },
     {
         question: 'Why does my JSON show [object Object] in Excel?',
@@ -53,7 +53,7 @@ const faqs = [
     },
     {
         question: 'How do I convert a large JSON file to Excel without crashing?',
-        answer: 'Most online converters crash on large files because they upload data to servers. JsonExport processes files locally using Web Workers, handling 50MB+ files smoothly without memory errors.'
+        answer: `Most online converters crash on large files because they upload data to servers. JsonExport processes files locally using Web Workers, handling large files smoothly without memory errors. Files up to ${FREE_EXPORT_LIMIT_LABEL} are free; larger ones export with Pro.`
     },
     {
         question: 'Can I convert JSON from APIs like Stripe, Salesforce, or HubSpot?',
@@ -71,7 +71,7 @@ export default function JsonToExcelPage() {
                         Online — Free &amp; Private.
                     </h1>
                 }
-                subheading="The fastest way to turn JSON data into formatted Excel spreadsheets. Handles nested objects, arrays, and 100MB+ files — all processed privately in your browser."
+                subheading={`The fastest way to turn JSON data into formatted Excel spreadsheets. Handles nested objects and arrays, free up to ${FREE_EXPORT_LIMIT_LABEL} — all processed privately in your browser.`}
             />
 
             {/* How It Works */}
@@ -109,8 +109,8 @@ export default function JsonToExcelPage() {
                         <p className="text-muted-foreground text-sm">No more [object Object] in your spreadsheets. Our flattener converts nested JSON objects and arrays into clean, readable Excel columns.</p>
                     </div>
                     <div className="p-5 rounded-lg border border-border/40 bg-card">
-                        <h3 className="font-semibold mb-2">{"\uD83D\uDCE6"} Large File Support (100MB+)</h3>
-                        <p className="text-muted-foreground text-sm">Process massive JSON files without crashes or memory errors. Web Worker technology keeps the interface responsive even with huge datasets.</p>
+                        <h3 className="font-semibold mb-2">{"\uD83D\uDCE6"} Large File Support</h3>
+                        <p className="text-muted-foreground text-sm">Process massive JSON files without crashes or memory errors. Web Worker technology keeps the interface responsive even with huge datasets. Free up to {FREE_EXPORT_LIMIT_LABEL}; any size with Pro.</p>
                     </div>
                     <div className="p-5 rounded-lg border border-border/40 bg-card">
                         <h3 className="font-semibold mb-2">{"\u26A1"} Instant Results — No Signup</h3>

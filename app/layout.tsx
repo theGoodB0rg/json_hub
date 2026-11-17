@@ -8,6 +8,7 @@ import { Footer } from "@/components/Footer"
 import { Navbar } from "@/components/Navbar"
 import { DesktopLinkGuard } from "@/components/DesktopLinkGuard"
 import { ROUTES, SITE_ORIGIN } from '@/lib/routes'
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits'
 import { AnalyticsProvider } from '@/components/AnalyticsProvider'
 import { Toaster } from '@/components/ui/toaster'
 
@@ -16,6 +17,10 @@ const inter = Inter({
     display: 'swap', // Ensure text remains visible during font load
     preload: true,
 })
+
+// States the free limit up front: large-file visitors are the only ones Pro
+// helps, and a snippet promising them 100 MB+ free set up a surprise paywall.
+const SITE_DESCRIPTION = `Convert JSON to Excel, CSV, or XLSX instantly. Free with no signup up to ${FREE_EXPORT_LIMIT_LABEL}, any size with Pro. Auto-flattens nested arrays and fixes [object Object] errors.`
 
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_ORIGIN),
@@ -26,7 +31,7 @@ export const metadata: Metadata = {
         canonical: ROUTES.home,
     },
     title: 'JsonExport — Free JSON Exporter for Excel & CSV',
-    description: 'Convert JSON to Excel, CSV, or XLSX instantly. Free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
+    description: SITE_DESCRIPTION,
     applicationName: 'JsonExport',
     authors: [{ name: 'JsonExport Team' }],
     keywords: ['json to excel', 'json to excel converter', 'convert json to xlsx', 'json to csv', 'data analyst tools', 'json converter for data analysts', 'no-code json converter', 'secure json converter', 'json to excel free', 'flatten nested json', 'json to excel no upload', 'json to excel offline'],
@@ -48,7 +53,7 @@ export const metadata: Metadata = {
     },
     openGraph: {
         title: 'JsonExport — Free JSON Exporter for Excel & CSV',
-        description: 'Convert JSON to Excel, CSV, or XLSX instantly. Free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
+        description: SITE_DESCRIPTION,
         url: SITE_ORIGIN,
         siteName: 'JsonExport',
         locale: 'en_US',
@@ -57,7 +62,7 @@ export const metadata: Metadata = {
     twitter: {
         card: 'summary_large_image',
         title: 'JsonExport — Free JSON Exporter for Excel & CSV',
-        description: 'Convert JSON to Excel, CSV, or XLSX instantly. Free with no signup. Auto-flattens nested arrays, fixes [object Object] errors, and handles 100MB+ files.',
+        description: SITE_DESCRIPTION,
         creator: '@jsonexport',
     },
     manifest: '/manifest.json',
@@ -120,7 +125,7 @@ export default function RootLayout({
                                     "price": "0",
                                     "priceCurrency": "USD"
                                 },
-                                "description": "Free JSON to Excel, CSV, and XLSX converter. 100% private client-side processing. Handles nested arrays, [object Object] errors, and 100MB+ files. No upload, no signup.",
+                                "description": `Free JSON to Excel, CSV, and XLSX converter. 100% private client-side processing. Handles nested arrays and [object Object] errors. Free up to ${FREE_EXPORT_LIMIT_LABEL}. No upload, no signup.`,
                                 "url": SITE_ORIGIN,
                                 "aggregateRating": {
                                     "@type": "AggregateRating",

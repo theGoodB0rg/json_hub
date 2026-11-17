@@ -26,6 +26,7 @@ import { GitHubStarBanner } from "@/components/GitHubStarBanner";
 import { ContextualAffiliateToast } from "@/components/ContextualAffiliateToast";
 import { GrowthSourceBanner } from "@/components/GrowthSourceBanner";
 import { useProStore } from "@/lib/store/proStore";
+import { FREE_EXPORT_LIMIT_LABEL } from "@/lib/license/limits";
 import { pluginRegistry } from "@/lib/plugins/registry";
 import { CodeOutputViewer } from "@/components/CodeOutput/CodeOutputViewer";
 
@@ -120,7 +121,12 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
             {/* Desktop Auto Updater */}
             <AppUpdater />
 
-            <GitHubStarBanner />
+            {/* Phones: the tool started ~2 screens down (Nov 2026), and mobile
+                loaded a file at half the desktop rate. Decoration and asks that
+                come before any value are desktop-only; the trust strip stays. */}
+            <div className="hidden md:block">
+                <GitHubStarBanner />
+            </div>
 
             <main className="flex-1 flex flex-col">
                 <GrowthSourceBanner />
@@ -164,7 +170,7 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                             </li>
                             <li className="inline-flex items-center gap-1.5">
                                 <HardDrive className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
-                                <span>Handles 100 MB+ files</span>
+                                <span>Free up to {FREE_EXPORT_LIMIT_LABEL}</span>
                             </li>
                             <li className="inline-flex items-center gap-1.5">
                                 <Github className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
@@ -179,17 +185,19 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                             </li>
                         </ul>
 
-                        <div className="pt-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+                        <div className="hidden md:block pt-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
                             <HeroAnimation />
                         </div>
                     </div>
                 </section>
 
                 {/* Security Badges */}
-                <SecurityBadges />
+                <div className="hidden md:block">
+                    <SecurityBadges />
 
-                {/* Usage Statistics */}
-                <UsageStats />
+                    {/* Usage Statistics */}
+                    <UsageStats />
+                </div>
 
                 {/* Main App Interface */}
                 <section className="flex-1 px-4 pb-8 container mx-auto">

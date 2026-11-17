@@ -1,4 +1,5 @@
 import { Shield, Lock, Zap, DollarSign } from "lucide-react";
+import { FREE_EXPORT_LIMIT_LABEL } from "@/lib/license/limits";
 
 interface Badge {
     icon: React.ComponentType<{ className?: string }>;
@@ -20,7 +21,7 @@ const badges: Badge[] = [
     {
         icon: Zap,
         label: "Instant Processing",
-        description: "Files up to 100MB"
+        description: `Free up to ${FREE_EXPORT_LIMIT_LABEL}`
     },
     {
         icon: DollarSign,
