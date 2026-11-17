@@ -96,7 +96,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
 
         const timer = setTimeout(() => {
             if (rawInput.trim()) {
-                parseInput();
+                parseInput({ auto: true });
             }
         }, 800);
 

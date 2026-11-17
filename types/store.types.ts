@@ -64,7 +64,8 @@ export interface AppState {
     setOutputMode: (mode: OutputViewMode) => void;
     setRawInput: (input: string, options?: { isSample?: boolean }) => void;
     setSourceFilename: (name: string | null) => void;
-    parseInput: (options?: { isSample?: boolean }) => void;
+    /** `auto`: the editor's debounced parse while the user types or pastes. */
+    parseInput: (options?: { isSample?: boolean; auto?: boolean }) => void;
     parseInputStreaming: (file: File) => void;
     flattenData: () => void;
     updateCell: (rowIndex: number, column: string, value: any) => void;

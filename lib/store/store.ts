@@ -7,7 +7,7 @@ import { smartUnwrap } from '@/lib/parsers/unwrapper';
 import { unpackRows } from '@/lib/workers/rowTransfer';
 import type { AppState, ParseError, ExportFormat } from '@/types/store.types';
 import type { OutputViewMode } from '@/types/converter.types';
-import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
+import { trackConversionEvent, type ConversionEventPayload } from '@/lib/telemetry/conversion-events';
 import { trackFunnelStep } from '@/lib/analytics';
 import { pluginRegistry } from '@/lib/plugins/registry';
 import { importWithRetry, isChunkLoadError, reloadForFreshChunks, stashForRecovery } from '@/lib/platform/chunkRecovery';
@@ -39,6 +39,36 @@ let streamingReader: ReadableStreamDefaultReader<Uint8Array> | null = null;
 /** Set once the parser worker fails to start; parsing then runs on the main thread. */
 let workerUnavailable = false;
 
+/** Whether the current parse came from the editor's auto-parse (typing/pasting). */
+let parseIsAuto = false;
+let pendingParseError: ReturnType<typeof setTimeout> | null = null;
+/** How long auto-parse input must stay unchanged before its error counts. */
+const PARSE_ERROR_SETTLE_MS = 3000;
+
+function cancelPendingParseError(): void {
+    if (pendingParseError) clearTimeout(pendingParseError);
+    pendingParseError = null;
+}
+
+/**
+ * Records a parse error. The editor auto-parses 800 ms after each edit, so a
+ * user typing `{` produced a parse_error for every half-typed state — 20+ per
+ * minute from one person (Nov 2026), inflating the failure rate. An auto-parse
+ * error is only sent once the input has stayed unchanged for a few seconds,
+ * i.e. the user is actually stuck; any further edit cancels it.
+ */
+function trackParseError(fields: ConversionEventPayload): void {
+    cancelPendingParseError();
+    if (!parseIsAuto) {
+        trackConversionEvent('parse_error', fields);
+        return;
+    }
+    pendingParseError = setTimeout(() => {
+        pendingParseError = null;
+        trackConversionEvent('parse_error', fields);
+    }, PARSE_ERROR_SETTLE_MS);
+}
+
 function parseElapsedMs(): number | undefined {
     return parseStartedAt > 0 ? Math.round(performance.now() - parseStartedAt) : undefined;
 }
@@ -68,7 +98,7 @@ function parseOnMainThread(get: () => AppState, set: (partial: Partial<AppState>
         get().flattenData();
     } else {
         set({ parsedData: null, isParsed: false, parseErrors: result.errors, flatData: [], schema: [], columnOrder: [], isLoading: false });
-        trackConversionEvent('parse_error', { ...fields, error_message: result.errors?.[0]?.message ?? 'Parse error' });
+        trackParseError({ ...fields, error_message: result.errors?.[0]?.message ?? 'Parse error' });
     }
 }
 
@@ -195,7 +225,7 @@ export const useAppStore = create<AppState>()(
                                     columnOrder: [],
                                     isLoading: false,
                                 });
-                                trackConversionEvent('parse_error', {
+                                trackParseError({
                                     source: 'worker',
                                     platform: get().activePluginId,
                                     file_size_bytes: get().rawInput.length,
@@ -268,6 +298,8 @@ export const useAppStore = create<AppState>()(
                     },
 
                     setRawInput: (input: string, options?: { isSample?: boolean }) => {
+                        // The user is still editing, so the last auto-parse error was transient.
+                        cancelPendingParseError();
                         set({ rawInput: input, sourceBytes: input.length, isParsed: false, parseErrors: [], isSample: options?.isSample ?? false });
                     },
 
@@ -275,12 +307,13 @@ export const useAppStore = create<AppState>()(
                         set({ sourceFilename: name });
                     },
 
-                    parseInput: async (options?: { isSample?: boolean }) => {
+                    parseInput: async (options?: { isSample?: boolean; auto?: boolean }) => {
                         // Replace a worker that crashed on the previous file.
                         if (!get().worker) get().initWorker();
                         const { rawInput, worker, activePluginId } = get();
                         const isSample = options?.isSample ?? get().isSample ?? false;
                         parseStartedAt = performance.now();
+                        parseIsAuto = options?.auto ?? false;
                         set({ isLoading: true, isSample });
                         if (!isSample) {
                             trackFunnelStep('parse_initiated', { is_sample: false });
@@ -333,7 +366,7 @@ export const useAppStore = create<AppState>()(
                                         formattedOutput: '',
                                         isLoading: false,
                                     });
-                                    trackConversionEvent('parse_error', {
+                                    trackParseError({
                                         source: 'plugin',
                                         platform: activePluginId,
                                         file_size_bytes: rawInput.length,

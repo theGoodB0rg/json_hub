@@ -262,6 +262,22 @@ describe('back-to-back JSON documents', () => {
     });
 });
 
+describe('object members pasted without the outer braces', () => {
+    it('reads them as one object', () => {
+        const result = validateAndParse('"id": 7,\n  "name": "Ada",\n  "tags": ["x"],\n');
+        expect(result.success).toBe(true);
+        expect(result.data).toEqual({ id: 7, name: 'Ada', tags: ['x'] });
+    });
+
+    it.each([
+        ['a bare string followed by junk', '"abc" xyz'],
+        ['members with a syntax error', '"id": 7, "name": '],
+        ['a key with no value', '"id":'],
+    ])('still rejects %s', (_label, input) => {
+        expect(validateAndParse(input).success).toBe(false);
+    });
+});
+
 describe('raw control characters inside strings', () => {
     it('repairs tabs and line breaks pasted into string values', () => {
         const result = validateAndParse('[{"note":"line one\nline two\tTabbed"}]');

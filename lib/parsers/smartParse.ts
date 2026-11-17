@@ -85,6 +85,14 @@ export function validateAndParse(
             return { success: true, data: documents };
         }
 
+        // The inside of an object copied without its outer braces
+        // (`"id": 1, "name": "x"`). Telemetry shows these failing with
+        // "non-whitespace character after JSON" right after the first key.
+        const fragment = parseObjectFragment(input);
+        if (fragment) {
+            return { success: true, data: fragment };
+        }
+
         // Get error message
         let errorMessage = 'Invalid JSON';
         if (error instanceof Error) {
@@ -214,6 +222,22 @@ export function parseConcatenatedJson(input: string): unknown[] | null {
         }
     }
     return joinDocuments(values);
+}
+
+/**
+ * Reads `"key": value, ...` — object members without the surrounding braces —
+ * by wrapping them. Returns null unless the input starts with a quoted key
+ * followed by a colon and the wrapped text parses in full, so nothing else is
+ * ever reinterpreted.
+ */
+export function parseObjectFragment(input: string): Record<string, unknown> | null {
+    const body = input.trim().replace(/,$/, '');
+    if (!/^"(?:[^"\\]|\\.)*"\s*:/.test(body)) return null;
+    try {
+        return JSON.parse(`{${body}}`);
+    } catch {
+        return null;
+    }
 }
 
 /**
