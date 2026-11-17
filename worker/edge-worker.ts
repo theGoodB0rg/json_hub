@@ -11,7 +11,7 @@
  * report. This is Pillar 1 of the blocker-resistant telemetry stack.
  */
 
-import { HUMAN_BOT_SCORE_THRESHOLD, NON_HUMAN_CLIENT_CLASSES } from './human-classification';
+import { HUMAN_BOT_SCORE_THRESHOLD, NON_HUMAN_CLIENT_CLASSES, isScriptedHttpUserAgent } from './human-classification';
 
 export { HUMAN_BOT_SCORE_THRESHOLD, NON_HUMAN_CLIENT_CLASSES };
 
@@ -99,8 +99,9 @@ function classifyUserAgent(ua: string | null): string {
     if (!ua) return 'unknown';
     const s = ua.slice(0, 500);
     if (/bot|crawl|spider|slurp|facebookexternalhit|meta-externalagent/i.test(s)) return 'bot';
-    if (/HeadlessChrome|puppeteer|playwright|selenium/i.test(s)) return 'automated';
-    if (/Mobile|Android.*Mobile|iPhone|iPad/i.test(s)) return 'mobile';
+    if (/HeadlessChrome|puppeteer|playwright|selenium/i.test(s) || isScriptedHttpUserAgent(s)) return 'automated';
+    // Android without "Mobile" is a tablet (Chrome's reduced UA: "Linux; Android 10; K").
+    if (/Mobile|Android|iPhone|iPad/i.test(s)) return 'mobile';
     if (/Windows|Macintosh|Linux x86|CrOS/i.test(s)) return 'desktop';
     return 'other';
 }
@@ -172,8 +173,12 @@ export const SCORE_SOURCE = {
  * Chrome without Sec-Fetch were still counted human; v3 rows never are. The
  * capture-rate SQL accepts double4 >= 2, so the version serves as the
  * before/after boundary when measuring the rule's effect in Analytics Engine.
+ *
+ * v4 (2026-11-17): scripted-HTTP UAs classify as 'automated', Android tablets
+ * as 'mobile', and rows are written only for responses below 400 — requests
+ * for pages that do not exist (/admin, /.env) are scanners, not visits.
  */
-export const ROW_SCHEMA_VERSION = 3;
+export const ROW_SCHEMA_VERSION = 4;
 
 
 /**
@@ -384,7 +389,12 @@ export default {
             });
         }
 
-        if (isHtmlPageRequest(request, url)) {
+        // Pass-through to origin. The orange-cloud proxy means CF already
+        // fetches from the GitHub Pages origin (A records); we just forward.
+        const response = await fetch(request);
+
+        // Count only pages that exist. 304 is a cached revisit, so < 400.
+        if (response.status < 400 && isHtmlPageRequest(request, url)) {
             try {
                 const cf = (request as any).cf || {};
                 const path = normalizePath(url);
@@ -530,8 +540,6 @@ export default {
             }
         }
 
-        // Pass-through to origin. The orange-cloud proxy means CF already
-        // fetches from the GitHub Pages origin (A records); we just forward.
-        return fetch(request);
+        return response;
     },
 };

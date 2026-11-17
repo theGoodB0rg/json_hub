@@ -1,3 +1,5 @@
+import { isScriptedHttpUserAgent } from './human-classification';
+
 export interface D1PreparedStatement {
     bind(...values: any[]): D1PreparedStatement;
     run(): Promise<any>;
@@ -40,26 +42,9 @@ const CORS_HEADERS = {
  * API caller, exactly like the Oct 18 `curl` flood — reject out of hand.
  * (jsdom-style test harnesses stay on the AUTOMATED_UA_SUBSTRINGS quarantine
  * list instead: they are our own QA probes, store-and-exclude.)
+ * The list lives in ./human-classification, shared with the edge worker.
  */
-const SCRIPTED_UA_MARKERS = [
-    'curl/',
-    'python-requests',
-    'python-urllib',
-    'scrapy',
-    'wget/',
-    'go-http-client',
-    'node-fetch',
-    'okhttp/',
-    'axios/',
-    'java/',
-    'httpclient',
-];
-
-export function isScriptedHttpUserAgent(ua: unknown): boolean {
-    if (typeof ua !== 'string' || ua.length === 0) return false;
-    const lower = ua.toLowerCase();
-    return SCRIPTED_UA_MARKERS.some((sub) => lower.includes(sub));
-}
+export { isScriptedHttpUserAgent };
 
 /** Largest ingest body accepted. Real event batches are a few KB. */
 const MAX_BODY_BYTES = 64 * 1024;

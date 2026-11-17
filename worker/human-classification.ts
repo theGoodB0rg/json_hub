@@ -25,4 +25,36 @@ export const HUMAN_BOT_SCORE_THRESHOLD = 30;
  *                     Accept-Language: en-US,en;q=0.9 (no Sec-Fetch) produced
  *                     ~70% of the "human-like" row count in one 24h window.
  */
-export const NON_HUMAN_CLIENT_CLASSES = ['bot', 'automated', 'prefetch', 'subrequest', 'nobrowser', 'fakebrowser'] as const;
+export const NON_HUMAN_CLIENT_CLASSES = ['bot', 'automated', 'prefetch', 'subrequest', 'nobrowser', 'fakebrowser', 'other'] as const;
+// 'other' — a UA naming no recognisable OS. Every browser declares one
+// (Windows, Mac, Linux, Android, iOS, CrOS). Added 2026-11-17: all 226 'other'
+// rows ever written to D1 were scanners, prefetch proxies and fakes, and one
+// scanner put 2,888 'other' rows in a single hour, inflating Pillar 1 to 64x
+// Cloudflare RUM.
+
+/**
+ * HTTP-library user agents: never a person in a browser. Shared by the edge
+ * worker (pageview classification) and the telemetry worker (ingest gate) —
+ * the two kept separate lists, so a scanner the ingest gate rejected was
+ * still counted as a human pageview in Analytics Engine.
+ */
+export const SCRIPTED_UA_MARKERS = [
+    'curl/',
+    'python-requests',
+    'python-urllib',
+    'scrapy',
+    'wget/',
+    'go-http-client',
+    'node-fetch',
+    'okhttp/',
+    'axios/',
+    'java/',
+    'httpclient',
+    'dalvik/',
+] as const;
+
+export function isScriptedHttpUserAgent(ua: unknown): boolean {
+    if (typeof ua !== 'string' || ua.length === 0) return false;
+    const lower = ua.toLowerCase();
+    return SCRIPTED_UA_MARKERS.some((sub) => lower.includes(sub));
+}

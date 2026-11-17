@@ -102,6 +102,23 @@ describe('classifyClient — request-header refinement of the UA class', () => {
         expect(classifyClient(headers({ 'user-agent': 'Googlebot/2.1', 'sec-fetch-mode': 'navigate' }))).toBe('bot');
     });
 
+    it('REGRESSION 2026-11-17: UAs naming no OS, and HTTP libraries, are not human', () => {
+        const nav = { 'sec-fetch-mode': 'navigate', 'accept-language': 'en-US,en;q=0.9' };
+        for (const ua of ['Mozilla/5.0 (compatible; WP-Safe-Scanner/1.0)', 'panscient.com', 'Mozilla/5.0']) {
+            expect(looksHuman(0, SCORE_SOURCE.UNSCORED, classifyClient(headers({ 'user-agent': ua, ...nav })))).toBe(false);
+        }
+        expect(classifyClient(headers({ 'user-agent': 'python-requests/2.31.0', ...nav }))).toBe('automated');
+        expect(classifyClient(headers({ 'user-agent': 'Dalvik/2.1.0 (Linux; U; Android 6.0)', ...nav }))).toBe('automated');
+    });
+
+    it('counts an Android tablet (no "Mobile" token) as mobile', () => {
+        expect(classifyClient(headers({
+            'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+            'sec-fetch-mode': 'navigate',
+            'accept-language': 'en',
+        }))).toBe('mobile');
+    });
+
     it('capture-rate SQL list contains exactly the non-human classes', () => {
         expect(NON_HUMAN_SQL_LIST).toBe(NON_HUMAN_CLIENT_CLASSES.map(c => `'${c}'`).join(', '));
     });
@@ -268,5 +285,37 @@ describe('allowIngestRequest — per-IP ingest rate limiter', () => {
         const t0 = 100;
         for (let i = 0; i < 3; i++) expect(allowIngestRequest(null, t0 + i, 3, WIN)).toBe(true);
         expect(allowIngestRequest(null, t0 + 10, 3, WIN)).toBe(false);
+    });
+});
+
+describe('pageviews are counted only for pages that exist', () => {
+    const run = async (status: number) => {
+        const writes: unknown[] = [];
+        const realFetch = globalThis.fetch;
+        globalThis.fetch = jest.fn(async () => ({ status })) as any;
+        try {
+            const worker = (await import('./edge-worker')).default as any;
+            await worker.fetch(
+                {
+                    method: 'GET',
+                    url: 'https://jsonexport.com/admin',
+                    headers: headers({ accept: 'text/html', 'user-agent': CHROME_UA, 'sec-fetch-mode': 'navigate', 'accept-language': 'en' }),
+                },
+                { PAGEVIEWS: { writeDataPoint: (p: unknown) => writes.push(p) } },
+                { waitUntil: () => undefined, passThroughOnException: () => undefined }
+            );
+        } finally {
+            globalThis.fetch = realFetch;
+        }
+        return writes.length;
+    };
+
+    it('skips a 404 (scanners probing /admin, /.env)', async () => {
+        expect(await run(404)).toBe(0);
+    });
+
+    it('records a 200 and a 304 cached revisit', async () => {
+        expect(await run(200)).toBe(1);
+        expect(await run(304)).toBe(1);
     });
 });
