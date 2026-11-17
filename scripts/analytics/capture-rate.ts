@@ -20,6 +20,7 @@
  */
 
 import { HUMAN_BOT_SCORE_THRESHOLD, NON_HUMAN_CLIENT_CLASSES } from '../../worker/human-classification';
+import { captureVerdict, sourcesDisagreeOnPillar1, type CaptureVerdict } from '../../lib/analytics/captureVerdict';
 
 const ACCOUNT_ID = 'ea158eac6035716195ee97831b85562c';
 const AE_DATASET = 'jsonexport_pageviews';
@@ -68,7 +69,7 @@ export interface CaptureRateReport {
          *  available without a shared request id. */
         clientBlockerSuppression: number | null;
     };
-    verdict: 'healthy' | 'degraded' | 'unknown';
+    verdict: CaptureVerdict;
     notes: string[];
 }
 
@@ -334,11 +335,6 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
             ? d1.pageviewsEdgeFallback / totalCaptured
             : null;
 
-    let verdict: CaptureRateReport['verdict'] = 'unknown';
-    if (cf.pageviews != null && d1.pageviews != null) {
-        if (pillar2 != null && pillar2 >= 0.70) verdict = 'healthy';
-        else verdict = 'degraded';
-    }
 
     // Alert thresholds tightened to avoid noise in low-traffic windows:
     //   - Pillar 1 must be <0.5x or >2x CF RUM AND volume > 50 to warn
@@ -352,22 +348,18 @@ export async function computeCaptureRate(windowHours = 24): Promise<CaptureRateR
             ? ae.pageviewsSchemaV2 / ae.pageviewsRawAllHtml
             : null;
     const v2Dominant = v2Share != null && v2Share >= 0.8;
+    const sourcesDisagree = sourcesDisagreeOnPillar1(cf.pageviews, ae.pageviews, v2Dominant);
+    const verdict = captureVerdict(cf.pageviews, d1.pageviews, pillar2, sourcesDisagree);
 
     if (v2Share != null && v2Share < 0.8) {
         notes.push(
             `${((1 - v2Share) * 100).toFixed(0)}% of Analytics Engine rows in this window predate the 2026-10-10 bot-score fix and carry a hardcoded score of 1. They are excluded from the human count rather than miscounted as bots, so Pillar 1 reads low until the window rolls forward. Not a live defect.`
         );
     }
-    if (
-        v2Dominant &&
-        cf.pageviews != null &&
-        ae.pageviews != null &&
-        cf.pageviews > 50 &&
-        pillar1 != null &&
-        (pillar1 < 0.5 || pillar1 > 2.0)
-    ) {
+    if (sourcesDisagree && pillar1 != null) {
         notes.push(
-            `Pillar 1 (human-filtered AE) is ${(pillar1 * 100).toFixed(1)}% of CF RUM — expected 70-130%. Check edge worker's isHtmlPageRequest heuristic.`
+            `Pillar 1 (human-filtered AE) is ${(pillar1 * 100).toFixed(1)}% of CF RUM — expected 70-130%. ` +
+            `Either the edge's human filter is passing bots or CF RUM is undercounting, so the Pillar 2 ratio cannot be trusted and no health verdict is given.`
         );
     }
     if (
