@@ -50,7 +50,7 @@ export function TemplateSelector({ platform }: { platform?: string }) {
             <Tooltip>
                 <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="gap-2 px-2.5">
+                        <Button variant="outline" size="sm" className="gap-2 px-2.5" data-track="template_menu">
                             <Sparkles className="h-3.5 w-3.5 text-primary" />
                             <span className="hidden lg:inline font-medium">Try Example</span>
                             <ChevronDown className="h-3 w-3 opacity-50" />
@@ -83,6 +83,7 @@ export function TemplateSelector({ platform }: { platform?: string }) {
                                 <DropdownMenuItem
                                     key={template.id}
                                     onClick={() => handleSelectTemplate(template.data)}
+                                data-track="template_pick"
                                     className="cursor-pointer py-2"
                                 >
                                     <div className="flex items-start gap-2.5 w-full">

@@ -174,6 +174,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
 
     const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
+        trackConversionEvent('ui_interaction', { format: 'input_drop' });
         const file = event.dataTransfer.files[0];
         if (file) {
             processFile(file);
@@ -231,6 +232,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                             <TooltipTrigger asChild>
                                 <Button
                                     onClick={() => document.getElementById('file-upload')?.click()}
+                                    data-track="upload"
                                     variant="outline"
                                     size="icon"
                                     disabled={isLoading}
@@ -248,6 +250,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                             <TooltipTrigger asChild>
                                 <Button
                                     onClick={handleClear}
+                                    data-track="clear"
                                     variant="outline"
                                     size="icon"
                                     disabled={isLoading}
@@ -265,6 +268,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                             <TooltipTrigger asChild>
                                 <Button
                                     onClick={handlePaste}
+                                    data-track="paste_button"
                                     variant="outline"
                                     size="icon"
                                     disabled={isLoading}
@@ -282,6 +286,7 @@ export function JsonEditor({ platform }: { platform?: string }) {
                             <TooltipTrigger asChild>
                                 <Button
                                     onClick={() => setIsMaximized(!isMaximized)}
+                                    data-track="maximize"
                                     variant="outline"
                                     size="icon"
                                     className="md:hidden"
@@ -324,6 +329,8 @@ export function JsonEditor({ platform }: { platform?: string }) {
                     className="flex-1 border rounded-md overflow-hidden relative"
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
+                    // Not clicks, so the delegated data-track listener cannot see them.
+                    onPaste={() => trackConversionEvent('ui_interaction', { format: 'input_paste' })}
                 >
                     {isLargeInput ? (
                         <LargeFileViewer

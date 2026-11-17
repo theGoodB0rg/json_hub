@@ -27,12 +27,31 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (!pathname || lastTrackedPath.current === pathname) return;
+        // In-app navigation does not change document.referrer, so every click
+        // between our own pages was logged with the visit's original external
+        // referrer: internal clicks were invisible (Nov 2026).
+        const previous = lastTrackedPath.current;
         lastTrackedPath.current = pathname;
 
         trackPageView(pathname);
         trackFunnelStep('page_visit', { path: pathname });
-        trackConversionEvent('page_view', { path: pathname });
+        trackConversionEvent('page_view', {
+            path: pathname,
+            ...(previous ? { referrer: `${window.location.origin}${previous}` } : {}),
+        });
     }, [pathname]);
+
+    // One listener for every control marked data-track="key". Sends the key
+    // only. Capture phase, so it still fires when a handler stops propagation.
+    useEffect(() => {
+        const onClick = (e: MouseEvent) => {
+            const el = (e.target as Element | null)?.closest?.('[data-track]');
+            const key = el?.getAttribute('data-track');
+            if (key) trackConversionEvent('ui_interaction', { format: key });
+        };
+        document.addEventListener('click', onClick, true);
+        return () => document.removeEventListener('click', onClick, true);
+    }, []);
 
     return (
         <>

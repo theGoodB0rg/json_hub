@@ -79,6 +79,7 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
                                 size="icon"
                                 className="h-6 w-6 rounded-md"
                                 onClick={() => updateExportSettings({ structure: 'flat' })}
+                                data-track="structure_flat"
                             >
                                 <LayoutGrid className="h-3 w-3" />
                             </Button>
@@ -93,6 +94,7 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
                                 size="icon"
                                 className="h-6 w-6 rounded-md"
                                 onClick={() => updateExportSettings({ structure: 'nested' })}
+                                data-track="structure_nested"
                             >
                                 <Layers className="h-3 w-3" />
                             </Button>
@@ -111,6 +113,7 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
                         size="sm"
                         className={`justify-start border-white/5 ${selectedFormat === format.value ? 'shadow-lg shadow-primary/20' : ''}`}
                         onClick={() => setSelectedFormat(format.value)}
+                        data-track={`format_${format.value}`}
                     >
                         <format.icon className="w-4 h-4 mr-1 sm:mr-2 flex-shrink-0" />
                         <span className="truncate">{format.label}</span>
@@ -123,6 +126,7 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
                 className="w-full font-bold shadow-lg shadow-primary/25 relative group overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all text-sm md:text-base py-6"
                 size="lg"
                 data-testid="export-download-button"
+                data-track="export_click"
             >
                 <div className="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                 <Download className="w-5 h-5 mr-2 shrink-0 animate-bounce" />

@@ -55,7 +55,12 @@ export type ConversionEventName =
     // carries the dataset, `file_size_bytes` its size.
     | 'sample_copied'
     | 'sample_downloaded'
-    | 'converter_bridge_clicked';
+    | 'converter_bridge_clicked'
+    // A tool control was used (upload, paste, template, format, export...).
+    // `format` carries the control's data-track key, nothing else: no text,
+    // no payload. Nov 2026: 43% of search visitors left /json-to-excel
+    // without loading a file and nothing showed what they had tried.
+    | 'ui_interaction';
 
 export interface ConversionEventPayload {
     [key: string]: string | number | boolean | null | undefined;

@@ -30,6 +30,7 @@ export function FormatSwitcher({ className }: { className?: string }) {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
+                    data-track="converter_menu"
                     variant="outline"
                     size="sm"
                     className={cn(
