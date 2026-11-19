@@ -113,7 +113,7 @@ export function validateAndParse(
 
         const errors: ParseError[] = [];
 
-        const hint = describeNonJsonInput(input);
+        const hint = describeNonJsonInput(input) ?? describeCutOffInput(input, errorMessage);
         if (hint) {
             errorMessage = `${hint} (${errorMessage})`;
         }
@@ -257,6 +257,20 @@ export function describeNonJsonInput(input: string): string | null {
         return 'This looks like CSV or a spreadsheet export, not JSON. Use the CSV converter instead.';
     }
     return null;
+}
+
+/**
+ * Says the input is cut off when the parser failed at its very last
+ * character. V8 reports this as an ordinary syntax error ("Expected ':' after
+ * property name … at position N"), not "unexpected end". Telemetry has files
+ * that ended at exactly 10,485,760 and 20,000 characters: the tool that
+ * produced them stopped at a size limit. The word "incomplete" makes
+ * telemetry count these as json_truncated.
+ */
+export function describeCutOffInput(input: string, errorMessage: string): string | null {
+    const position = errorMessage.match(/at position (\d+)/i);
+    if (!position || Number(position[1]) < input.trimEnd().length) return null;
+    return 'This JSON looks incomplete: it stops partway through, as if the file was cut off. Copy or download the whole file again.';
 }
 
 /**

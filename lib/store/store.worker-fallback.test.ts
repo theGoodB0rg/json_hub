@@ -35,8 +35,8 @@ describe('parser worker that never starts', () => {
         crash(FakeWorker.instances[0]);
 
         expect(store.getState().parseErrors).toEqual([]);
-        expect(tracked.map((t) => t.name)).toEqual(['worker_init_failed']);
-        expect(tracked[0].payload.error_type).toBe('worker_unavailable');
+        // Nothing was being parsed, so nothing is logged (crawlers sent these).
+        expect(tracked).toEqual([]);
 
         store.getState().setRawInput('[{"a":1},{"a":2}]');
         void store.getState().parseInput();
@@ -56,6 +56,8 @@ describe('parser worker that never starts', () => {
 
         expect(store.getState().isLoading).toBe(false);
         expect(store.getState().flatData).toHaveLength(1);
+        const initFailure = tracked.find((t) => t.name === 'worker_init_failed');
+        expect(initFailure?.payload.error_type).toBe('worker_unavailable');
     });
 });
 

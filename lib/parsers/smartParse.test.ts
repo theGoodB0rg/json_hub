@@ -1,4 +1,5 @@
 import { validateAndParse, isValidJSON, getEncodingDepth, escapeControlCharsInStrings } from './smartParse';
+import { classifyErrorMessage } from '@/lib/telemetry/error-classify';
 
 describe('smartParse', () => {
     describe('validateAndParse', () => {
@@ -295,5 +296,25 @@ describe('raw control characters inside strings', () => {
 
     it('still reports other syntax errors', () => {
         expect(validateAndParse('{"x":"a\nb",}').success).toBe(false);
+    });
+});
+
+describe('input cut off at a size limit', () => {
+    // Shapes from telemetry: files ending at exactly 10,485,760 and 20,000 characters.
+    it.each([
+        '[{"id":1,"name":"a"},{"id":2,"na',
+        '[{"id":1,"name":"a"},{"id":2,"name":"b"',
+        '{"rows":[1,2,3',
+    ])('says the file looks cut off: %s', (input) => {
+        const result = validateAndParse(input);
+        expect(result.success).toBe(false);
+        expect(result.errors?.[0].message).toMatch(/looks incomplete/);
+        expect(classifyErrorMessage(result.errors?.[0].message)).toBe('json_truncated');
+    });
+
+    it('leaves a mistake in the middle of the file as a syntax error', () => {
+        const message = validateAndParse('[{"id":1,,"x":2}]').errors?.[0].message ?? '';
+        expect(message).not.toMatch(/looks incomplete/);
+        expect(classifyErrorMessage(message)).toBe('json_syntax');
     });
 });

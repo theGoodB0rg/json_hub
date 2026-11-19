@@ -268,13 +268,20 @@ export const useAppStore = create<AppState>()(
                                 worker.terminate();
                                 workerUnavailable = true;
                                 set({ worker: null });
+                                // Only log it when a parse was waiting on the worker.
+                                // The worker starts on page load, so crawlers and
+                                // prerenderers that never load a file sent all 32
+                                // of these events up to 2026-11-19. Later parses
+                                // are still counted as parse_success with source
+                                // 'main-thread'.
+                                if (!get().isLoading) return;
                                 trackConversionEvent('worker_init_failed', {
                                     source: 'worker',
                                     platform: get().activePluginId,
                                     error_type: 'worker_unavailable',
                                     error_message: detail,
                                 });
-                                if (get().isLoading) parseOnMainThread(get, set);
+                                parseOnMainThread(get, set);
                                 return;
                             }
                             set({ isLoading: false, worker: null, parseErrors: [{ message: WORKER_CRASH_MESSAGE }] });
