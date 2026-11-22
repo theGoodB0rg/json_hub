@@ -12,6 +12,7 @@
  * Repo and endpoint are hardcoded; this component is single-purpose.
  */
 
+import { PRO_PRICE_LABEL } from '@/lib/license/pricing';
 import { useEffect, useState } from 'react';
 import { Loader2, Download, Monitor, Apple, Terminal, AlertCircle } from 'lucide-react';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
@@ -173,14 +174,14 @@ export function DesktopDownloads() {
                 <h3 className="mt-3 text-base font-semibold">Desktop app coming soon</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                     The desktop installers are in the final build pipeline. Buy a license
-                    now to lock in $29 — we&apos;ll email you the download links the moment
+                    now to lock in {PRO_PRICE_LABEL} — we&apos;ll email you the download links the moment
                     the release ships.
                 </p>
                 <BuyProLink
                     source="desktop_landing_waitlist"
                     className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
                 >
-                    Pre-order $29
+                    Pre-order {PRO_PRICE_LABEL}
                 </BuyProLink>
             </div>
         );

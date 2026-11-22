@@ -25,6 +25,7 @@
  *   attributable to this surface and variant vs the free-tier paywall.
  */
 
+import { PRO_PRICE_LABEL } from '@/lib/license/pricing';
 import { useEffect, useState, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
@@ -64,7 +65,7 @@ function copyFor(details: ExportDetails): UpsellCopy {
     const offer = (
         <>
             Pro exports files of any size and converts whole folders at once, in your browser or the
-            desktop app. One-time $29, lifetime license.
+            desktop app. One-time {PRO_PRICE_LABEL}, lifetime license.
         </>
     );
     switch (details.variant) {
@@ -245,7 +246,7 @@ export function PostExportUpsell() {
                     onClick={click}
                     className="flex-1 rounded bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition hover:opacity-90"
                 >
-                    Get Pro — $29
+                    Get Pro — {PRO_PRICE_LABEL}
                 </button>
                 <button
                     type="button"

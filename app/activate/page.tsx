@@ -1,3 +1,4 @@
+import { PRO_PRICE_LABEL } from '@/lib/license/pricing';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { buildPageMetadata } from '@/lib/seo';
@@ -69,7 +70,7 @@ export default function ActivatePage() {
                             source="activate_page"
                             className="font-medium text-primary hover:underline"
                         >
-                            Get a license — $29 lifetime →
+                            Get a license — {PRO_PRICE_LABEL} lifetime →
                         </BuyProLink>
                     </p>
                     <p className="mt-2">

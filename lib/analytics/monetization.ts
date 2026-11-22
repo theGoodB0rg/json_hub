@@ -30,6 +30,10 @@ export interface MonetizationFunnel {
     upsellShown: number;
     /** Free-tier paywall opens, keyed by reason (`large_file`, `batch`, sent as `format`). */
     paywallShown: Record<string, number>;
+    /** Paywalls closed without buying or taking the free sample (since 2026-11-22). */
+    paywallDismissed: number;
+    /** Paywalls answered with "download the first rows free" (since 2026-11-22). */
+    paywallSampleTaken: number;
     upsellDismissed: number;
     /** Post-export upsell results per behavior variant. Counts only rows that
      *  carry a variant in `format`; shown/dismissed rows from before variants
@@ -86,6 +90,8 @@ export function computeMonetization(events: MonetizationEvent[]): MonetizationFu
                 acc[reason] = (acc[reason] || 0) + 1;
                 return acc;
             }, {}),
+        paywallDismissed: real.filter(e => e.event_name === 'paywall_dismissed').length,
+        paywallSampleTaken: real.filter(e => e.event_name === 'paywall_sample_taken').length,
         upsellDismissed: real.filter(e => e.event_name === 'upsell_dismissed').length,
         upsellByVariant,
         checkoutClicks,

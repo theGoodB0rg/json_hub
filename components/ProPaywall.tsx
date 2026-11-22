@@ -1,5 +1,6 @@
 'use client';
 
+import { PRO_PRICE_LABEL } from '@/lib/license/pricing';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { BuyProLink } from '@/components/BuyProLink';
 import { useAppStore } from '@/lib/store/store';
 import { FREE_EXPORT_LIMIT_LABEL, FREE_SAMPLE_ROWS } from '@/lib/license/limits';
 import { ROUTES } from '@/lib/routes';
+import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 
 const formatMb = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`;
 
@@ -17,16 +19,25 @@ const formatMb = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`;
  * Buying and activating reuse the existing Gumroad link and /activate page.
  * Activation in another tab reaches this one through the license restore in
  * ConverterApp, so the user can come back and export without reloading.
+ *
+ * Every way out is counted, with the paywall reason in `format`: a buy click
+ * (`checkout_clicked`, via BuyProLink), the free sample (`paywall_sample_taken`)
+ * or walking away (`paywall_dismissed`). Before, a paywall that was shown and
+ * abandoned looked the same as one still open.
  */
 export function ProPaywall() {
     const { paywall, setPaywall, sourceBytes, selectedFormat, exportData } = useAppStore();
     if (!paywall) return null;
 
     const close = () => setPaywall(null);
+    const dismiss = () => {
+        trackConversionEvent('paywall_dismissed', { format: paywall });
+        close();
+    };
     const isLargeFile = paywall === 'large_file';
 
     return (
-        <Dialog open onOpenChange={(open) => !open && close()}>
+        <Dialog open onOpenChange={(open) => !open && dismiss()}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>
@@ -47,7 +58,7 @@ export function ProPaywall() {
                             </span>
                         )}
                         <span className="block">
-                            $29 once, lifetime. Also unlocks batch conversion and the desktop app for files of any
+                            {PRO_PRICE_LABEL} once, lifetime. Also unlocks batch conversion and the desktop app for files of any
                             size. Nothing is uploaded, ever.
                         </span>
                     </DialogDescription>
@@ -55,12 +66,13 @@ export function ProPaywall() {
 
                 <div className="flex flex-col gap-2">
                     <Button asChild size="lg">
-                        <BuyProLink source={`paywall_${paywall}`}>Get Pro — $29</BuyProLink>
+                        <BuyProLink source={`paywall_${paywall}`}>Get Pro — {PRO_PRICE_LABEL}</BuyProLink>
                     </Button>
                     {isLargeFile && (
                         <Button
                             variant="outline"
                             onClick={() => {
+                                trackConversionEvent('paywall_sample_taken', { format: paywall });
                                 close();
                                 void exportData(selectedFormat, { sampleRows: FREE_SAMPLE_ROWS });
                             }}

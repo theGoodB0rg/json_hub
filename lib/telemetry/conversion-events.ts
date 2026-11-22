@@ -35,6 +35,9 @@ export type ConversionEventName =
     // Any click on a Gumroad "buy Pro" link. Source rides in `format`.
     | 'checkout_clicked'
     | 'paywall_shown'
+    // How a paywall ended when it was not a buy click. Reason rides in `format`.
+    | 'paywall_dismissed'
+    | 'paywall_sample_taken'
     // Licensing. These were all `upsell_clicked`, told apart only by the
     // page they fired on, because D1 persists a fixed column set and drops
     // the `upsell_type` payload field. A path is not a meaning: "2 activation

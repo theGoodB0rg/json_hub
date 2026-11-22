@@ -9,6 +9,8 @@ import React from 'react';
 import { render, screen, act, waitFor } from '@testing-library/react';
 import { PostExportUpsell } from './PostExportUpsell';
 import { useProStore } from '@/lib/store/proStore';
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
+import { PRO_PRICE_LABEL } from '@/lib/license/pricing';
 
 const EVENT = 'jsonexport:conversion-event';
 const COOLDOWN_KEY = 'jsonexport:post-export-upsell-last';
@@ -44,7 +46,7 @@ describe('PostExportUpsell', () => {
 
         const dialog = await waitForToast();
         expect(dialog).toBeInTheDocument();
-        expect(dialog).toHaveTextContent(/Get Pro — \$29/);
+        expect(dialog).toHaveTextContent(`Get Pro — ${PRO_PRICE_LABEL}`);
     });
 
     it('skips sample/demo exports', async () => {
@@ -111,7 +113,7 @@ describe('PostExportUpsell', () => {
 
         const dialog = await waitForToast();
         expect(dialog).toHaveTextContent(/3\.0 MB file/);
-        expect(dialog).toHaveTextContent(/up to 50 MB/);
+        expect(dialog).toHaveTextContent(`up to ${FREE_EXPORT_LIMIT_LABEL}`);
     });
 
     it('speaks to workflow once the browser has exported before', async () => {

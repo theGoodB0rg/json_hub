@@ -1,5 +1,6 @@
 'use client';
 
+import { PRO_PRICE_LABEL } from '@/lib/license/pricing';
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -93,11 +94,11 @@ export function Navbar() {
                         <Link
                             href={ROUTES.desktop}
                             className="hidden md:inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-md text-sm font-bold text-amber-950 bg-amber-400 hover:bg-amber-300 shadow-sm shadow-amber-500/30 ring-1 ring-amber-500/50 transition-colors motion-safe:animate-pulse-gentle"
-                            aria-label="Upgrade to JsonExport Pro — $29 one-time, lifetime license"
+                            aria-label={`Upgrade to JsonExport Pro — ${PRO_PRICE_LABEL} one-time, lifetime license`}
                         >
                             <Zap className="h-3.5 w-3.5" aria-hidden />
                             Get Pro
-                            <span className="text-[10px] font-semibold text-amber-900/80 border-l border-amber-700/40 pl-1.5 ml-0.5">$29</span>
+                            <span className="text-[10px] font-semibold text-amber-900/80 border-l border-amber-700/40 pl-1.5 ml-0.5">{PRO_PRICE_LABEL}</span>
                         </Link>
                         {/* M3: entry point for buyers with a key but no obvious path */}
                         <Link

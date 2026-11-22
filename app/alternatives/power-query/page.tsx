@@ -5,6 +5,7 @@ import { Check, X, Zap, Code, GraduationCap, Clock, Shield } from 'lucide-react'
 import { FAQSchema } from '@/components/FAQSchema';
 import { buildPageMetadata } from '@/lib/seo';
 import { ROUTES } from '@/lib/routes';
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
 
 export const metadata: Metadata = {
     ...buildPageMetadata({
@@ -30,7 +31,7 @@ const faqs = [
     },
     {
         question: "Is JsonExport free like Power Query?",
-        answer: "Yes, JsonExport is free to use with no signup required, for files up to 50 MB. Larger files preview free and export with Pro."
+        answer: `Yes, JsonExport is free to use with no signup required, for files up to ${FREE_EXPORT_LIMIT_LABEL}. Larger files preview free and export with Pro.`
     }
 ];
 

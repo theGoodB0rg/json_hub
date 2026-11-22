@@ -101,3 +101,17 @@ describe('computeMonetization', () => {
         expect(m.checkoutClicks).toEqual({ activate_page: 2, desktop_hero: 1 });
     });
 });
+
+describe('computeMonetization paywall exits', () => {
+    it('counts dismissals and free-sample choices apart from showings', () => {
+        const m = computeMonetization([
+            ev({ event_name: 'paywall_shown', format: 'large_file' }),
+            ev({ event_name: 'paywall_shown', format: 'batch' }),
+            ev({ event_name: 'paywall_dismissed', format: 'batch' }),
+            ev({ event_name: 'paywall_sample_taken', format: 'large_file' }),
+        ]);
+        expect(m.paywallShown).toEqual({ large_file: 1, batch: 1 });
+        expect(m.paywallDismissed).toBe(1);
+        expect(m.paywallSampleTaken).toBe(1);
+    });
+});
