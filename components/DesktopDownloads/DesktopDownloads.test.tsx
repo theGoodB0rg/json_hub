@@ -70,7 +70,7 @@ describe('DesktopDownloads', () => {
 
         // Each OS row renders
         await waitFor(() => {
-            expect(screen.getByText('Windows')).toBeInTheDocument();
+            expect(screen.getByText('Windows (direct installer)')).toBeInTheDocument();
         });
         expect(screen.getByText('macOS (Apple Silicon)')).toBeInTheDocument();
         expect(screen.getByText('macOS (Intel)')).toBeInTheDocument();
@@ -99,10 +99,10 @@ describe('DesktopDownloads', () => {
 
         render(<DesktopDownloads />);
         await waitFor(() => {
-            expect(screen.getByText('Windows')).toBeInTheDocument();
+            expect(screen.getByText('Windows (direct installer)')).toBeInTheDocument();
         });
         // A .sig file for the exe would be a bad download — bucket should pick the real exe
-        const windowsRow = screen.getByText('Windows').closest('li')!;
+        const windowsRow = screen.getByText('Windows (direct installer)').closest('li')!;
         expect(windowsRow.textContent).toContain('.exe');
         expect(windowsRow.textContent).not.toMatch(/\.exe\.sig/);
     });
@@ -117,7 +117,7 @@ describe('DesktopDownloads', () => {
 
         render(<DesktopDownloads />);
         await waitFor(() => {
-            expect(screen.getByText('Windows')).toBeInTheDocument();
+            expect(screen.getByText('Windows (direct installer)')).toBeInTheDocument();
         });
         // 4 of 5 buckets have no asset (3 non-win rows + something)
         const placeholders = screen.getAllByText(/not in this release/i);
@@ -132,5 +132,16 @@ describe('DesktopDownloads', () => {
         });
         const link = screen.getByRole('link', { name: /browse releases on github/i });
         expect(link.getAttribute('href')).toBe('https://github.com/theGoodB0rg/json_hub/releases/latest');
+    });
+});
+
+describe('DesktopDownloads Microsoft Store link', () => {
+    it('offers the Store install whatever GitHub returns', async () => {
+        global.fetch = jest.fn().mockRejectedValue(new Error('offline'));
+        render(<DesktopDownloads />);
+        const link = screen.getByRole('link', { name: /get it from microsoft/i });
+        expect(link.getAttribute('href')).toContain('apps.microsoft.com/detail/9NPBWN96Q6FR');
+        expect(link.getAttribute('rel')).toContain('noopener');
+        await waitFor(() => expect(screen.getByText(/couldn.t fetch the latest release/i)).toBeInTheDocument());
     });
 });

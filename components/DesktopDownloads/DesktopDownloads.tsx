@@ -1,8 +1,15 @@
 'use client';
 
 /**
- * DesktopDownloads — reads the latest GitHub Release at render time and
- * shows direct download buttons for each OS artifact. If no release exists
+ * DesktopDownloads — leads with the Microsoft Store install on Windows, then
+ * reads the latest GitHub Release at render time and shows direct download
+ * buttons for each OS artifact.
+ *
+ * The Store comes first because it is where installs actually happen: 32 in
+ * the month to 2026-11-22 against roughly 0–1 real GitHub downloads per
+ * release, with no unsigned-installer warning and updates handled by the
+ * Store. The link is static, so it shows whatever state GitHub is in.
+ * If no release exists
  * yet, shows a "Coming soon" state with an email-capture link.
  *
  * The GitHub API is called from the client so we don't need to re-deploy
@@ -20,6 +27,8 @@ import { BuyProLink } from '@/components/BuyProLink';
 
 const GH_RELEASES_API = 'https://api.github.com/repos/theGoodB0rg/json_hub/releases/latest';
 const GH_RELEASES_PAGE = 'https://github.com/theGoodB0rg/json_hub/releases/latest';
+/** `cid` shows up as a custom campaign in Partner Center's acquisitions report. */
+export const MS_STORE_URL = 'https://apps.microsoft.com/detail/9NPBWN96Q6FR?cid=jsonexport_site';
 
 interface Asset {
     name: string;
@@ -53,7 +62,7 @@ interface OsBucket {
 const BUCKETS: OsBucket[] = [
     {
         key: 'windows',
-        label: 'Windows',
+        label: 'Windows (direct installer)',
         sublabel: '.exe installer',
         icon: <Monitor className="h-5 w-5" aria-hidden />,
         match: (n) => /\.(exe|msi)$/i.test(n) && !/\.sig$/i.test(n),
@@ -115,7 +124,42 @@ function formatDate(iso: string): string {
     }
 }
 
+function StoreInstall() {
+    return (
+        <div className="flex items-center gap-4 rounded-lg border border-primary/40 bg-primary/5 p-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                <Monitor className="h-5 w-5" aria-hidden />
+            </div>
+            <div className="min-w-0 flex-1">
+                <p className="font-medium">Windows — Microsoft Store</p>
+                <p className="text-xs text-muted-foreground">
+                    Recommended on Windows 10 and 11. Installs in one click and updates itself.
+                </p>
+            </div>
+            <a
+                href={MS_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackConversionEvent('desktop_download_clicked', { platform: 'windows-store', format: 'store' })}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+            >
+                <Download className="h-4 w-4" aria-hidden />
+                Get it from Microsoft
+            </a>
+        </div>
+    );
+}
+
 export function DesktopDownloads() {
+    return (
+        <div className="space-y-3">
+            <StoreInstall />
+            <GitHubDownloads />
+        </div>
+    );
+}
+
+function GitHubDownloads() {
     const [state, setState] = useState<
         | { kind: 'loading' }
         | { kind: 'ready'; release: Release; buckets: Record<OsKey, Asset | null> }
