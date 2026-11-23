@@ -6,11 +6,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button';
 import { BuyProLink } from '@/components/BuyProLink';
 import { useAppStore } from '@/lib/store/store';
-import { FREE_EXPORT_LIMIT_LABEL, FREE_SAMPLE_ROWS } from '@/lib/license/limits';
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
+import { useFreeLimit } from '@/lib/license/useFreeLimit';
 import { ROUTES } from '@/lib/routes';
 import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
-
-const formatMb = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`;
 
 /**
  * The single paywall for the free tier. Opened by the store (`paywall` state)
@@ -26,7 +25,8 @@ const formatMb = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`;
  * abandoned looked the same as one still open.
  */
 export function ProPaywall() {
-    const { paywall, setPaywall, sourceBytes, selectedFormat, exportData } = useAppStore();
+    const { paywall, setPaywall, selectedFormat, exportData } = useAppStore();
+    const free = useFreeLimit();
     if (!paywall) return null;
 
     const close = () => setPaywall(null);
@@ -48,9 +48,9 @@ export function ProPaywall() {
                     <DialogDescription className="space-y-2 pt-1 text-left">
                         {isLargeFile ? (
                             <span className="block">
-                                This file is {formatMb(sourceBytes)}. Files up to {FREE_EXPORT_LIMIT_LABEL} convert
-                                free, and you can preview any size. Pro exports the whole file, right here in your
-                                browser.
+                                This file is {free?.sizeLabel}. The first {FREE_EXPORT_LIMIT_LABEL} export free
+                                {free && <> ({free.sampleRows.toLocaleString()} of {free.totalRows.toLocaleString()} rows)</>}.
+                                Pro exports the whole file, right here in your browser.
                             </span>
                         ) : (
                             <span className="block">
@@ -68,16 +68,16 @@ export function ProPaywall() {
                     <Button asChild size="lg">
                         <BuyProLink source={`paywall_${paywall}`}>Get Pro — {PRO_PRICE_LABEL}</BuyProLink>
                     </Button>
-                    {isLargeFile && (
+                    {isLargeFile && free && (
                         <Button
                             variant="outline"
                             onClick={() => {
-                                trackConversionEvent('paywall_sample_taken', { format: paywall });
+                                trackConversionEvent('paywall_sample_taken', { format: paywall, row_count: free.sampleRows });
                                 close();
-                                void exportData(selectedFormat, { sampleRows: FREE_SAMPLE_ROWS });
+                                void exportData(selectedFormat, { sampleRows: free.sampleRows });
                             }}
                         >
-                            Download the first {FREE_SAMPLE_ROWS.toLocaleString()} rows free
+                            Download the first {free.sampleRows.toLocaleString()} rows ({free.percent}%) free
                         </Button>
                     )}
                 </div>

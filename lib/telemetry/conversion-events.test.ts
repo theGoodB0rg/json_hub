@@ -59,6 +59,23 @@ describe('Telemetry Conversion Events', () => {
         delete process.env.NEXT_PUBLIC_TELEMETRY_URL;
     });
 
+    it('carries a visitor and session id the caller cannot overwrite, and none when the browser opts out', () => {
+        trackConversionEvent('parse_success', { visitor_id: 'forged-by-caller', rowCount: 12 });
+        const [first] = getTrackedConversionEvents();
+        expect(first.payload.visitor_id).toMatch(/^[A-Za-z0-9-]{8,64}$/);
+        expect(first.payload.visitor_id).not.toBe('forged-by-caller');
+        expect(first.payload.session_id).toMatch(/^[A-Za-z0-9-]{8,64}$/);
+        expect(first.payload.row_count).toBe(12);
+
+        clearTrackedConversionEvents();
+        Object.defineProperty(navigator, 'globalPrivacyControl', { value: true, configurable: true });
+        try {
+            trackConversionEvent('page_view');
+            expect(getTrackedConversionEvents()[0].payload.visitor_id).toBeUndefined();
+        } finally {
+            Object.defineProperty(navigator, 'globalPrivacyControl', { value: undefined, configurable: true });
+        }
+    });
     it('tracks conversion event in localStorage and dispatches custom DOM event', () => {
         const eventListener = jest.fn();
         window.addEventListener('jsonexport:conversion-event', eventListener);

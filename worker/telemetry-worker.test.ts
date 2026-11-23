@@ -16,6 +16,7 @@ import worker, {
     isAutomationUserAgent,
     isScriptedHttpUserAgent,
     resolveServerSampleFlag,
+    safeId,
 } from './telemetry-worker';
 
 const JSDOM_UA = 'Mozilla/5.0 (win32) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/20.0.3';
@@ -290,5 +291,18 @@ describe('Oct-18 ingest hardening — provenance and scripted-UA gates', () => {
         );
         expect(res.status).toBe(403);
         expect(batches.length).toBe(0);
+    });
+});
+
+describe('safeId (visitor / session ids)', () => {
+    it('keeps random client tokens', () => {
+        expect(safeId('3f2b8c1e-9a4d-4e6f-8b2a-1c3d5e7f9a0b')).toBe('3f2b8c1e-9a4d-4e6f-8b2a-1c3d5e7f9a0b');
+        expect(safeId('1795410360049-a1b2c3d4')).toBe('1795410360049-a1b2c3d4');
+    });
+
+    it('drops anything that could carry free text', () => {
+        for (const bad of ['short', 'has space in it', "x'); DROP TABLE events;--", 'a'.repeat(65), 'email@example.com', 42, null, undefined]) {
+            expect(safeId(bad)).toBeNull();
+        }
     });
 });

@@ -195,22 +195,22 @@ export default function PrivacyPage() {
                                     <span className="text-emerald-600 dark:text-emerald-400 text-lg font-bold">CT</span>
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold">Client Telemetry</h3>
-                                    <p className="text-xs text-muted-foreground">Local storage, never sent anywhere</p>
+                                    <h3 className="font-semibold">Usage Telemetry</h3>
+                                    <p className="text-xs text-muted-foreground">Anonymous usage events, sent to our own server</p>
                                 </div>
                             </div>
                             <ul className="space-y-2 text-sm">
                                 <li className="flex gap-2">
                                     <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                                    <span>Feature usage (parse clicked, export format chosen)</span>
+                                    <span>Tool events: file loaded, export format, file size, row count, timing, error type</span>
                                 </li>
                                 <li className="flex gap-2">
                                     <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                                    <span>Anonymous visit count (new vs returning visitor — stored locally)</span>
+                                    <span>A random visitor ID made in your browser, so we can see how a visit flows from load to export. It is not linked to your name, email or IP address and is replaced after 13 months</span>
                                 </li>
                                 <li className="flex gap-2">
                                     <X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
-                                    <span className="text-muted-foreground">No personal data, no email, no account</span>
+                                    <span className="text-muted-foreground">No personal data, no email, no account. Global Privacy Control or Do Not Track turns the visitor ID off</span>
                                 </li>
                                 <li className="flex gap-2">
                                     <X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
@@ -225,11 +225,11 @@ export default function PrivacyPage() {
                         <p className="text-muted-foreground">
                             We track aggregate usage to know what features matter, which pages need improvement,
                             and whether the tool is actually useful. We deliberately chose Cloudflare Web Analytics
-                            (zero cookies, zero personal data) over Google Analytics, and we keep detailed telemetry
-                            on your own device where you can see it, export it, or clear it at any time.
+                            (zero cookies, zero personal data) over Google Analytics, and our own telemetry
+                            records only anonymous tool events, never the contents of your files.
                         </p>
                         <p className="text-muted-foreground mt-2">
-                            To clear all client-side telemetry data, open your browser&apos;s developer tools,
+                            To reset your visitor ID and clear all client-side telemetry data, open your browser&apos;s developer tools,
                             go to Application → Local Storage, and delete keys starting with <code className="text-xs bg-muted px-1 py-0.5 rounded">jsonexport:</code>.
                         </p>
                     </div>

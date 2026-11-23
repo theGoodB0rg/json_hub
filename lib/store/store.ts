@@ -3,7 +3,7 @@ import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { temporal } from 'zundo';
 import { validateAndParse } from '@/lib/parsers/smartParse';
 import { flattenJSON } from '@/lib/parsers/flattener';
-import { smartUnwrap } from '@/lib/parsers/unwrapper';
+import { smartUnwrap, recordCount } from '@/lib/parsers/unwrapper';
 import { unpackRows } from '@/lib/workers/rowTransfer';
 import type { AppState, ParseError, ExportFormat } from '@/types/store.types';
 import type { OutputViewMode } from '@/types/converter.types';
@@ -86,6 +86,7 @@ function parseOnMainThread(get: () => AppState, set: (partial: Partial<AppState>
         platform: activePluginId,
         file_size_bytes: rawInput.length,
         duration_ms: parseElapsedMs(),
+        row_count: result.success && Array.isArray(result.data) ? result.data.length : undefined,
     };
     if (result.success) {
         set({ parsedData: result.data, isParsed: true, parseErrors: [], isLoading: false });
@@ -207,6 +208,7 @@ export const useAppStore = create<AppState>()(
                                     platform: get().activePluginId,
                                     file_size_bytes: currentRawInput.length,
                                     duration_ms: parseElapsedMs(),
+                                    row_count: Array.isArray(payload) ? payload.length : undefined,
                                 };
                                 if (isSample) {
                                     trackConversionEvent('sample_preview', { ...parseFields, is_sample: true });
@@ -687,7 +689,7 @@ export const useAppStore = create<AppState>()(
                         const sampleRows = options?.sampleRows;
                         if (!sampleRows && sourceBytes > FREE_EXPORT_LIMIT_BYTES && !useProStore.getState().isPro) {
                             set({ paywall: 'large_file' });
-                            trackConversionEvent('paywall_shown', { format: 'large_file', file_size_bytes: sourceBytes, platform: activePluginId });
+                            trackConversionEvent('paywall_shown', { format: 'large_file', file_size_bytes: sourceBytes, platform: activePluginId, row_count: recordCount(parsedData) });
                             return;
                         }
                         const sample = <T,>(value: T): T =>

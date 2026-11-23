@@ -13,9 +13,14 @@ CREATE TABLE IF NOT EXISTS events (
     path TEXT,
     user_agent TEXT,
     timestamp INTEGER NOT NULL,
-    is_sample INTEGER DEFAULT 0
+    is_sample INTEGER DEFAULT 0,
+    -- Random per-browser / per-session tokens (see migrations/0002).
+    visitor_id TEXT,
+    session_id TEXT,
+    row_count INTEGER
 );
 
+CREATE INDEX IF NOT EXISTS idx_events_visitor ON events(visitor_id);
 CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(timestamp);
 CREATE INDEX IF NOT EXISTS idx_events_name ON events(event_name);
 CREATE INDEX IF NOT EXISTS idx_events_platform ON events(platform);

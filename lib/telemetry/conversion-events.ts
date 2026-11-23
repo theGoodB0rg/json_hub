@@ -7,6 +7,8 @@ import {
 import { resolveSampleFlag } from './sample-detection';
 import { classifyErrorMessage, redactErrorMessage } from './error-classify';
 import { desktopReferrer } from '@/lib/platform/siteOrigin';
+import { getVisitorId } from '@/lib/analytics/client-id';
+import { ensureSession } from '@/lib/analytics/session';
 
 export type ConversionEventName =
     | 'page_view'
@@ -26,7 +28,6 @@ export type ConversionEventName =
     | 'affiliate_toast_shown'
     | 'affiliate_toast_click'
     | 'affiliate_sidebar_click'
-    | 'github_star_click'
     | 'github_issues_click'
     // Post-export Pro upsell (M1 in MONETIZATION_ROADMAP_2026-10-10.md)
     | 'upsell_shown'
@@ -199,6 +200,7 @@ export function normalizeTelemetryPayload(payload: ConversionEventPayload): Conv
     alias('inputBytes', 'file_size_bytes');
     alias('fileSizeBytes', 'file_size_bytes');
     alias('durationMs', 'duration_ms');
+    alias('rowCount', 'row_count');
 
     if (out.error_message != null) {
         const raw = String(out.error_message);
@@ -206,6 +208,15 @@ export function normalizeTelemetryPayload(payload: ConversionEventPayload): Conv
         if (out.error_type == null) out.error_type = classifyErrorMessage(raw);
     }
     return out;
+}
+
+/** Visitor + session ids for reading one visitor's events as a journey.
+ *  Spread last so a caller's payload cannot overwrite them. Empty when the
+ *  browser opts out (GPC / DNT). */
+function journeyIds(): ConversionEventPayload {
+    const visitorId = getVisitorId();
+    if (!visitorId) return {};
+    return { visitor_id: visitorId, session_id: ensureSession().sessionId };
 }
 
 export function trackConversionEvent(
@@ -224,6 +235,7 @@ export function trackConversionEvent(
                 ? desktopReferrer(window.location) ?? (document.referrer || '(direct)')
                 : undefined,
             ...payload,
+            ...journeyIds(),
         }),
     };
 

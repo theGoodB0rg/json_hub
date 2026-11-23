@@ -71,6 +71,14 @@ function safeNumber(val: any, min = 0, max = 1_000_000_000): number | null {
     return Math.max(min, Math.min(max, Math.round(val)));
 }
 
+/** Visitor / session ids are random client tokens (UUIDs, or
+ *  `<ms>-<random>`). Anything else is dropped rather than stored, so the
+ *  columns can never carry free text. */
+const ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
+export function safeId(val: unknown): string | null {
+    return typeof val === 'string' && ID_PATTERN.test(val) ? val : null;
+}
+
 /**
  * Automation-UA detection — server-side mirror of
  * lib/telemetry/sample-detection.ts (canonical definition).
@@ -183,8 +191,9 @@ export default {
                         `INSERT INTO events (
                             id, event_name, platform, format, file_size_bytes, 
                             duration_ms, error_type, error_message, country, 
-                            referrer, path, user_agent, timestamp, is_sample
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                            referrer, path, user_agent, timestamp, is_sample,
+                            visitor_id, session_id, row_count
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
                     ).bind(
                         id,
                         safeString(e.event_name, 64) || 'unknown',
@@ -199,7 +208,10 @@ export default {
                         safeString(e.path, 300),
                         userAgent,
                         eventTime,
-                        isSample
+                        isSample,
+                        safeId(e.visitor_id),
+                        safeId(e.session_id),
+                        safeNumber(e.row_count, 0, 100_000_000)
                     );
                 });
 

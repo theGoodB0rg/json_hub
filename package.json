@@ -48,6 +48,7 @@
     "gsc:pull": "npx tsx scripts/analytics/gsc-fetcher.ts",
     "analytics": "npx tsx scripts/analytics/unified-report.ts",
     "analytics:report": "npx tsx scripts/analytics/unified-report.ts",
+    "analytics:journeys": "npx tsx scripts/analytics/visitor-journeys.ts",
     "trend-research": "node scripts/trend-research/index.js",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",

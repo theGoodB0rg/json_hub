@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { pluginRegistry } from '@/lib/plugins/registry';
 import { ConversionFeedback } from '@/components/FeedbackWidget/ConversionFeedback';
 import { JiraChangelogNotice } from './JiraChangelogNotice';
+import { FreeLimitNote } from './FreeLimitNote';
 import { getJiraChangelogStatus } from '@/lib/parsers/platform/jira';
 
 interface ExportMenuProps {
@@ -132,6 +133,8 @@ export function ExportMenu({ platform }: ExportMenuProps = {}) {
                 <Download className="w-5 h-5 mr-2 shrink-0 animate-bounce" />
                 <span className="truncate">Download {formats.find((f) => f.value === selectedFormat)?.label || 'File'} ({flatData.length.toLocaleString()} {flatData.length === 1 ? 'row' : 'rows'})</span>
             </Button>
+
+            <FreeLimitNote />
 
             {hasExported && (
                 <ConversionFeedback

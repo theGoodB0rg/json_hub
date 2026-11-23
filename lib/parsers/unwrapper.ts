@@ -132,3 +132,10 @@ export function smartUnwrap(data: any, mode: FlattenMode = 'flat'): UnwrapResult
 
     return { data, isUnwrapped: false };
 }
+
+/** Top-level records an export works on, which is what a free sample slices.
+ *  Runs the unwrapper, so call it only when the count is actually needed. */
+export function recordCount(parsed: unknown): number {
+    const { data } = smartUnwrap(parsed);
+    return Array.isArray(data) ? data.length : 1;
+}
