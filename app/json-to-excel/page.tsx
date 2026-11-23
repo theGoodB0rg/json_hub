@@ -7,14 +7,15 @@ import { FAQSchema } from '@/components/FAQSchema';
 import Link from 'next/link';
 
 export const metadata: Metadata = buildPageMetadata({
-    // GSC Oct 4–Nov 1: "json to excel converter" (735 impr, 1.5% CTR) is the
-    // phrasing searchers use most after the head term, and the "online free"
-    // variants earn the best CTR (5.8–7.9%). "Large files" is backed by
-    // telemetry: 51 of 160 real exports were over 1 MB. Previous title
-    // ('JSON to XLSX / Excel Converter — Free, Private, No Upload', from
-    // 2026-10-10) is the baseline to compare CTR against.
-    title: 'JSON to Excel Converter Online — Free, Handles Large Files',
-    description: `Convert JSON to Excel (.xlsx) in one click. Auto-flattens nested arrays, fixes [object Object] errors. Free up to ${FREE_EXPORT_LIMIT_LABEL}, any size with Pro. 100% in your browser, no sign-up, no upload.`,
+    // GSC Nov 2–22 under the previous title ('JSON to Excel Converter Online —
+    // Free, Handles Large Files', 2026-11-01): page 2.62% CTR at pos 6.1;
+    // "json to excel" 1.63% and "json to excel converter" 1.53% — unchanged
+    // from the title before it. Zero queries contain "large" or "nested", so
+    // that hook spoke to nobody. Queries with the verb "convert" earn 4.88%,
+    // "free" 3.5%, "how" 6.7%. So: lead with the task verb, match the head
+    // terms, and answer "is it free / do I need an account" before the click.
+    title: 'Convert JSON to Excel — Free Online Converter, No Sign-Up',
+    description: `Paste or drop your JSON, download a clean .xlsx in seconds. Nested data becomes readable columns, not [object Object]. Free up to ${FREE_EXPORT_LIMIT_LABEL}, no account, nothing uploaded.`,
     canonicalPath: ROUTES.jsonToExcel,
 });
 
