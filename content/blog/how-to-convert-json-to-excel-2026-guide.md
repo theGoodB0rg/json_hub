@@ -107,7 +107,7 @@ It depends. Most "free online converters" upload your data to their server. You 
 This happens when you convert nested data (like a list of tags or an address object) into a single cell. You need a "flattener" tool. JsonExport handles this automatically by creating columns like `address.street` and `address.city`.
 
 ### Can I convert large JSON files (50MB+)?
-Yes, but most online tools will crash. Browser-based tools (like JsonExport) can handle up to ~100MB depending on your RAM. For files larger than 500MB, you should strictly use Python or a database loader.
+Yes, but most online tools will crash. Browser-based tools (like JsonExport) can handle up to ~100MB depending on your RAM. JsonExport is free up to 15 MB; larger files with Pro. For files larger than 500MB, you should strictly use Python or a database loader.
 
 ---
 

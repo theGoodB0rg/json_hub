@@ -229,6 +229,7 @@ print("Done!")
 ## Tool #4: JsonExport (✅ Recommended for Most Users)
 
 **File Size Limit:** Up to 100MB (device-dependent above 50MB)  
+**Free tier:** Free up to 15 MB; larger files with Pro  
 **Rating:** 9/10 for files up to 100MB
 
 ### Why It's Great (For the Right Use Case)
@@ -421,7 +422,7 @@ with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
 ## Conclusion: Choose the Right Tool for Your File Size
 
 **For everyday & medium files (under 50 MB):**  
-→ **Use JsonExport** – instant, 100% private, no coding required. Handles up to 100MB directly in your browser.
+→ **Use JsonExport** – instant, 100% private, no coding required. Handles up to 100MB directly in your browser. Free up to 15 MB; larger files with Pro.
 
 **For massive files (100 MB+):**  
 → **Use Python + Pandas** – dedicated streaming & chunked processing for enterprise datasets.
@@ -433,7 +434,7 @@ with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
 
 ### Honest Recommendation by File Size
 
-- **< 50 MB:** JsonExport (instant, no setup, client-side private)
+- **< 50 MB:** JsonExport (instant, no setup, client-side private; free up to 15 MB, larger files with Pro)
 - **50-100 MB:** JsonExport (in-browser / desktop) or Python
 - **100 MB+:** Python with chunked processing (required)
 

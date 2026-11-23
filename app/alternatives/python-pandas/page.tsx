@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
 import { ConverterApp } from '@/components/ConverterApp';
 import { Card } from '@/components/ui/card';
 import { Check, X, Terminal, MousePointer, Clock, FileText, Users } from 'lucide-react';
@@ -22,7 +23,7 @@ const faqs = [
     },
     {
         question: "Can JsonExport handle as much as Python Pandas?",
-        answer: "For 90% of use cases (files up to 50MB, nested structures), yes. Python excels with 100MB+ files or when you need custom transformations not available in UI tools."
+        answer: `For 90% of use cases (nested structures, everyday file sizes), yes. Files up to ${FREE_EXPORT_LIMIT_LABEL} export free; larger files with Pro. Python excels with 100MB+ files or when you need custom transformations not available in UI tools.`
     },
     {
         question: "I already know Python. Should I use JsonExport?",
@@ -162,7 +163,7 @@ df.to_excel('output.xlsx', index=False)
                                     <h3 className="font-semibold text-lg mb-2">Use JsonExport (90% of cases)</h3>
                                     <ul className="space-y-1 text-muted-foreground">
                                         <li>• One-time conversions</li>
-                                        <li>• Files up to 50MB</li>
+                                        <li>• Files up to {FREE_EXPORT_LIMIT_LABEL} free (larger with Pro)</li>
                                         <li>• When you need results now, not in 30 minutes</li>
                                         <li>• When you&apos;re not a developer</li>
                                         <li>• When privacy matters (client-side processing)</li>

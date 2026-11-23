@@ -198,7 +198,7 @@ For visual exploration:
 
 **Steps:**
 1. Check file size (determines tool choice)
-2. Under 50MB: JsonExport (in-browser)
+2. Under 50MB: JsonExport (in-browser; free up to 15 MB, larger files with Pro)
 3. Over 100MB: Python or split file
 4. Flatten nested documents
 5. Analyze in Excel or BI tool

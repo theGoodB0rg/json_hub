@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
 import { FlatteningVisualizer } from '@/components/visualizations/FlatteningVisualizer';
 import { BlogLayout } from '@/components/blog/BlogLayout';
 import Link from 'next/link';
@@ -100,7 +101,7 @@ export default function GuidePage() {
                         </h4>
                         <ul className="space-y-2 text-sm">
                             <li>• Automatic Flattening (see above)</li>
-                            <li>• Handles large files (50MB+)</li>
+                            <li>• Free up to {FREE_EXPORT_LIMIT_LABEL}; larger files with Pro</li>
                             <li>• Privacy-first (Client-side)</li>
                             <li>• Free without signup</li>
                         </ul>

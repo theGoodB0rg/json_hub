@@ -1,3 +1,5 @@
+import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
+
 export interface ContentMatrixItem {
     slug: string;
     pluginId: string;
@@ -77,7 +79,7 @@ export const conversionMatrix: ContentMatrixItem[] = [
             },
             {
                 question: 'Is there a file size limit for CSV conversion?',
-                answer: 'Because processing happens entirely in your browser memory, JsonExport smoothly handles files up to 50MB+ without network latency or server timeouts.',
+                answer: `Files up to ${FREE_EXPORT_LIMIT_LABEL} convert free; larger files preview free and export with JsonExport Pro. Processing happens entirely in your browser, so there is no upload wait or server timeout.`,
             },
         ],
     },

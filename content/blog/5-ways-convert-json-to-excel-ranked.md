@@ -19,7 +19,7 @@ I tested **5 popular methods** and ranked them by **ease of use**, **speed**, **
 
 | Method | Ease of Use | Coding Required | Privacy | Cost | File Size Limit | Rating |
 |--------|-------------|-----------------|---------|------|-----------------|--------|
-| **JsonExport** | ✅ Easy | No | ✅ Excellent | Free | 50MB+ | **9/10** ⭐ |
+| **JsonExport** | ✅ Easy | No | ✅ Excellent | Free up to 15 MB; Pro above | 50MB+ | **9/10** ⭐ |
 | Python + Pandas | ⚠️ Hard | Yes | ✅ Excellent | Free | Unlimited | 7/10 |
 | Power Query | ⚠️ Hard | Yes (M language) | ✅ Good | Included with Excel | Varies | 6/10 |
 | Online Converters | ✅ Easy | No | ❌ Poor | Free/Paid | 5-10MB | 5/10 |
@@ -435,7 +435,7 @@ JSON with arrays inside arrays:
 - ❌ **Online Converters:** File size limit (5-10MB)
 - ❌ **Power Query:** Slow/crashes
 - ✅ **Python:** Handles 100MB+ with streaming
-- ⚠️ **JsonExport:** Works up to ~50MB (browser memory limit)
+- ⚠️ **JsonExport:** Works up to ~50MB (browser memory limit); free up to 15 MB, larger files with Pro
 
 **Recommendation:** For 50MB+, use Python.
 

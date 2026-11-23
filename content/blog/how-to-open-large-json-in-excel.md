@@ -121,7 +121,7 @@ You can import JSON natively in Excel by going to **Data > Get Data > From File 
 
 | Tool | Sweet Spot | Max Practical |
 | :--- | :--- | :--- |
-| **JsonExport** | < 50MB | ~100MB |
+| **JsonExport** | < 50MB (free up to 15 MB) | ~100MB |
 | **Power Query** | 1-20MB | ~50MB |
 | **Python + Pandas** | 50-500MB | Unlimited |
 
