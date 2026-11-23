@@ -22,7 +22,6 @@ import { Button } from "@/components/ui/button";
 import AppUpdater from '@/components/AppUpdater';
 import { useAppStore } from '@/lib/store/store';
 import { SecurityBadges } from "@/components/SecurityBadges";
-import { GitHubStarBanner } from "@/components/GitHubStarBanner";
 import { ContextualAffiliateToast } from "@/components/ContextualAffiliateToast";
 import { GrowthSourceBanner } from "@/components/GrowthSourceBanner";
 import { useProStore } from "@/lib/store/proStore";
@@ -124,10 +123,6 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
             {/* Phones: the tool started ~2 screens down (Nov 2026), and mobile
                 loaded a file at half the desktop rate. Decoration and asks that
                 come before any value are desktop-only; the trust strip stays. */}
-            <div className="hidden md:block">
-                <GitHubStarBanner />
-            </div>
-
             <main className="flex-1 flex flex-col">
                 <GrowthSourceBanner />
 

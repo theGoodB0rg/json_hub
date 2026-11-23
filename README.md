@@ -10,7 +10,6 @@ Convert complex, nested JSON to clean Excel/CSV spreadsheets instantly.
 Auto-Unescape • Smart Flattening • Privacy-First • 100% Client-Side
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live-Demo-2563eb?style=for-the-badge)](https://jsonexport.com)
-[![GitHub Stars](https://img.shields.io/github/stars/theGoodB0rg/json_hub?style=for-the-badge&logo=github)](https://github.com/theGoodB0rg/json_hub/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Build](https://img.shields.io/badge/Tests-98%25-success?style=for-the-badge)](tests/)
 
