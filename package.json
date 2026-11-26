@@ -54,7 +54,8 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "msix": "pwsh -NoProfile -File scripts/build-msix.ps1",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "bing": "node scripts/bing.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
