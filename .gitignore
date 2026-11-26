@@ -84,3 +84,4 @@ scripts/pull-telemetry.ts
 scripts/analyze-telemetry.ts
 scripts/generate_pdf_kit.py
 .github/workflows/weekly-trend-research.yml
+.wrangler/

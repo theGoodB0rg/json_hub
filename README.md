@@ -91,6 +91,15 @@ All processing happens in your browser. Zero network calls. No data upload.
 
 ---
 
+## Use it inside ChatGPT or Claude
+
+JsonExport is also a connector (an MCP server) for ChatGPT, Claude and other MCP clients. Paste JSON in a chat and get a table, CSV and a one-click Excel link back.
+
+- Connector URL: `https://jsonexport.com/mcp` (no sign-in). Setup steps: open that URL in a browser.
+- Tool: `json_to_table`. Same parser as the website: API envelopes, nested objects, JSON Lines and escaped JSON.
+- Privacy: the connector converts in memory and stores nothing. Excel is built on jsonexport.com in your browser; the data travels after `#` in the link and never reaches a server.
+- Code: `mcp/` (stateless Cloudflare Worker). Run locally with `cd mcp && npx wrangler dev`, then `node scripts/mcp-smoke.mjs http://127.0.0.1:8787/mcp`.
+
 ## Perfect For
 
 - Converting **Stripe API responses** to Excel for analysis

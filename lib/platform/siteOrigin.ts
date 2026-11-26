@@ -40,3 +40,14 @@ export function desktopReferrer(location: Loc): string | null {
     if (!isDesktopWebview(location)) return null;
     return channel ?? 'app:desktop'; // before detection finishes
 }
+
+/**
+ * Attribution tag from a `?ref=` link we generated (e.g. `ref:mcp` for links
+ * handed out by the ChatGPT / Claude app), sent in the same `referrer` column
+ * as the desktop channel. Chat apps open links without a referrer, so this is
+ * the only way to see those visitors in the funnel.
+ */
+export function campaignReferrer(search: string): string | null {
+    const ref = new URLSearchParams(search).get('ref');
+    return ref && /^[a-z0-9-]{1,32}$/.test(ref) ? `ref:${ref}` : null;
+}

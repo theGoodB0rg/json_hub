@@ -1,5 +1,30 @@
 import LZString from 'lz-string';
 
+const SHARE_PARAM = 'share';
+
+/** Compressed length the in-app Share button allows (keeps links paste-friendly). */
+const DEFAULT_MAX_COMPRESSED = 2048;
+
+export interface ShareUrlOptions {
+    /** Longest compressed payload allowed; longer data returns null. */
+    maxCompressed?: number;
+    /** Attribution tag sent as `?ref=` (e.g. `mcp`), visible to telemetry. */
+    ref?: string;
+}
+
+/**
+ * Builds a link that opens JsonExport with `json` preloaded. The data rides
+ * in the URL fragment (`#share=`), which browsers never send to a server, so
+ * the "your data never leaves your browser" promise holds for shared links.
+ * Pure: safe to call from the web app, the desktop app or a worker.
+ */
+export function buildShareUrl(origin: string, json: string, options: ShareUrlOptions = {}): string | null {
+    const compressed = LZString.compressToEncodedURIComponent(json);
+    if (compressed.length > (options.maxCompressed ?? DEFAULT_MAX_COMPRESSED)) return null;
+    const query = options.ref ? `?ref=${encodeURIComponent(options.ref)}` : '';
+    return `${origin}/${query}#${SHARE_PARAM}=${compressed}`;
+}
+
 /**
  * Compresses JSON data and creates a shareable URL
  * @param jsonData - JSON string to share
@@ -7,21 +32,20 @@ import LZString from 'lz-string';
  */
 export function createShareableLink(jsonData: string): string | null {
     try {
-        // Compress the JSON data
-        const compressed = LZString.compressToEncodedURIComponent(jsonData);
-
-        // Check if compressed data is too large for URL (max ~2KB for safety)
-        if (compressed.length > 2048) {
-            return null;
-        }
-
-        // Create the shareable URL
-        const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-        return `${baseUrl}/?share=${compressed}`;
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        return buildShareUrl(origin, jsonData);
     } catch (error) {
         console.error('Failed to create shareable link:', error);
         return null;
     }
+}
+
+/** Reads the share payload from `#share=` (current) or `?share=` (older links). */
+export function readSharePayload(hash: string, search: string): string | null {
+    const fromHash = new URLSearchParams(hash.replace(/^#/, '')).get(SHARE_PARAM);
+    const encoded = fromHash ?? new URLSearchParams(search).get(SHARE_PARAM);
+    if (!encoded) return null;
+    return LZString.decompressFromEncodedURIComponent(encoded) || null;
 }
 
 /**
@@ -32,20 +56,13 @@ export function loadFromShareableLink(): string | null {
     if (typeof window === 'undefined') return null;
 
     try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const shareData = urlParams.get('share');
-
-        if (!shareData) return null;
-
-        // Decompress the data
-        const decompressed = LZString.decompressFromEncodedURIComponent(shareData);
-
-        if (!decompressed) {
-            console.error('Failed to decompress share data');
-            return null;
+        const data = readSharePayload(window.location.hash, window.location.search);
+        if (data) {
+            // Drop the payload from the address bar so a refresh or a copied
+            // URL does not carry the user's data around.
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
         }
-
-        return decompressed;
+        return data;
     } catch (error) {
         console.error('Failed to load from shareable link:', error);
         return null;

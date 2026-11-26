@@ -6,7 +6,7 @@ import {
 } from './endpoints';
 import { resolveSampleFlag } from './sample-detection';
 import { classifyErrorMessage, redactErrorMessage } from './error-classify';
-import { desktopReferrer } from '@/lib/platform/siteOrigin';
+import { campaignReferrer, desktopReferrer } from '@/lib/platform/siteOrigin';
 import { getVisitorId } from '@/lib/analytics/client-id';
 import { ensureSession } from '@/lib/analytics/session';
 
@@ -232,7 +232,7 @@ export function trackConversionEvent(
         payload: normalizeTelemetryPayload({
             path: typeof window !== 'undefined' ? window.location.pathname : undefined,
             referrer: typeof document !== 'undefined'
-                ? desktopReferrer(window.location) ?? (document.referrer || '(direct)')
+                ? desktopReferrer(window.location) ?? campaignReferrer(window.location.search) ?? (document.referrer || '(direct)')
                 : undefined,
             ...payload,
             ...journeyIds(),

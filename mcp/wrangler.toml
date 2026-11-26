@@ -1,0 +1,22 @@
+# jsonexport-mcp: the ChatGPT / Claude connector (MCP over Streamable HTTP).
+# Same account and zone as jsonexport-edge. These routes are more specific
+# than the edge worker's jsonexport.com/*, so Cloudflare sends /mcp here.
+# Stateless: no storage bindings, nothing about the user's data is kept.
+
+name = "jsonexport-mcp"
+main = "worker.ts"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+account_id = "ea158eac6035716195ee97831b85562c"
+workers_dev = true
+
+[observability]
+enabled = true
+
+[[routes]]
+pattern = "jsonexport.com/mcp"
+zone_name = "jsonexport.com"
+
+[[routes]]
+pattern = "jsonexport.com/mcp/*"
+zone_name = "jsonexport.com"
