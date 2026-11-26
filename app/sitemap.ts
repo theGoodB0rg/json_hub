@@ -83,6 +83,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.8,
         },
         {
+            url: toAbsoluteUrl(ROUTES.security),
+            lastModified: lastModifiedFor(['app/security']),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
+            url: toAbsoluteUrl(ROUTES.desktop),
+            lastModified: lastModifiedFor(['app/desktop']),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
             url: toAbsoluteUrl(ROUTES.testData),
             lastModified: lastModifiedFor(['app/test-data/page.tsx', 'lib/dummy-data.ts']),
             changeFrequency: 'weekly',

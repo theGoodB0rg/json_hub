@@ -38,6 +38,7 @@
     "check:links": "node scripts/validate-seo-integrity.js --links",
     "check:sitemap": "node scripts/validate-seo-integrity.js --sitemap",
     "check:seo": "node scripts/validate-seo-integrity.js",
+    "indexnow": "node scripts/indexnow.mjs",
     "verify:prepush": "npm run lint && npm run build && npm run check:seo",
     "test": "jest",
     "test:watch": "jest --watch",

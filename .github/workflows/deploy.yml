@@ -76,3 +76,17 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+      # Ping IndexNow (Bing and friends) with every sitemap URL. Best effort:
+      # it must never fail the deploy. --wait covers the CDN catching up.
+      - name: Checkout IndexNow script
+        if: github.ref == 'refs/heads/main'
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/indexnow.mjs
+          sparse-checkout-cone-mode: false
+      - name: Notify IndexNow
+        if: github.ref == 'refs/heads/main'
+        continue-on-error: true
+        timeout-minutes: 15
+        run: node scripts/indexnow.mjs --wait=600
