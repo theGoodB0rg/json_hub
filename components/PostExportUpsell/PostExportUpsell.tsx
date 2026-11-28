@@ -32,6 +32,8 @@ import { trackConversionEvent } from '@/lib/telemetry/conversion-events';
 import { useProStore } from '@/lib/store/proStore';
 import { checkoutUrl, trackCheckoutClick } from '@/components/BuyProLink';
 import { FREE_EXPORT_LIMIT_LABEL } from '@/lib/license/limits';
+import { MS_STORE_URL } from '@/components/DesktopDownloads/DesktopDownloads';
+import { isTauriRuntime } from '@/lib/platform/downloadHelper';
 import {
     chooseUpsellVariant,
     checkoutSourceFor,
@@ -256,6 +258,19 @@ export function PostExportUpsell() {
                     Later
                 </button>
             </div>
+            {/* The Store converts ~70% of listing views to installs, but the
+                site sent it 0 installs (Nov 2026): the only link was on /desktop. */}
+            {!isTauriRuntime() && /Windows/.test(navigator.userAgent) && (
+                <a
+                    href={MS_STORE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-track="store_link_post_export"
+                    className="mt-2 block text-center text-xs text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
+                >
+                    On Windows? Get the app from the Microsoft Store
+                </a>
+            )}
         </div>
     );
 }

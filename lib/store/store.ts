@@ -312,6 +312,11 @@ export const useAppStore = create<AppState>()(
                         set({ rawInput: input, sourceBytes: input.length, isParsed: false, parseErrors: [], isSample: options?.isSample ?? false });
                     },
 
+                    loadSample: (input: string) => {
+                        get().setRawInput(input, { isSample: true });
+                        setTimeout(() => get().parseInput({ isSample: true }), 100);
+                    },
+
                     setSourceFilename: (name: string | null) => {
                         set({ sourceFilename: name });
                     },

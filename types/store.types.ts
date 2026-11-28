@@ -63,6 +63,8 @@ export interface AppState {
     setPluginId: (pluginId: string) => void;
     setOutputMode: (mode: OutputViewMode) => void;
     setRawInput: (input: string, options?: { isSample?: boolean }) => void;
+    /** Put demo data in the editor and parse it, flagged as a sample. */
+    loadSample: (input: string) => void;
     setSourceFilename: (name: string | null) => void;
     /** `auto`: the editor's debounced parse while the user types or pastes. */
     parseInput: (options?: { isSample?: boolean; auto?: boolean }) => void;

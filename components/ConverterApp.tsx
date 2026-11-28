@@ -88,8 +88,7 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                 setRawInput(seededData);
                 setTimeout(() => parseInput(), 100);
             } else if (initialSample) {
-                setRawInput(initialSample, { isSample: true });
-                setTimeout(() => parseInput({ isSample: true }), 100);
+                useAppStore.getState().loadSample(initialSample);
             }
         };
 
@@ -126,15 +125,15 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
             <main className="flex-1 flex flex-col">
                 <GrowthSourceBanner />
 
-                {/* Hero Section */}
-                <section className="py-12 md:py-20 px-4 text-center relative overflow-hidden">
+                {/* Hero Section. Kept short so the converter starts on the first
+                    screen: on a 1366x768 laptop the old hero (pill, 6xl heading,
+                    animation, badges, stats) pushed the tool fully below the
+                    fold, and 27 of 39 search visitors (Nov 24-28) never touched
+                    it. The decoration now sits below the tool. */}
+                <section className="py-8 px-4 text-center relative overflow-hidden">
                     <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
-                    <div className="max-w-4xl mx-auto space-y-8">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-medium mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <Zap className="h-3.5 w-3.5" />
-                            <span>Instant Conversion. Zero Latency.</span>
-                        </div>
+                    <div className="max-w-4xl mx-auto space-y-4 md:[&_h1]:text-5xl md:[&_br]:hidden">
 
                         {heading || (
                             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-5 duration-700">
@@ -143,7 +142,7 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                             </h1>
                         )}
 
-                        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+                        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
                             {subheading || "Stop struggling with nested JSON. Visualize, flatten, and clean your data instantly—100% locally."}
                         </p>
 
@@ -180,19 +179,8 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                             </li>
                         </ul>
 
-                        <div className="hidden md:block pt-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-                            <HeroAnimation />
-                        </div>
                     </div>
                 </section>
-
-                {/* Security Badges */}
-                <div className="hidden md:block">
-                    <SecurityBadges />
-
-                    {/* Usage Statistics */}
-                    <UsageStats />
-                </div>
 
                 {/* Main App Interface */}
                 <section className="flex-1 px-4 pb-8 container mx-auto">
@@ -294,6 +282,15 @@ export function ConverterApp({ heading, subheading, platform, pluginId, initialS
                         </div>
                     </div>
                 </section>
+
+                {/* Below the tool on desktop: what the output looks like, trust, usage. */}
+                <div className="hidden md:block">
+                    <div className="px-4 py-8">
+                        <HeroAnimation />
+                    </div>
+                    <SecurityBadges />
+                    <UsageStats />
+                </div>
 
                 {/* Testimonials Section */}
                 <Testimonials />

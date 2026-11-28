@@ -64,13 +64,13 @@ export function ProPaywall() {
                     </DialogDescription>
                 </DialogHeader>
 
+                {/* Free sample first: under the old order (buy first) 0 of the
+                    paywall viewers took the sample or bought (Nov 22-28).
+                    Someone who opens the sample has seen the tool work. */}
                 <div className="flex flex-col gap-2">
-                    <Button asChild size="lg">
-                        <BuyProLink source={`paywall_${paywall}`}>Get Pro — {PRO_PRICE_LABEL}</BuyProLink>
-                    </Button>
                     {isLargeFile && free && (
                         <Button
-                            variant="outline"
+                            size="lg"
                             onClick={() => {
                                 trackConversionEvent('paywall_sample_taken', { format: paywall, row_count: free.sampleRows });
                                 close();
@@ -80,6 +80,9 @@ export function ProPaywall() {
                             Download the first {free.sampleRows.toLocaleString()} rows ({free.percent}%) free
                         </Button>
                     )}
+                    <Button asChild size="lg" variant={isLargeFile && free ? 'outline' : 'default'}>
+                        <BuyProLink source={`paywall_${paywall}`}>Get Pro — {PRO_PRICE_LABEL}</BuyProLink>
+                    </Button>
                 </div>
 
                 <DialogFooter className="sm:justify-start">

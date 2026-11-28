@@ -10,6 +10,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { TemplateSelector } from '@/components/TemplateSelector/TemplateSelector';
 import { LightJsonEditor } from './LightJsonEditor';
 import { DiagnosticOverlay } from './DiagnosticOverlay';
+import { EmptyInputPrompt } from './EmptyInputPrompt';
+import { JSON_TEMPLATES } from '@/lib/templates/jsonTemplates';
 import { cn } from "@/lib/utils";
 import { Progress } from '@/components/ui/progress';
 import { pluginRegistry } from '@/lib/plugins/registry';
@@ -347,6 +349,15 @@ export function JsonEditor({ platform }: { platform?: string }) {
                             fileSize={fileSize}
                             placeholder={currentPlugin.uiConfig.inputPlaceholder}
                             readOnly={isLoading}
+                        />
+                    )}
+
+                    {!rawInput && !isLoading && !isDiagnosing && (
+                        <EmptyInputPrompt
+                            sourceLabel={currentPlugin.sourceFormat.toUpperCase()}
+                            onChooseFile={() => fileInputRef.current?.click()}
+                            onPaste={handlePaste}
+                            onSample={currentPlugin.sourceFormat === 'json' ? () => useAppStore.getState().loadSample(JSON_TEMPLATES[0].data) : undefined}
                         />
                     )}
 

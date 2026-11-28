@@ -214,7 +214,9 @@ export const converterPages: ConverterPageConfig[] = [
     {
         slug: 'trello-json-to-csv',
         platformName: 'Trello',
-        title: 'Trello JSON to CSV / Excel Converter — Clean Cards & Lists',
+        // GSC Oct 31–Nov 27: 787 impressions at pos 36, searched as "export trello
+        // (cards) to excel" / "trello to excel"; none say "JSON" or "CSV" first.
+        title: 'Export Trello to Excel — Cards, Lists & Checklists (CSV/XLSX)',
         description: 'Convert Trello board JSON exports into clean CSV or Excel files. Extracts cards, lists, labels, and checklists into tabular columns.',
         h1: 'Trello JSON to CSV/Excel Converter',
         subheading: 'Prepare your Trello data for import into other systems or archive it for safekeeping.',

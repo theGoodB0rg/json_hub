@@ -17,13 +17,7 @@ import { JSON_TEMPLATES } from '@/lib/templates/jsonTemplates';
 import { BrandIcon } from '@/components/ui/BrandIcon';
 
 export function TemplateSelector({ platform }: { platform?: string }) {
-    const { setRawInput, parseInput } = useAppStore();
-
-    const handleSelectTemplate = (templateData: string) => {
-        setRawInput(templateData, { isSample: true });
-        // Auto-parse after loading template
-        setTimeout(() => parseInput({ isSample: true }), 100);
-    };
+    const loadSample = useAppStore(s => s.loadSample);
 
     const categories: Record<string, string> = {
         api: 'API Responses',
@@ -82,7 +76,7 @@ export function TemplateSelector({ platform }: { platform?: string }) {
                             {templates.map((template) => (
                                 <DropdownMenuItem
                                     key={template.id}
-                                    onClick={() => handleSelectTemplate(template.data)}
+                                    onClick={() => loadSample(template.data)}
                                 data-track="template_pick"
                                     className="cursor-pointer py-2"
                                 >

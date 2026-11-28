@@ -16,7 +16,7 @@ interface Props {
 
 export function DemoPreview({ pageConfig }: Props) {
     const [copied, setCopied] = useState(false);
-    const { setRawInput, parseInput } = useAppStore();
+    const loadSample = useAppStore(s => s.loadSample);
 
     // Load authentic platform sample
     const platformSample = useMemo(() => {
@@ -49,8 +49,7 @@ export function DemoPreview({ pageConfig }: Props) {
     };
 
     const handleLoadIntoEditor = () => {
-        setRawInput(sampleSnippet, { isSample: true });
-        setTimeout(() => parseInput({ isSample: true }), 100);
+        loadSample(sampleSnippet);
         window.scrollTo({ top: 100, behavior: 'smooth' });
     };
 
