@@ -65,6 +65,8 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: ./out
+          # Serves public/.well-known/mcp-registry-auth (MCP Registry domain proof).
+          include-hidden-files: true
 
   deploy:
     environment:
